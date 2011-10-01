@@ -1,0 +1,56 @@
+/*Modal*/
+.modal_bg {
+	width:100%;
+	background:#333;
+	opacity:.5;
+	position:absolute;
+	top:0;
+	display:none;
+}
+.modal {
+	width:600px;
+	background:#fff;
+	max-height:320px;
+	position:absolute;
+	padding:5px;
+	border-radius:5px;
+	display:none;
+	box-shadow: 3px 3px 3px #666;
+}
+.modal .target {
+	overflow-x:hidden;
+	overflow-y:hidden;	
+}
+/* DIALOG MODAL - USED FOR YES/NO FUNCTIONS*/
+.modaldialog {
+	width:350px;
+	max-height:200px;	
+}
+.modaldialog .prompt {
+	display:block;
+	color:#999;
+	padding:5px 0 20px 0;
+	font-size:.9em;
+}
+/* LARGE MODAL - USED FOR EXTERNAL URL'S*/
+.modallarge {
+	width:900px;
+	max-height:none;
+}
+.modallarge iframe {
+	border:0;
+	padding:0;
+	width:900px;
+	height:500px;
+}
+/* MODAL FUNCTIONS*/
+.modal .close {
+	float:right;
+	font-size:0;
+	display:block;
+	width:30px;
+	height:30px;
+	background-image:url(/img/modal_close.png);	
+	margin:-15px -15px 0 0;
+}
+

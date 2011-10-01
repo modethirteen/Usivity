@@ -1,0 +1,25 @@
+<h1>Send Message</h1>
+<div class="message">
+	<span class="contact_picture minimize">
+		<img src="{author.avatar.@uri}">
+	</span>
+	<div class="message_contents">
+		<span class="contact_name">
+			<a target="_new" class="profile" href="http://twitter.com/{author.name}">{author.name}</a>
+		</span>
+		<div class="message_text">
+			{body}
+		</div>
+	</div>
+</div>
+
+
+<form class="message_send">	
+	<span class="ititle">message</span>
+	<textarea name="message"></textarea>
+	
+	<div class="buttons">
+		<button type="submit" class="button apply">send</button>
+		<button type="submit" class="button cancel">cancel</button>
+	</div>
+</form>

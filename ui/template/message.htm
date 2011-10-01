@@ -1,0 +1,27 @@
+<div id="{id}">
+	<span class="contact_picture minimize">
+		<img src="{author.avatar.@uri}">
+	</span>
+	<div class="message_contents">
+		<span class="contact_name">
+			<a target="_new" class="profile" href="http://twitter.com/{author.name}">{author.name}</a>
+		</span>
+		<div class="message_text">
+			{body}
+		</div>
+		<span class="message_meta">
+			<span class="message_time">
+				{timestamp}
+			</span>
+			<span class="message_source">
+				{source}
+			</span>
+		</span>
+		<div class="message_actions">
+			<a href="/template/message_send.htm" id="{id}" class="popup claim">claim</a>
+			<a href="/template/assign.htm" id="{id}" class="dialog assign">assign</a>
+			<a href="/template/delete.htm" id="{id}" class="dialog delete">delete</a>
+			<a href="/template/tag.htm" id="{id}" class="dialog tag">tag</a>
+		</div>
+	</div>
+</div>

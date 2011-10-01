@@ -1,0 +1,188 @@
+/*Body*/
+body {
+	background:#c2d9e1;		
+}
+/*Wrap*/
+.wrap {
+	padding:0;
+	overflow:hidden;
+}
+.fwrap { 
+	/*feature wrap - white box around each feature section*/
+	background:#fff;
+	padding:5px;
+	border-radius:5px;
+	margin:5px 5px 10px 5px;
+	overflow-x:hidden;
+	box-shadow: 2px 2px 2px #8aacb8;
+	display:none;
+}
+/*header*/
+.header {
+	padding:5px;
+	background:#191919;
+	border-bottom:2px solid #fff;
+	margin:0;
+	height:40px;	
+}
+.logo {
+	height:40px;
+	width:131px;
+	font-size:0;
+	color:#1c1c1d;
+	background:url('/img/logo.gif');
+	margin:0 0 0 5px;
+}
+/*Controls & menu*/
+.controls {
+	float:right;
+}
+.menu {
+	float:right;
+	color:#fff;
+	height:40px;	
+	line-height:40px;
+}
+.menu a {
+	float:right;
+	display:block;
+	margin:0 30px 0 0;
+	font-size:.9em;
+	text-decoration:none;
+}
+/*Search*/
+.search {
+	margin:10px 5px 0 0;	
+}
+.search input {
+	border:0;
+	padding:3px;
+	border-radius:3px;	
+}
+.highlight {
+	background:#fff000;	
+}
+/*Columns*/
+.col {
+	float:left;
+	margin:0;
+	padding:5px 0 0 0;
+	display:block;	
+}
+.col1 {
+	width:40%;	
+}
+.col2 {
+	width:40%;	
+}
+.col3 {
+	width:20%;	
+}
+/*Streams*/
+.mystream {
+	
+}
+.openstream {
+	
+}
+/*Contacts*/
+.contacts {
+
+}
+/*Details*/
+.details {
+	
+}
+/*Messages*/
+.message {
+	background:#efefef;
+	margin:0 0 5px 0;
+	border-radius:5px;
+	padding:5px;	
+	overflow:hidden;
+}
+.message:hover {
+	background:#dff5f5;	
+}
+.message_contents {
+	padding:0 0 0 10px;
+	margin:0 0 0 50px;
+}
+.message_text {
+	font-size:.8em;	
+	margin:0 0 5px 0;
+}
+.message_meta {
+	display:block;	
+}
+.message_meta span {
+	float:left;
+	font-size:.7em;
+	color:#999;
+	display:block;
+	margin:0 20px 0 0;
+}
+
+.message_actions a {
+	float:right;
+	display:block;
+	margin:0 0 0 10px;
+	font-size:.7em;	
+}
+.message_new {
+	display:none;	
+}
+/*contact*/
+.contact {
+	background:#efefef;
+	margin:0 0 5px 0;
+	border-radius:5px;
+	padding:5px;	
+	overflow:hidden;
+}
+.contact:hover {
+	background:#dff5f5;	
+}
+.contact_contents {
+	padding:0 0 0 10px;
+	margin:0 0 0 45px;
+}
+.contact_picture {
+	border:2px solid #fff;
+	display:block;
+	width:48px;
+	height:48px;
+	background:#ccc;
+	float:left;	
+	cursor:pointer;
+}
+.contact_picture img {
+	width:48px;
+}
+.contact_name {
+	font-weight:bold;
+	font-size:.9em;	
+}
+.contact_new {
+	display:none;	
+}
+/*My Connections*/
+.myconnections {
+	width:340px;
+	margin:0 auto;	
+}
+.myconnections a {
+	display:block;
+	float:left;
+	margin:10px;
+	width:150px;
+	height:50px;
+	font-size:0;
+	color:#fff;
+}
+.myconnections .twitter {
+	background-image:url(/img/auth_twitter.gif);	
+}
+.myconnections .facebook {
+	background-image:url(/img/auth_facebook.gif);	
+}
