@@ -2,14 +2,27 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" dir="ltr"> 
 <head> 
 <title>Usivity | Social CRM</title> 
+
+	<!--JavaScript Libraries-->
 	<script language="JavaScript" src="/js/jquery-1.6.1.min.js"></script>
+	
+	<!--Interaction Libraries-->
 	<script language="JavaScript" src="/js/settings.js"></script>
 	<script language="JavaScript" src="/js/template.js"></script>
-	<script language="JavaScript" src="/js/data.js"></script>
-	<script language="JavaScript" src="/js/usivity.js"></script>
+	<script language="JavaScript" src="/js/loaddata.js"></script>
+	<script language="JavaScript" src="/js/dropdowns.js"></script>
 	<script language="JavaScript" src="/js/modal.js"></script>
 	<script language="JavaScript" src="/js/forms.js"></script>
+	<script language="JavaScript" src="/js/animations.js"></script>
+	<script language="JavaScript" src="/js/search.js"></script>
 	
+	<!--API Libraries-->
+	<script language="JavaScript" src="/js/connections.js"></script>
+	<script language="JavaScript" src="/js/messages.js"></script>
+	<script language="JavaScript" src="/js/subscriptions.js"></script>
+	
+	
+	<!--CSS Libraries-->
 	<link rel="stylesheet" type="text/css" href="/css/reset.css" />
 	<link rel="stylesheet" type="text/css" href="/css/modal.css" />
 	<link rel="stylesheet" type="text/css" href="/css/layout.css" />
@@ -26,12 +39,14 @@
 			</form>
 		</div>
 		<div class="menu">
-			<a href="template/settings.htm" class="popup settings">settings</a>
-			<a href="template/reports.htm" class="popup reports">reports</a>
-			<a href="template/connections.htm" class="dialog connections">connections</a>
-			<a href="template/recent.htm" class="popup recent">recent</a>
-			<a href="template/team.htm" class="popup team">team</a>
-			<a href="template/email.htm" class="popup email">email</a>
+			<ul>
+				<li class="settings"><a href="template/settings.htm" class="popup">settings</a></li>
+				<!--<li><a href="template/reports.htm" class="popup reports">reports</a></li>-->
+				<li class="connections"><a href="template/connections.htm" id="connectionsapi" class="drop">connections</a></li>
+				<li class="subscriptions"><a href="template/subscriptions.htm" id="connectionsapi" class="drop">subscriptions</a></li>
+				<!--<li class="recent"><a href="template/recent.htm" class="popup">recent</a></li>-->
+				<!--<li class="team"><a href="template/team.htm" class="popup">team</a></li>-->
+			</ul>
 		</div>
 		<h1 class="logo">Usivity | Social CRM</h1>
 	</div>
@@ -39,7 +54,7 @@
 		<div class="streams">
 			<div class="openstream fwrap first last">
 				<div class="title">
-					<h2>Open Stream</h2>
+					<h2>Open Message Stream</h2>
 				</div>
 				<div class="target">
 				
@@ -51,7 +66,7 @@
 		<div class="streams">
 			<div class="mystream fwrap first last">
 				<div class="title">
-					<h2>My Stream</h2>
+					<h2>My Message Stream</h2>
 				</div>
 				<div class="target">
 				

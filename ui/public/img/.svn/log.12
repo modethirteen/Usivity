@@ -1,0 +1,17 @@
+<rm
+   name=".svn/prop-base/table_activity_bg_1_left.gif.svn-revert"/>
+<modify-entry
+   committed-rev="35"
+   committed-date="2011-10-09T00:37:51.131798Z"
+   name="table_activity_bg_1_left.gif"
+   checksum="47d6eca258b151fe4c3a0fd5d6725661"
+   last-author="damienh"/>
+<delete-changelist
+   name="table_activity_bg_1_left.gif"/>
+<committed
+   name="table_activity_bg_1_left.gif"
+   revision="35"/>
+<modify-wcprop
+   name="table_activity_bg_1_left.gif"
+   propname="svn:wc:ra_dav:version-url"
+   propval="/!svn/ver/35/projects/usivity/web/jsui/public/img/table_activity_bg_1_left.gif"/>

@@ -1,0 +1,20 @@
+<h1>My {subscriptions_@id} subscriptions</h1>
+<div class="subscriptionsform">
+	<form action="/usivity/sources/{subscriptions_@source}/subscriptions">	<!-- Replace id with HREF attribute from API -->
+		<span class="ititle">add new keyword</span>
+		<input type="text" name="email" class="constraints"/>
+		
+		<div class="buttons">
+			<button type="submit" class="add">add subscription</button>
+		</div>
+	</form>
+	<ul>
+{foreach
+	{in:subscriptions_subscription}
+		<li>
+			<span>{constraints}</span>
+			<a href="#" id="{@id}" class="delete">delete</a>
+		</li>
+foreach}
+	</ul>
+</div> 

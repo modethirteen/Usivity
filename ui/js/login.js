@@ -1,3 +1,12 @@
+/*
+	login.js - format and handle generica form interactions
+	TODO: MOVE THIS FILE TO SEPARATE DIRECTORY.  THIS FILE LIVES ON THE API FOR SECURE AUTHENTICATION
+	FUNCTIONS
+		-
+		-
+		-
+*/
+
 $(document).ready( function() {
 	
 	$(window).resize(function() {

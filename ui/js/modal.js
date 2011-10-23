@@ -1,3 +1,10 @@
+/*
+	modal.js - handle all popup modal dialogs.  responsible for loading data, positioning and resizing modals  
+	
+	FUNCTIONS
+		-
+		-
+*/
 $(document).ready( function() {
 	
 	$(window).resize(function() {
@@ -17,32 +24,46 @@ $(document).ready( function() {
 	});
 	
 	// "NORMAL" POPUP LINK
-	$(".popup").live("click", function() {
-		var src = $(this).attr("href");
-		var id = $(this).attr("id");
-		var datastore = openmessages.data[id];
+	$(".popup, .dialog").live("click", function() {
+		var link	= $(this);
+		var src 	= link.attr("href");
+		var id 		= link.attr("id");
+		var type	= "";
 		
-		$.get(src, function(data) {
-			var html = maketemplate(data, datastore);
-			$(".modal .target").html(html);
-			showmodal();
-		});
-		return false;
-	});
-	
-	// MODAL DIALOG - POPUP FOR YES/NO DIALOGS
-	// TODO - MERGE FUNCTION WITH (".popup")WITH A DOUBLE SELECTOR
-	$(".dialog").live("click", function() {
-		var src = $(this).attr("href");
-		var id = $(this).attr("id");
-		var datastore = openmessages.data[id];
-		$(".modal").addClass("modaldialog");
+		if (link.hasClass("dialog"))
+		{
+			var type = "modalsmall";
+		}
 		
-		$.get(src, function(data) {
-			var html = maketemplate(data, datastore);
-			$(".modal .target").html(html);
-			showmodal();
-		});
+		if (id)
+		{
+			if (id.indexOf("/") >= 0)
+			{
+				var datahtml = "";
+				var dataurl = id;
+			}
+			else
+			{
+				var datahtml 	= usivity[id].markup; // TODO:  CHANGE THE LOCATION OF WHERE DATA IS STORED IN DATA.JS
+				var dataurl 	= usivity[id].url;  //TODO:  DON'T STORE OBJECT URL'S IN DATA STORAGE, ACCEPT URL'S DIRECTLY
+			}
+			
+			$.get(src, function(data) {		
+				//TODO: CHANGE PARAMETER NAMES TO MATCH FUNCTION PARAMETERS
+				var html = preparedata(data, datahtml, dataurl, function(html) {
+					$(".modal .target").html(html);
+					showmodal(type);	
+				});
+			});
+		}
+		else
+		{
+			// LOAD PAGES THAT DON'T NEED TO HAVE DATA FROM AN API
+			$.get(src, function(data) {		
+				$(".modal .target").html(data);
+				showmodal(type);	
+			});
+		}
 		return false;
 	});
 	
@@ -63,12 +84,14 @@ $(document).ready( function() {
 function closeModal() {
 	$(".modal").fadeOut('fast', function() {
 		$(".modal_bg").fadeOut('fast');
-		$(".modal").removeClass("modaldialog");
-		$(".modal").removeClass("modallarge");
+		$(".modal").removeClass("modalsmall"); // TODO: PUT THESE CLASSES IN SETTINGS AS AN ARRAY
+		$(".modal").removeClass("modallarge"); // TODO: PUT THESE CLASSES IN SETTINGS AS AN ARRAY
 	});	
 }
 
-function showmodal() {
+function showmodal(type) {
+	// Apply Type
+	$(".modal").addClass(type);
 	
 	// Replace Title
 	var title = $(".modal h1").html();
@@ -110,5 +133,4 @@ function resizemodal() {
 	$(".modal_bg").height(bheight);
 	$(".modal").css("top",mtop);
 	$(".modal").css("left",mleft);	
-	
 }

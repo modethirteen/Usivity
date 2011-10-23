@@ -4,11 +4,9 @@ body {
 }
 
 /*Links*/
-a:visited,
 a {
 	color:#179fcc;
 }
-a:visited:hover,
 a:hover {
 	color:#dc8121;
 }
@@ -23,29 +21,20 @@ a:hover {
 h2, h3, h4, h5, h6 {
 	color:#666;
 	font-family:myriad pro;
-	margin:0;
+	margin:0 0 5px 0;
+	padding:0 0 5px 0;
 }
 h2 {
-	font-size:1em;
+	font-size:1.2em;
+	border-bottom:1px dotted #dcdcdc;
 }
 /*Title*/
-.title {
-	background:#ccc;
-	background-image:url(/img/header_bg.gif);
-	background-position:center center;
-	margin:0 0 5px 0;
-	border-radius:5px;
-	padding:5px;	
-}
-.title h2 {
-	color:#fff;	
-}
 .title a {
 	float:right;
 	font-size:.75em;
 	display:block;
-	color:#fff;
 	text-decoration:none;
+	padding:7px 0 0 0;
 }
 /*FORMS*/
 form {
@@ -132,26 +121,60 @@ tr:hover {
 /*BUTTONS*/
 .buttons {
 	overflow:hidden;
-	margin:10px 0 0 0;
+	margin:0;
 	clear:both;
 	padding:10px 0 0 0;
 }
 .buttons .button {
-	margin:0 0 0 10px;	
+	margin:0 10px 0 0;	
 }
+button,
 .button {
-	float:right;
-	display:block;
-	padding:5px 10px;
-	background:#dc8121;
-	border:0;
-	color:#fff;
-	font-size:.7em;
-	font-weight:bold;
-	text-decoration:none;
-	border-radius:5px;
-	cursor:pointer;
+	background-image: -webkit-gradient(
+	linear, 
+	left bottom, 
+	left top, 
+	color-stop(0.25, rgb(214, 214, 214)), 
+	color-stop(0.63, rgb(247, 247, 247))
+	);
+	background-image: -moz-linear-gradient(
+	center bottom, 
+	rgb(214, 214, 214) 25%, 
+	rgb(247, 247, 247) 63% 
+	);
+	border: 1px solid #999;
+	cursor: pointer;
+	display: inline-block;
+	float: left;
+	margin: 0 1px 10px 0;
+	padding: 2px 7px;
+	font-size: 11px;
+	text-shadow: #F0F0F0 1px 1px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	color: #666;
+	font-family: 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
+	font-weight: bold;
 }
+button:hover,
 .button:hover {
-	background:#ed9a43;	
+	color:#000;	
+}
+
+/*Tabs*/
+.tab {
+	display:block;
+	float:left;
+	overflow:hidden;
+	padding:5px 20px;
+	border:1px solid #ccc;
+	margin:5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom:0px;
 }
