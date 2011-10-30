@@ -7,6 +7,7 @@ using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Xml;
 using Usivity.Core.Libraries;
+using Usivity.Core.Libraries.Json;
 using Usivity.Data;
 using Usivity.Data.Entities;
 
@@ -105,6 +106,26 @@ namespace Usivity.Core.Services {
             DreamContext.Current.SetState(usivityContext);
             response.Return(request);
             yield break;
+        }
+
+        private static XDoc GetRequestXml(DreamMessage request) {
+            XDoc doc;
+            try {
+                var json = new JDoc(request.ToText());
+                doc = json.ToDocument();   
+            }
+            catch {
+                try {
+                    doc = XDocFactory.From(request.ToText(), MimeType.TEXT_XML);
+                    if(doc.IsEmpty) {
+                        throw;
+                    }
+                }
+                catch {
+                    throw new DreamBadRequestException("Request format must be valid XML or JSON");
+                }
+            }
+            return doc;
         }
     
         private void QueueMessages(TaskTimer tt) {

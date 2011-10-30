@@ -97,12 +97,6 @@ namespace Usivity.Core.Services {
                 yield break;       
             }
             
-            var contact = _data.GetContact(message);
-            if(contact != null && contact.ClaimedByUserId != UsivityContext.Current.User.Id) {
-                response.Return(DreamMessage.Forbidden("You cannot post a reply to this message"));
-                yield break;
-            }
-
             Message reply = null;
             try {
                 reply = source.PostMessageReply(message, request.ToText(), connection);
@@ -122,8 +116,9 @@ namespace Usivity.Core.Services {
 
             var doc = GetMessageParentXml(reply);
 
+            var contact = _data.GetContact(message);
             if(contact == null) {
-                contact = new Contact(string.Empty, string.Empty, UsivityContext.Current.User);
+                contact = new Contact(UsivityContext.Current.User);
                 contact.SetSourceIdentity(message.Source, message.Author);
                 var contactMessages = _data.GetMessages(UsivityContext.Current.Organization, contact);
                 foreach(var contactMessage in contactMessages) {
@@ -141,6 +136,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        //--- Methods ---
         private XDoc GetMessageXml(Message message, string relation = null) {
             return message.ToDocument(relation).Attr("href", _messagesUri.At(message.Id));
         }

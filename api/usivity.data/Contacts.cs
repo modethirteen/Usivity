@@ -18,6 +18,14 @@ namespace Usivity.Data {
             return _contacts.FindOneAs<Contact>(query);
         }
 
+        public Contact GetContact(string id, User user) {
+            var query = Query.And(
+                Query.EQ("_id", id),
+                Query.EQ("ClaimedByUserId", user.Id)
+            );
+            return _contacts.FindOneAs<Contact>(query);
+        }
+
         public IEnumerable<Contact> GetContacts(User user) {
             var query = Query.EQ("ClaimedByUserId", user.Id);
             return _contacts.FindAs<Contact>(query);

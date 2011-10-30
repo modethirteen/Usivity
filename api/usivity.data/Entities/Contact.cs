@@ -13,14 +13,12 @@ namespace Usivity.Data.Entities {
         //--- Properties ---
         public string Id { get; private set; }
         public string ClaimedByUserId { get; set; }
-        public string FirstName { get; private set; }
-        public string LastName { get; private set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         //--- Constructors ---
-        public Contact(string firstName, string lastName, User claimingUser) {
+        public Contact(User claimingUser) {
             Id = UsivityDataSession.GenerateEntityId(this);
-            FirstName = firstName;
-            LastName = lastName;
             ClaimedByUserId = claimingUser.Id;
             _identities = new Dictionary<string, SourceIdentity>();
             _conversations = new List<string>();

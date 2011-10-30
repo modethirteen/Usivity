@@ -61,20 +61,6 @@ namespace Usivity.Core.Services {
             }
             var user = UsivityContext.Current.User;
 
-            /*XDoc doc;
-            try {
-                doc = XDocFactory.From(request.ToText(), MimeType.TEXT_XML);
-            }
-            catch {
-                try {
-                    var json = new JDoc(request.ToText());
-                    doc = json.ToDocument();   
-                }
-                catch {
-                    throw new DreamBadRequestException("Connection request must be valid XML or JSON");
-                }
-            }*/
-
             //TODO: parse document instead of params
             var connectionRequest = new XDoc("connection")
                 .Start("oauth")
@@ -166,6 +152,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        //--- Methods ---
         private XDoc GetSourceXml(ISource source, User user) {
             var connectionDoc = GetSourceConnectionXml(source, user);
             var doc = new XDoc("source")
