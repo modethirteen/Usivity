@@ -19,23 +19,25 @@ namespace Usivity.Core.Services {
         public Yield GetMessages(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var count = context.GetParam("limit", 10);
             var stream = context.GetParam<string>("stream").ToLowerInvariant();
-            var doc = XDoc.Empty;
 
+            IEnumerable<Message> messages;
             switch(stream) {
                 case "user":
-                    throw new NotImplementedException();
+                    messages = _data
+                        .GetUserStreamMessages(UsivityContext.Current.Organization, UsivityContext.Current.User, count);
+                    break;
                 default:
-                    var messages = _data
+                    messages = _data
                         .GetOpenStreamMessages(UsivityContext.Current.Organization, UsivityContext.Current.User, count, _refresh);
-                    doc = new XDoc("messages")
-                        .Attr("count", messages.Count())
-                        .Attr("href", _messagesUri);
-                    foreach(var message in messages) {
-                        doc.Add(GetMessageXml(message));
-                    }
-                    doc.EndAll();
                     break;
             }
+            var doc = new XDoc("messages")
+                .Attr("count", messages.Count())
+                .Attr("href", _messagesUri);
+            foreach(var message in messages) {
+                doc.Add(GetMessageChildrenXml(message));
+            }
+            doc.EndAll();
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
@@ -85,26 +87,20 @@ namespace Usivity.Core.Services {
 
             var connection = UsivityContext.Current.User.GetConnection(source.Id);
             if(connection == null) {
-                response.Return(DreamMessage.Forbidden("You have not connected to source network \"" + source.Id + "\""));
+                response.Return(DreamMessage.BadRequest("You have not connected to source network \"" + source.Id + "\""));
                 yield break;
             }
 
-            var isContactNew = false;
+            var userSourceIdentity = UsivityContext.Current.User.GetConnection(source.Id).Identity;
+            if(userSourceIdentity != null && userSourceIdentity.Id == message.Author.Id) {
+                response.Return(DreamMessage.BadRequest("You cannot post a reply to your own message"));
+                yield break;       
+            }
+            
             var contact = _data.GetContact(message);
             if(contact != null && contact.ClaimedByUserId != UsivityContext.Current.User.Id) {
                 response.Return(DreamMessage.Forbidden("You cannot post a reply to this message"));
                 yield break;
-            }
-            if(contact == null) {
-                contact = new Contact(string.Empty, string.Empty, UsivityContext.Current.User);
-                contact.SetSourceIdentity(message.Source, message.Author);
-                var contactMessages = _data.GetMessages(UsivityContext.Current.Organization, contact);
-                foreach(var contactMessage in contactMessages) {
-                    contactMessage.MoveToStream(Message.MessageStreams.User);
-                    _data.SaveMessage(contactMessage, UsivityContext.Current.Organization);
-                }
-                _data.SaveContact(contact);
-                isContactNew = true;
             }
 
             Message reply = null;
@@ -124,20 +120,49 @@ namespace Usivity.Core.Services {
             }
             _data.SaveMessage(reply, UsivityContext.Current.Organization);
 
-            var doc = GetMessageXml(reply);
-            if(isContactNew) {
+            var doc = GetMessageParentXml(reply);
+
+            if(contact == null) {
+                contact = new Contact(string.Empty, string.Empty, UsivityContext.Current.User);
+                contact.SetSourceIdentity(message.Source, message.Author);
+                var contactMessages = _data.GetMessages(UsivityContext.Current.Organization, contact);
+                foreach(var contactMessage in contactMessages) {
+                    contactMessage.MoveToStream(Message.MessageStreams.User);
+                    _data.SaveMessage(contactMessage, UsivityContext.Current.Organization);
+                }
+                
+                // new contact means new conversation
+                contact.AddConversationMessageId(message.Id);
+                _data.SaveContact(contact);
                 doc["message.parent/author"].Add(GetContactXml(contact, "new"));
-            } 
+            }
+
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
 
         private XDoc GetMessageXml(Message message, string relation = null) {
-            var doc = message.ToDocument(relation).Attr("href", _messagesUri.At(message.Id));
-            if(message.InReplyToId != null) {
-                var parent = _data.GetMessage(UsivityContext.Current.Organization, message.InReplyToId);
+            return message.ToDocument(relation).Attr("href", _messagesUri.At(message.Id));
+        }
+
+        private XDoc GetMessageParentXml(Message message) {
+            var doc = GetMessageXml(message);
+            if(message.ParentMessageId != null) {
+                var parent = _data.GetMessage(UsivityContext.Current.Organization, message.ParentMessageId);
                 if(parent != null) {
                     doc.AddAll(GetMessageXml(parent, "parent"));
+                }
+            }
+            return doc;
+        }
+
+        private XDoc GetMessageChildrenXml(Message message) {
+            var doc = GetMessageXml(message);
+            var children = _data.GetMessageChildren(UsivityContext.Current.Organization, message);
+            if(children.Count() > 0) {
+                doc.Start("messages.children");
+                foreach(var child in children) {
+                    doc.AddAll(GetMessageChildrenXml(child));
                 }
             }
             return doc;

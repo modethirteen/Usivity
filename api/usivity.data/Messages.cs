@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 
@@ -24,6 +25,28 @@ namespace Usivity.Data {
                 openstream.Save(message);
             }
             return messages;
+        }
+
+        public IEnumerable<Message> GetUserStreamMessages(Organization organization, User user, int count) {
+            var openstream = GetMessagesCollection(organization);
+            var contacts = GetContacts(user);
+            var conversations = new List<string>();
+            foreach(var contact in contacts) {
+                var contactConverstations = contact.GetConversations();
+                if(contactConverstations != null && contactConverstations.Count() > 0) {
+                    conversations.AddRange(contact.GetConversations());   
+                }
+            }
+            var ids = BsonArray.Create(conversations);
+            var query = Query.In("_id", ids);
+            var messages = openstream.FindAs<Message>(query);
+            return messages;
+        }
+
+        public IEnumerable<Message> GetMessageChildren(Organization organization, Message message) {
+            var openstream = GetMessagesCollection(organization);
+            var query = Query.EQ("ParentMessageId", message.Id);
+            return openstream.FindAs<Message>(query);
         }
 
         public void SaveMessage(Message message, Organization organization) {
@@ -81,6 +104,7 @@ namespace Usivity.Data {
             var messages = _db.GetCollection<Message>(organization.Id + "_messages");
             var indexes = new IndexKeysBuilder().Ascending("Source", "SourceMessageId");
             messages.EnsureIndex(indexes, IndexOptions.SetUnique(true));
+            messages.EnsureIndex("MessageThreadIds");
             return messages;
         }
     }

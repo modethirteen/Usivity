@@ -64,6 +64,7 @@ namespace Usivity.Data {
                 cm.MapProperty("FirstName");
                 cm.MapProperty("LastName");
                 cm.MapField("_identities");
+                cm.MapField("_conversations");
             });
             BsonClassMap.RegisterClassMap<OAuthConnection>();
 

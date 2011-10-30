@@ -9,6 +9,7 @@ namespace Usivity.Data.Entities {
         //--- Properties ---
         public string HttpUsername { get; private set; }
         public string HttpPassword { get; private set; }
+        public SourceIdentity Identity { get; set; }
 
         //--- Constructors ---
         public BasicAuthConnection(string username, string password) {

@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver.Builders;
+﻿using System.Collections.Generic;
+using MongoDB.Driver.Builders;
 
 namespace Usivity.Data {
     using Entities;
@@ -15,6 +16,11 @@ namespace Usivity.Data {
                 Query.EQ(identity + "._id", message.Author.Id)
                 );
             return _contacts.FindOneAs<Contact>(query);
+        }
+
+        public IEnumerable<Contact> GetContacts(User user) {
+            var query = Query.EQ("ClaimedByUserId", user.Id);
+            return _contacts.FindAs<Contact>(query);
         }
 
         public void SaveContact(Contact contact) {

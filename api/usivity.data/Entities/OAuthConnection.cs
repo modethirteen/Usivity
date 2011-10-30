@@ -7,6 +7,7 @@ namespace Usivity.Data.Entities {
         //--- Properties ---
         public string Token { get; private set; }
         public string Secret { get; private set; }
+        public SourceIdentity Identity { get; set; }
 
         //--- Constructors ---
         public OAuthConnection(string token, string secret) {

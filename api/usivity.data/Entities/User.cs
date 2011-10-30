@@ -24,7 +24,7 @@ namespace Usivity.Data.Entities {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            return new XDoc("user").Attr("id", Id);
+            return new XDoc(resource).Attr("id", Id);
         }
 
         public IConnection GetConnection(string sourceId) {

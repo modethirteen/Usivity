@@ -115,7 +115,12 @@ namespace Usivity.Core.Services.Sources {
             var pairs = XUri.ParseParamsAsPairs(accessTokenString)
                 .ToDictionary(p => p.Key, p => p.Value);
 
-            return new OAuthConnection(pairs["oauth_token"], pairs["oauth_token_secret"]);
+            var connection = new OAuthConnection(pairs["oauth_token"], pairs["oauth_token_secret"]) {
+                Identity = {
+                    Id = pairs["user_id"]
+                }
+            };
+            return connection;
         }
 
         public Subscription GetNewSubscription(IEnumerable<string> constraints) {
@@ -145,14 +150,14 @@ namespace Usivity.Core.Services.Sources {
             var result = new XDoc("result")
                 .Elem("id_str", "foo_" + DateTime.UtcNow.ToShortTimeString())
                 .Elem("text", reply)
-                .Elem("from_user_id_str", "bar")
-                .Elem("from_user", "baz")
+                .Elem("from_user_id_str", connection.Identity.Id)
+                .Elem("from_user", "foo")
                 .Elem("profile_image_url",
                       "http://a3.twimg.com/profile_images/1408706495/at-twitter_bigger_reasonably_small.png")
                 .Elem("created_at", DateTime.UtcNow);
 
             var replyMessage = GetMessage(result, Message.MessageStreams.User);
-            replyMessage.InReplyToId = message.Id;
+            replyMessage.SetParent(message);
             return replyMessage;
         }
 

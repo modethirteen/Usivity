@@ -8,7 +8,7 @@ namespace Usivity.Data.Entities {
 
         //--- Fields ---
         private IDictionary<string, SourceIdentity> _identities;
-        private IEnumerable<string> _emailAddresses;
+        private List<string> _conversations;
 
         //--- Properties ---
         public string Id { get; private set; }
@@ -23,6 +23,7 @@ namespace Usivity.Data.Entities {
             LastName = lastName;
             ClaimedByUserId = claimingUser.Id;
             _identities = new Dictionary<string, SourceIdentity>();
+            _conversations = new List<string>();
         }
 
         //--- Methods ---
@@ -47,6 +48,18 @@ namespace Usivity.Data.Entities {
 
         public IDictionary<string, SourceIdentity> GetSourceIdentities() {
             return _identities;
+        }
+
+        public IEnumerable<string> GetConversations() {
+            return _conversations;
+        }
+
+        public void AddConversationMessageId(string messageId) {
+            _conversations.Add(messageId);
+        }
+        
+        public void RemoveConversationMessageId(string messageId) {
+            _conversations.Remove(messageId);
         }
     }
 }

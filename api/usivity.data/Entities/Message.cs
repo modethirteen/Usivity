@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using MindTouch.Xml;
 
@@ -13,7 +14,8 @@ namespace Usivity.Data.Entities {
         public string Id { get; private set; }
         public string Source { get; set; }
         public string SourceMessageId { get; set; }
-        public string InReplyToId { get; set; }
+        public string ParentMessageId { get; set; }
+        public List<string> MessageThreadIds { get; private set; }
         public SourceIdentity Author { get; set; }
         public string Body { get; set; }
         public DateTime Timestamp { get; set; }
@@ -25,6 +27,7 @@ namespace Usivity.Data.Entities {
         public Message(MessageStreams stream) {
             Id = UsivityDataSession.GenerateEntityId(this);
             MoveToStream(stream);
+            MessageThreadIds = new List<string>();
         }
 
         //--- Methods ---
@@ -52,6 +55,13 @@ namespace Usivity.Data.Entities {
                 NextAccess = DateTime.UtcNow;
             }
             Stream = stream;
+        }
+
+        public void SetParent(Message message) {
+            ParentMessageId = message.Id;
+            MessageThreadIds = new List<string>();
+            MessageThreadIds.AddRange(message.MessageThreadIds);
+            MessageThreadIds.Add(message.Id);
         }
     }
 }
