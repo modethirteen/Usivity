@@ -92,10 +92,6 @@ namespace Usivity.Core.Services {
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
 
             //TODO: get current context from request
-            if(context.GetParam<string>("apikey") != "foo") {
-                response.Return(DreamMessage.NotFound(""));
-                yield break;
-            }
             var user = _data.GetUser("1");
             var organization = _data.GetOrganization("foo");
 
