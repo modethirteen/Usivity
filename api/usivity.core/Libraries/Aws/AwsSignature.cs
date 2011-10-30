@@ -3,6 +3,7 @@ using System.Text;
 using System.Security.Cryptography;
 
 namespace Usivity.Core.Libraries.Aws {
+
     public sealed class AwsSignature {
 
         //--- Class Fields ---

@@ -34,7 +34,7 @@ namespace Usivity.Core.Libraries.Aws.Sqs
         public XUri QueueUri { get; private set; }
 
         //--- Methods ---
-        public List<SqsMessage> GetMessages() {
+        public IList<SqsMessage> GetMessages() {
             var parameters = new Dictionary<string, string> {
                 {"MaxNumberOfMessages", _maxMessages.ToString()}
             };
@@ -95,7 +95,7 @@ namespace Usivity.Core.Libraries.Aws.Sqs
             parameters.Add(_useExpires ? "Expires" : "Timestamp", time);
             var parameterPairs = parameters
                 .OrderBy(param => param.Key, StringComparer.Ordinal)
-                .Select(param => CreateKeyPair(param));
+                .Select(CreateKeyPair);
             var query = string.Join("&", parameterPairs.ToArray());
             var p = Plug.New(_config.QueueUri).WithTimeout(_config.Timeout);
 
@@ -115,9 +115,6 @@ namespace Usivity.Core.Libraries.Aws.Sqs
         }
 
         private static string CreateKeyPair(KeyValuePair<string, string> param) {
-
-            // Note (arnec): For proper signature generation, spaces must be in %20 format (where spaces are + after XUri.Encode)
-            // Note (andyv): Amazon requires *, ), ( to be encoded, but not ~ as per RFC 3986/1738
             return param.Key + "=" + XUri.Encode(param.Value)
                  .ReplaceAll("*", "%2A")
                  .ReplaceAll("+", "%20")

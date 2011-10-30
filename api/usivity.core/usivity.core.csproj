@@ -58,26 +58,21 @@
     <Compile Include="Libraries\Extension.cs" />
     <Compile Include="Libraries\OAuth.cs" />
     <Compile Include="Services\Core-Contacts.cs" />
-    <Compile Include="Services\OpenStream\Author.cs" />
-    <Compile Include="Entities\IEntity.cs" />
-    <Compile Include="Services\OpenStream\Message.cs" />
     <Compile Include="Libraries\Aws\AwsSignature.cs" />
     <Compile Include="Libraries\Aws\Sqs\SqsClient.cs" />
     <Compile Include="Libraries\Aws\Sqs\SqsClientConfig.cs" />
     <Compile Include="Libraries\Aws\Sqs\SqsMessage.cs" />
     <Compile Include="Libraries\Json\JDoc.cs" />
     <Compile Include="Libraries\Json\PlugEx.cs" />
-    <Compile Include="Services\OpenStreamService.cs" />
-    <Compile Include="Services\OpenStream\ISource.cs" />
-    <Compile Include="Services\OpenStream\OAuthToken.cs" />
-    <Compile Include="Services\OpenStream\Subscription.cs" />
-    <Compile Include="Services\OpenStream\TwitterSource.cs" />
+    <Compile Include="Services\Core-Messages.cs" />
+    <Compile Include="Services\Core-Sources.cs" />
+    <Compile Include="Services\Sources\ISource.cs" />
+    <Compile Include="Services\Sources\TwitterSource.cs" />
     <Compile Include="Services\CoreService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\UsivityContext.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\usivity.data\usivity.data.csproj">
       <Project>{62996F95-997C-481D-BBE6-F9BC9DF16D48}</Project>
