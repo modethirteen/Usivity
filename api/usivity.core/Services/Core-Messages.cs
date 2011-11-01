@@ -12,8 +12,8 @@ namespace Usivity.Core.Services {
     public partial class CoreService {
 
         //--- Features ---
-        [DreamFeature("GET:messages", "Get messages")]
-        [DreamFeatureParam("stream", "{open,user}", "Message stream to fetch from (default: open)")]
+        [DreamFeature("GET:messages", "Get messages from stream")]
+        [DreamFeatureParam("stream", "{open,user}", "Message stream to fetch from")]
         [DreamFeatureParam("limit", "int?", "Max messages to receive ranging 1 - 100 (default: 10)")]
         [DreamFeatureParam("offset", "int?", "Max messages to receive ranging 1 - 100 (default: 10)")]
         public Yield GetMessages(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
@@ -42,7 +42,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
-        [DreamFeature("GET:messages/{messageid}", "Get message by id")]
+        [DreamFeature("GET:messages/{messageid}", "Get message")]
         [DreamFeatureParam("messageid", "string", "Message id")]
         public Yield GetMessage(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var message = _data
@@ -56,7 +56,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
-        [DreamFeature("DELETE:messages/{messageid}", "Delete message by id")]
+        [DreamFeature("DELETE:messages/{messageid}", "Delete message")]
         [DreamFeatureParam("messageid", "string", "Message id")]
         public Yield DeleteMessage(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var message = _data
@@ -70,7 +70,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
        
-        [DreamFeature("POST:messages/{messageid}", "Post message in reply to id")]
+        [DreamFeature("POST:messages/{messageid}", "Post message in reply")]
         [DreamFeatureParam("message", "string", "Message id to reply to")]
         public Yield PostMessageReply(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var message = _data

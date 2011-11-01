@@ -116,7 +116,7 @@ namespace Usivity.Core.Services.Sources {
                 .ToDictionary(p => p.Key, p => p.Value);
 
             var connection = new OAuthConnection(pairs["oauth_token"], pairs["oauth_token_secret"]) {
-                Identity = {
+                Identity = new SourceIdentity() {
                     Id = pairs["user_id"]
                 }
             };

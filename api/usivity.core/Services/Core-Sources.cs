@@ -3,7 +3,6 @@ using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Xml;
-using Usivity.Core.Libraries.Json;
 using Usivity.Data.Entities;
 
 namespace Usivity.Core.Services {
