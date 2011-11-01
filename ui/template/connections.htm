@@ -1,6 +1,6 @@
 <ul>
 {foreach
 	{in:sources}
-	<li class="{source_connection_active}"><a href="{source_connection_authorize.uri}" class="{source_@id} connection">{source_@id}</a></li>
+	<li class="{source_connection_active}"><a href="{source_connection_uri.authorize}" class="{source_@id} connection">{source_@id}</a></li>
 foreach}
 </ul>
