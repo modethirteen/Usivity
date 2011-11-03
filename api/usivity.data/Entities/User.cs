@@ -8,13 +8,18 @@ namespace Usivity.Data.Entities {
 
         //--- Properties ---
         public string Id { get; private set; }
+        public string Name { get; private set; }
+        public string Password { get; set; }
+        public IEnumerable<string> Organizations { get; private set; }
 
         //--- Fields ---
         private Dictionary<string, IConnection> _connections;
 
         //--- Constructors ---
-        public User () {
+        public User(string name) {
             Id = UsivityDataSession.GenerateEntityId(this);
+            Name = name;
+            Organizations = new List<string>();
             _connections = new Dictionary<string, IConnection>();
         }
 

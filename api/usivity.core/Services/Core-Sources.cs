@@ -12,7 +12,7 @@ namespace Usivity.Core.Services {
     public partial class CoreService {
 
         [DreamFeature("GET:sources", "Get all source networks")]
-        public Yield GetSources(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetSources(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var doc = new XDoc("sources")
                 .Attr("count", _sources.Count())
                 .Attr("href", _sourcesUri);
@@ -26,7 +26,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("GET:sources/{sourceid}", "Get source network")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
-        public Yield GetSource(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetSource(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
                 response.Return(DreamMessage.NotFound("Source network does not exist"));
@@ -39,7 +39,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("GET:sources/{sourceid}/connection", "Get your source network connection")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
-        public Yield GetSourceConnection(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetSourceConnection(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
                 response.Return(DreamMessage.NotFound("Source network does not exist"));
@@ -52,7 +52,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("PUT:sources/{sourceid}/connection", "Update your source network connection")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
-        public Yield UpdateSourceConnection(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield UpdateSourceConnection(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
                 response.Return(DreamMessage.NotFound("Source network does not exist"));
@@ -78,7 +78,7 @@ namespace Usivity.Core.Services {
         [DreamFeature("POST:sources/{sourceid}/subscriptions", "Subscribe to a source network")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
         [DreamFeatureParam("constraints", "string", "Comma seperated list of constraints")]
-        public Yield PostSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield PostSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
                 response.Return(DreamMessage.NotFound("Network source does not exist"));
@@ -101,7 +101,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("GET:sources/{sourceid}/subscriptions", "Get all subscriptions to a source network")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
-        public Yield GetSubscriptions(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetSubscriptions(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
                 response.Return(DreamMessage.NotFound("Source network does not exist"));
@@ -115,7 +115,7 @@ namespace Usivity.Core.Services {
         [DreamFeature("GET:sources/{sourceid}/subscriptions/{subscriptionid}", "Get subscription to a source network")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
         [DreamFeatureParam("subscriptionid", "string", "Subscription id")]
-        public Yield GetSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
                 response.Return(DreamMessage.NotFound("Source network does not exist"));
@@ -134,7 +134,7 @@ namespace Usivity.Core.Services {
         [DreamFeature("DELETE:sources/{source}/subscriptions/{subscriptionid}", "Delete subscription to a source network")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
         [DreamFeatureParam("subscriptionid", "string", "Subscription id")]
-        public Yield DeleteSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield DeleteSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
                 response.Return(DreamMessage.NotFound("Source network does not exist"));

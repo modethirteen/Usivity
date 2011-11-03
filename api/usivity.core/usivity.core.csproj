@@ -57,6 +57,8 @@
   <ItemGroup>
     <Compile Include="Libraries\Extension.cs" />
     <Compile Include="Libraries\OAuth.cs" />
+    <Compile Include="Services\Core-Organizations.cs" />
+    <Compile Include="Services\Core-Users.cs" />
     <Compile Include="Services\Core-Contacts.cs" />
     <Compile Include="Libraries\Aws\AwsSignature.cs" />
     <Compile Include="Libraries\Aws\Sqs\SqsClient.cs" />

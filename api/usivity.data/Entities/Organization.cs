@@ -19,7 +19,7 @@ namespace Usivity.Data.Entities {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            return new XDoc(resource).Attr("id", Id);
+            return new XDoc(resource).Attr("id", Id).Elem("name", Name);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Tasking;
@@ -16,7 +15,7 @@ namespace Usivity.Core.Services {
         [DreamFeatureParam("stream", "{open,user}", "Message stream to fetch from")]
         [DreamFeatureParam("limit", "int?", "Max messages to receive ranging 1 - 100 (default: 10)")]
         [DreamFeatureParam("offset", "int?", "Max messages to receive ranging 1 - 100 (default: 10)")]
-        public Yield GetMessages(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetMessages(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var count = context.GetParam("limit", 10);
             var stream = context.GetParam<string>("stream").ToLowerInvariant();
 
@@ -44,7 +43,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("GET:messages/{messageid}", "Get message")]
         [DreamFeatureParam("messageid", "string", "Message id")]
-        public Yield GetMessage(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetMessage(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var message = _data
                 .GetMessage(UsivityContext.Current.Organization, UsivityContext.Current.User, context.GetParam<string>("messageid"));
             if(message == null) {
@@ -58,7 +57,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("DELETE:messages/{messageid}", "Delete message")]
         [DreamFeatureParam("messageid", "string", "Message id")]
-        public Yield DeleteMessage(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield DeleteMessage(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var message = _data
                 .GetMessage(UsivityContext.Current.Organization, UsivityContext.Current.User, context.GetParam<string>("messageid"));
             if(message == null) {
@@ -72,7 +71,7 @@ namespace Usivity.Core.Services {
        
         [DreamFeature("POST:messages/{messageid}", "Post message in reply")]
         [DreamFeatureParam("message", "string", "Message id to reply to")]
-        public Yield PostMessageReply(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield PostMessageReply(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var message = _data
                 .GetMessage(UsivityContext.Current.Organization, UsivityContext.Current.User, context.GetParam<string>("messageid"));
             if(message == null) {
