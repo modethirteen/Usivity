@@ -91,6 +91,7 @@ namespace Usivity.Core.Services {
             
             var constraints = context.GetParam<string>("constraints").Split(',');
             var subscription = source.GetNewSubscription(constraints);
+            subscription.UserId = UsivityContext.Current.User.Id;
             source.Subscriptions.Add(subscription);
             _data.SaveSubscription(subscription);
 
