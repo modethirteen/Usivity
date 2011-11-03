@@ -11,20 +11,23 @@ $(document).ready(function() {
 	// DELETE SUBSCRIPTION
 	$(".subscriptionsform .delete").live("click", function() {
 		var link	= $(this);
-		var id 		= link.attr("id");
+		var href	= link.attr("href");
 		
-		var apiaction = "?dream.in.verb=DELETE";
-		var apiurl = (usivity.apiroot.url + usivity.subtwitter.url + "/" + id + apiaction);
-		
-		// TODO:  ADD RESPONSE FOR FAIL EVENT
+		deleteparams = {
+			"dream.in.verb" : "DELETE"
+		};
+		var uri = apiuri(href,deleteparams);
 		$.ajax({
 			type: "POST",
 			crossDomain:true, 
-			url: apiurl,
+			url: uri,
 			success: function(results)
 			{
 				link.parents("li").remove(); 		
-			}
+			},
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+			} 
 		});
 		
 		return false;	
@@ -33,27 +36,34 @@ $(document).ready(function() {
 	
 	/*POST SUBSCRIPTIONS*/
 	$(".subscriptionsform form").live("submit", function() {
-		var form 	= $(this);
-		var url 	= form.attr("action");
-		var input	= form.find(".constraints");
-		
+		var form 		= $(this);
+		var url 		= form.attr("action");
+		var input		= form.find(".constraints");
 		var constraints = input.val();
-		var apiurl = (usivity.apiroot.url + url + "?constraints=" + constraints);  //TODO: Stop using url as variable
 		
+		subscriptionparams = {
+			"constraints" : constraints
+		};
+		
+		var uri = apiuri(url, subscriptionparams);
 		$.ajax({
 			type: "POST",
-			data: constraints,
 			crossDomain:true, 
-			url: apiurl,
+			url: uri,
 			success: function(results)
 			{
 				// TODO: GET RESULTS FROM API (TALK TO ANDY) - CAN'T HAVE DELETE FOR NEWLY ADDED SUBSCRIPTIONS
+				console.log("success");
 				input.val("");
 				input.focus("");
 				var newele = $(document.createElement('li'));
 				newele.html('<span>' + constraints + '</span>');
 				$(".subscriptionsform ul").append(newele);
-			}
+				
+			},
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+			}   
 		});
 		
 		return false;	

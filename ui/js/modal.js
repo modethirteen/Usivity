@@ -37,6 +37,7 @@ $(document).ready( function() {
 		
 		if (id)
 		{
+			//TODO:  REPLACE ALL HREF'S STORED IN SETTINGS.JS WITH HREF FROM API
 			if (id.indexOf("/") >= 0)
 			{
 				var datahtml = "";
@@ -45,7 +46,7 @@ $(document).ready( function() {
 			else
 			{
 				var datahtml 	= usivity[id].markup; // TODO:  CHANGE THE LOCATION OF WHERE DATA IS STORED IN DATA.JS
-				var dataurl 	= usivity[id].url;  //TODO:  DON'T STORE OBJECT URL'S IN DATA STORAGE, ACCEPT URL'S DIRECTLY
+				var dataurl 	= usivity[id].url;  //TODO:  DON'T STORE OBJECT URL'S IN DATA STORAGE, ACCEPT URL'S DIRECTLY.  TRY TO GET RID OF DATA STORED IN SETTINGS.JS
 			}
 			
 			$.get(src, function(data) {		

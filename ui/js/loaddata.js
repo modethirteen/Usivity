@@ -6,17 +6,14 @@
 		-
 */
 
-//TODO:  MAKE THIS WORK FOR MULTIPLE STREAMS
-//TODO:  REMOVE DEPENDENCY ON 'DATASTORE'...REMOVE DATASTORE PARAMETER
-function fillmessagequeue(url,callback)
+function fillqueue(uri,params,callback)
 {
-	
-	var apiurl = (usivity.apiroot.url + url + usivity.apiformat.value);
-	
+	var api 	= apiuri(uri,params);
+	var storage = params.stream;
+
 	$.ajax({
-		/*TODO:  Make Generic function to return data with JSONP*/
 		crossDomain:true, 
-		url: apiurl,
+		url: api,
 		dataType: 'jsonp',
 		jsonp: false,
 		jsonpCallback: 'callback',
@@ -27,23 +24,66 @@ function fillmessagequeue(url,callback)
 			$.each(results.messages.message, function() { 
 				this.body = fixmessage(this.body);
 				var id = this["@id"];
-				usivity[id] = this; //TODO:  CHANGE TO NEW OBJECT NAME:USIVITY
-				usivity.ids.push(id);  //TODO:  CHANGE TO NEW OBJECT NAME:USIVITY
+				usivity[id] = this; 
+				usivity.ids[storage].push(id);  
 			});
 			if (callback)
 			{
-				callback(url);
+				callback(api);
 			}
 		}
 	});
 }
 
-function fixmessage(text) {
+function fixmessage(text) 
+{
 	
 	// Convert URL to HREF
 	var text = text.replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig,'<a class="external" target="_new" href="$1">$1</a>'); 
 	var text = text.replace(/(^|\s)@(\w+)/g, '$1<a class="profile" href="http://www.twitter.com/$2">$2</a>');
 	return text;
+}
+
+
+function apiuri(uri,params) 
+{
+	if (uri)
+	{
+		queryparams	= "";
+		
+		// If params isn't set just append the standard params
+		if (!params)
+		{
+			var params = usivity.apiformat.value;	
+		}
+		
+		// Cut off any appended params
+		if (uri.indexOf("?") != -1)
+		{
+			var uri = uri.substring(0,uri.indexOf("?")-1)
+		}
+
+		// Concatenate all params into one string
+		var queryparams = "?";
+		$.each(params, function(index, value) { 
+			queryparams = queryparams + (index + "=" + value + "&");
+		});
+		
+		// Cut off last & symbol from queryparams
+		var queryparams = queryparams.substring(0,queryparams.length-1);
+	
+		
+		// CHECK FOR DOMAIN NAME OR NOT
+		if (uri.indexOf(usivity.apiroot.url) == -1) // TODO:  CLEAN UP THIS LOGIC
+		{
+			var fulluri = (usivity.apiroot.url + uri + queryparams);// TODO:  Change URL to URI
+		}
+		else
+		{
+			var fulluri = (uri + queryparams);	
+		}
+		return fulluri;
+	}
 }
 
 

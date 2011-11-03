@@ -19,11 +19,10 @@ function preparedata(markup, object, objecturl, callback) {
 	/*IF A URL IS PROVIDED, LOAD THE DATA FROM THE URL SOURCE*/
 	if (objecturl)
 	{
-		var apiurl = (usivity.apiroot.url + objecturl + usivity.apiformat.value);
-		
+		var uri = apiuri(objecturl);
 		$.ajax({
 			crossDomain:true, 
-			url: apiurl,
+			url: uri,
 			dataType: 'jsonp',
 			jsonp: false,
 			jsonpCallback: 'callback',
@@ -53,7 +52,7 @@ function injecttemplate (markup,object) {
 			// Remove foreach statements from template variable
  			var loop = value.replace("{foreach","");
  			var loop = loop.replace("foreach}","");
- 			loopmarkup = "";
+ 			loopmarkup = "";  //TODO: RENAME BETTER OR ADD VAR
  			
  			// Find the object (Strip away the foreach markup)
 			var matches = loop.match(new RegExp('\{in:(.*?)\}', "g"));
@@ -64,38 +63,42 @@ function injecttemplate (markup,object) {
 			// Clean the content of all template markup
 			var content = loop.replace(new RegExp('\{in:(.*?)\}', "g"),"");
 			
-			
 			// Load the data from the object
 			if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
 			{
 				var arr = val.split("_");
 				var pointer = object[arr[0]];
 				arr.splice(0,1);
+				
+				// TODO: REPLACE WITH $.EACH
 				for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
 				{
 					pointer = pointer[arr[i]];
 				}
-				var obj = pointer;
+				obj = pointer;
 			}
 			else
 			{
-				var obj =  object[val];
+				obj =  object[val];
 			}	
 			
-			// Check for the correct formatting of the object
-			// CODE:  obj instanceof Object
-			if (!obj.length)
+			if (obj)
 			{
-				loopmarkup = loopmarkup + replacevariable(content, obj);
-			}
-			else
-			{
-				// Loop through each occurance of the object to templatize
-				$.each(obj, function(key,value){
-					loopmarkup = loopmarkup + replacevariable(content, value);
-				});	
-			}
+				// Check for the correct formatting of the object
+				if (obj.length)
+				{
+					// Loop through each occurance of the object to templatize
+					$.each(obj, function(key,value){
+						loopmarkup = loopmarkup + replacevariable(content, value);
+					});	
+				}
+				else
+				{
+					loopmarkup = loopmarkup + replacevariable(content, obj);
+				}
+			}	
 		
+			// REMOVE THE {FOREACH FOREACH} STATEMENTS
 			markup = markup.replace(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"),loopmarkup);
 			
 		});

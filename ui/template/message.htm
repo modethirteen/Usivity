@@ -1,6 +1,6 @@
 <div id="{@id}" class="message">
 	<span class="contact_picture minimize">
-		<img src="{author_avatar_@href}">
+		<img src="{author_uri.avatar}">
 	</span>
 	<div class="message_contents">
 		<span class="contact_name">
@@ -18,9 +18,9 @@
 			</span>
 		</span>
 		<div class="message_actions">
-			<a href="/template/message_form.htm" id="/usivity/messages/{@id}" class="popup claim">claim</a><!-- Replace id with HREF attribute from API -->
-			<a href="/template/assign.htm" id="/usivity/messages/{@id}" class="dialog assign">assign</a><!-- Replace id with HREF attribute from API -->
-			<a href="/template/delete.htm" id="/usivity/messages/{@id}" class="dialog delete">delete</a><!-- Replace id with HREF attribute from API -->
+			<a href="/template/message_post.htm" id="/usivity/messages/{@id}" class="popup claim">claim</a><!-- Replace id with HREF attribute from API -->
+			<a href="/template/message_assign.htm" id="/usivity/messages/{@id}" class="dialog assign">assign</a><!-- Replace id with HREF attribute from API -->
+			<a href="/template/message_delete.htm" id="/usivity/messages/{@id}" class="dialog delete">delete</a><!-- Replace id with HREF attribute from API -->
 		</div>
 	</div>
 </div>
