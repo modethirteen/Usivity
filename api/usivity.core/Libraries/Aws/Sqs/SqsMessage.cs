@@ -3,14 +3,6 @@
     public class SqsMessage {
 
         //--- Constructors ---
-
-        /// <summary>
-        /// Create a new message instance 
-        /// </summary>
-        /// <param name="messageId"></param>
-        /// <param name="receiptHandle"></param>
-        /// <param name="md5OfBody"></param>
-        /// <param name="body"></param>
         public SqsMessage(string messageId, string receiptHandle, string md5OfBody, string body) {
             Id = messageId;
             ReceiptHandle = receiptHandle;
