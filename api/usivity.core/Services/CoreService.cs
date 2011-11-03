@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using log4net;
 using MindTouch;
 using MindTouch.Dream;
@@ -24,20 +23,16 @@ namespace Usivity.Core.Services {
         
         //--- Constants ---
         internal const uint MINUTES_TO_REFRESH = 15;
-        internal const string AUTHTOKEN_HEADERNAME = "X-Authtoken";
-        internal const string AUTHTOKEN_COOKIENAME = "authtoken";
-        internal const string AUTHTOKEN_PATTERN = @"^(?<id>([\d])+)_(?<ts>([\d]){18})_(?<hash>.+)$";
 
         //--- Class Fields ---
         private static readonly ILog _log = LogUtils.CreateLog();
-        private static readonly Regex _authTokenRegex =
-            new Regex(AUTHTOKEN_PATTERN, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         //--- Class Properties ---
         public static Dictionary<string, OAuthRequestToken> ActiveOAuthRequestTokens { get; set; }
 
         //--- Fields ---
-        private string _securitySalt;
+        private UsivityAuth _auth;
+        private User _anonymous;
         private double _refresh;
         private UsivityDataSession _data;
         private IList<ISource> _sources;
@@ -76,10 +71,11 @@ namespace Usivity.Core.Services {
             UsivityDataSession.Initialize(dataSessionConfig);
             _data = UsivityDataSession.CurrentSession;
 
-            _securitySalt = config["security/salt"].AsText ?? string.Empty;
-            if(string.IsNullOrEmpty(_securitySalt)) {
+            var securitySalt = config["security/salt"].AsText ?? string.Empty;
+            if(string.IsNullOrEmpty(securitySalt)) {
                 throw new DreamInternalErrorException("Security salt string has not been configured");
             }
+            _auth = UsivityAuth.Factory(securitySalt);
 
             // setup sources
             _sources = new List<ISource> {
@@ -91,6 +87,10 @@ namespace Usivity.Core.Services {
                     source.Subscriptions.Add(subscription);
                 }               
             }
+
+            // setup anonymous user
+            _anonymous = _data.GetAnonymousUser()
+                ?? new User(User.ANONYMOUS_USER) { Role = User.UserRoles.None };
 
             var apiUri = Self.Uri.AsPublicUri();
             _usersUri = apiUri.At("users");
@@ -106,15 +106,33 @@ namespace Usivity.Core.Services {
             result.Return();
         }
 
+        protected override DreamAccess DetermineAccess(DreamContext context, string key) {
+            var usivityContext = UsivityContext.CurrentOrNull;
+            if(usivityContext != null) {
+                switch(usivityContext.User.Role) {
+                    case User.UserRoles.Owner:
+                    case User.UserRoles.Admin:
+                        return DreamAccess.Internal;
+                    case User.UserRoles.Member:
+                        return DreamAccess.Private;
+                }
+            }
+            return base.DetermineAccess(context, key);
+        }
+
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var user = _auth.GetAuthenticatedUser(request);
+            if(request.Headers.Authenticate != null) {
+                string username, password;
+                HttpUtil.GetAuthentication(context.Uri.ToUri(), request.Headers, out username, out password);
+                user = _data.GetAuthenticatedUser(username, password);
+            }
+            if(user == null) {
+                user = _anonymous;
+            }
 
-            string username;
-            string password;
-            HttpUtil.GetAuthentication(context.Uri.ToUri(), request.Headers, out username, out password);
-
-
+            //TODO: dynamic selection of team
             var organization = _data.GetOrganization("1");
-            var user = _data.GetUser("1");
 
             var usivityContext = new UsivityContext {
                 User = user,

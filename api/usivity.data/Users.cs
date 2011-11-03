@@ -23,6 +23,15 @@ namespace Usivity.Data {
             return _users.FindOneAs<User>(query);
         }
 
+        public User GetAnonymousUser() {
+            var query = Query.EQ("Name", User.ANONYMOUS_USER);
+            return _users.FindOneAs<User>(query);
+        }
+
+        public User GetAuthenticatedUser(string name, string password) {
+            return null;    
+        }
+
         public void SaveUser(User user) {
             SaveEntity(_users, user);
         }

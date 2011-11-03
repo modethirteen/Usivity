@@ -72,6 +72,7 @@
     <Compile Include="Services\Sources\TwitterSource.cs" />
     <Compile Include="Services\CoreService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\UsivityAuth.cs" />
     <Compile Include="Services\UsivityContext.cs" />
   </ItemGroup>
   <ItemGroup />
