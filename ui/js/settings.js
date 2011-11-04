@@ -6,15 +6,20 @@
 */
 
 usivity = {};
-usivity.ids = [];
-
+usivity.ids = {};
+usivity.ids.open 		= [];
+usivity.ids.user		= [];
+usivity.ids.contacts 	= [];
 
 // API SETTINGS
 usivity.apiroot = {};
 usivity.apiroot.url = "http://api.usivity.com";
 
 usivity.apiformat = {};
-usivity.apiformat.value = "?dream.out.format=jsonp&dream.out.pre=callback";
+usivity.apiformat.value = {
+	"dream.out.format" 	: "jsonp",
+	"dream.out.pre"	: "callback"  // TODO:  TAKE THIS OUT OF SETTINGS
+};
 
 // MESSAGES (BOTH OPENS AND MY)
 usivity.messageinterval = {};
@@ -28,9 +33,7 @@ usivity.connectionsapi.url = "/usivity/sources";
 
 // OPENMESSAGES
 usivity.openmessages = {};
-usivity.openmessages.temp = "/template/message.htm";  //TODO: MORE SPECIFIC VARIABLE NAME -- TRY TO REMOVE THIS DEPENDENCY
-usivity.openmessages.wrap = ".openstream";  //TODO: MORE SPECIFIC VARIABLE NAME  -- TRY TO REMOVE THIS DEPENDENCY
-usivity.openmessages.datapath = "/usivity/messages/";  //TODO: MORE SPECIFIC VARIABLE NAME  -- TRY TO REMOVE THIS DEPENDENCY
+usivity.openmessages.datapath = "/usivity/messages/";  	//TODO: MORE SPECIFIC VARIABLE NAME  -- TRY TO REMOVE THIS DEPENDENCY
 usivity.openstream = {};
 usivity.openstream.url = "/usivity/messages";
 

@@ -12,7 +12,6 @@ $(document).ready(function() {
 	$(".drop").live("click", function() {
 		return false;	
 	});
-	
 	$(".drop").live("hover", function() {
 		$(".down").hide();
 		var src = $(this).attr("href");
@@ -23,7 +22,6 @@ $(document).ready(function() {
 		var down		= $(this).next(".down");
 				
 		// GET MARKUP
-		
 		if (down.length == 0)
 		{
 			$.get(src, function(markup) {
@@ -32,30 +30,14 @@ $(document).ready(function() {
 					down.html(html);
 					down.addClass('down');
 					drop.after(down);		
-					
-					// TODO: GET RID OF DUPLICATED DROP CODE
-					var droppos			= drop.position();
-					var dropleft 		= droppos.left;
-					var dropwidth		= drop.outerWidth();
-					var downwidth		= down.outerWidth();
-					var downleft 		= (dropleft - ((downwidth - dropwidth) / 2));
-					
-					down.css("left",downleft + "px");
-					down.slideDown(50);	
+
+					positiondrop(drop,down);
 				});
 			});
 		}
 		else
 		{
-			// TODO: GET RID OF DUPLICATED DROP CODE
-			var droppos			= drop.position();
-			var dropleft 		= droppos.left;
-			var dropwidth		= drop.outerWidth();
-			var downwidth		= down.outerWidth();
-			var downleft 		= (dropleft - ((downwidth - dropwidth) / 2));
-			
-			down.css("left",downleft + "px");
-			down.show();
+			positiondrop(drop,down);
 		}
 		
 	});
@@ -65,3 +47,15 @@ $(document).ready(function() {
 	});
 
 });
+
+function positiondrop(drop,down)
+{
+	var droppos			= drop.position();
+	var dropleft 		= droppos.left;
+	var dropwidth		= drop.outerWidth();
+	var downwidth		= down.outerWidth();
+	var downleft 		= (dropleft - ((downwidth - dropwidth) / 2));
+	
+	down.css("left",downleft + "px");
+	down.show();	
+}

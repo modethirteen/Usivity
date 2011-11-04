@@ -1,7 +1,7 @@
 <h1>Send Message</h1>
 <div class="message">
 	<span class="contact_picture minimize">
-		<img src="{message_author_avatar_@href}">
+		<img src="{message_author_uri.avatar}">
 	</span>
 	<div class="message_contents">
 		<span class="contact_name">
@@ -14,10 +14,9 @@
 </div>
 
 
-<form class="message_send">	
+<form class="message_send" id="{message_@id}" action="{message_@href}">	
 	<span class="ititle">message</span>
 	<textarea name="message"></textarea>
-	
 	<div class="buttons">
 		<button type="submit" class="button apply">send</button>
 		<button type="submit" class="button cancel">cancel</button>
