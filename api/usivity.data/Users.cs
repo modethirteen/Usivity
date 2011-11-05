@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 
 namespace Usivity.Data {
@@ -9,18 +7,31 @@ namespace Usivity.Data {
     public partial class UsivityDataSession {
 
         public IEnumerable<User> GetUsers(Organization organization) {
-            var query = Query.In("Organization", BsonArray.Create(organization.Id));
+            var query = Query.Exists("_organizations." + organization.Id, true);
             return _users.FindAs<User>(query);
         }
 
+        public IEnumerable<User> GetUsers() {
+            return _users.FindAllAs<User>();
+        }
+
         public User GetUser(string id, Organization organization = null) {
-            var query = new QueryDocument {
-                {"_id", id}
-            };
+            QueryComplete query;
             if(organization != null) {
-                query.Add("Organization", organization.Id);
+                query = Query.And(
+                    Query.EQ("_id", id),
+                    Query.Exists("_organizations." + organization.Id, true)
+                    );
+            }
+            else {
+                query = Query.EQ("_id", id);
             }
             return _users.FindOneAs<User>(query);
+        }
+
+        public bool UserExists(string name) {
+            var query = Query.EQ("Name", name);
+            return _users.FindOneAs<User>(query) != null;
         }
 
         public User GetAnonymousUser() {
@@ -29,7 +40,11 @@ namespace Usivity.Data {
         }
 
         public User GetAuthenticatedUser(string name, string password) {
-            return null;    
+            var query = Query.And(
+                Query.EQ("Name", name),
+                Query.EQ("Password", password)
+                );
+            return _users.FindOneAs<User>(query);
         }
 
         public void SaveUser(User user) {

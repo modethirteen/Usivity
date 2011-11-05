@@ -14,23 +14,18 @@ namespace Usivity.Data.Entities {
 
         //--- Properties ---
         public string Id { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; set; }
         public string Password { get; set; }
-        public UserRoles Role { get; set; }
-        public IEnumerable<string> Organizations { get; private set; }
 
         //--- Fields ---
         private Dictionary<string, IConnection> _connections;
+        private Dictionary<string, UserRoles> _organizations;
 
         //--- Constructors ---
         public User(string name) {
             Id = UsivityDataSession.GenerateEntityId(this);
-            if(name == ANONYMOUS_USER) {
-                throw new ArgumentException("\"" + ANONYMOUS_USER + "\" is not a valid user name");
-            }
             Name = name;
-            Organizations = new List<string>();
-            Role = UserRoles.Member;
+            _organizations = new Dictionary<string, UserRoles>();
             _connections = new Dictionary<string, IConnection>();
         }
 
@@ -49,6 +44,14 @@ namespace Usivity.Data.Entities {
 
         public void SetConnection(string sourceId, IConnection connection) {
             _connections[sourceId] = connection;
+        }
+
+        public UserRoles GetOrganizationRole(string organizationId) {
+            return _organizations.TryGetValue(organizationId, UserRoles.None);
+        }
+
+        public void SetOrganizationRole(string organizationId, UserRoles role) {
+            _organizations[organizationId] = role;
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Tasking;
+using MindTouch.Web;
 using MindTouch.Xml;
 using Usivity.Data.Entities;
 
@@ -11,6 +13,36 @@ namespace Usivity.Core.Services {
     public partial class CoreService {
 
         //--- Features ---
+        [DreamFeature("GET:users/authentication", "Get user authentication")]
+        [DreamFeatureParam("redirect", "uri?", "Redirect to uri upon authentication")]
+        public Yield GetUserAuthentication(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            User user;
+            string authToken;
+            if(request.Headers.Authorization != null) {
+                string username, password;
+                HttpUtil.GetAuthentication(context.Uri.ToUri(), request.Headers, out username, out password);
+                password = _auth.GetSaltedPassword(password);
+                user = _data.GetAuthenticatedUser(username, password);
+                authToken = _auth.GenerateAuthToken(user);
+            }
+            else {
+                authToken = _auth.GetAuthToken(request);
+                user = _auth.GetAuthenticatedUser(authToken);
+            }
+            if(user == null) {
+                response.Return(new DreamMessage(DreamStatus.Unauthorized, new DreamHeaders()));
+                yield break;
+            }
+
+            var redirect = XUri.TryParse(context.GetParam("redirect", null));
+            var auth = redirect != null ? DreamMessage.Redirect(redirect) : DreamMessage.Ok(MimeType.TEXT_UTF8, authToken);
+            var expires = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_authExpiration));
+            var cookie = _auth.GetAuthCookie(authToken, expires);
+            auth.Headers["Set-Cookie"] = cookie.ToSetCookieHeader();
+            response.Return(auth);
+            yield break;
+        }
+
         [DreamFeature("GET:users", "Get all users")]
         protected Yield GetUsers(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var users = _data.GetUsers(UsivityContext.Current.Organization);
@@ -28,7 +60,7 @@ namespace Usivity.Core.Services {
         [DreamFeature("GET:users/{userid}", "Get user")]
         [DreamFeatureParam("userid", "string", "User id")]
         protected Yield GetUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var user = _data.GetUser(context.GetParam<string>("contactid"), UsivityContext.Current.Organization);
+            var user = _data.GetUser(context.GetParam<string>("userid"), UsivityContext.Current.Organization);
             if(user == null) {
                 response.Return(DreamMessage.NotFound("The requested user could not be located"));
                 yield break;
@@ -36,36 +68,52 @@ namespace Usivity.Core.Services {
             var doc = GetUserXml(user);
             response.Return(DreamMessage.Ok(doc));
             yield break;
-           
         }
 
         [DreamFeature("POST:users", "Create a new user")]
-        protected Yield PostUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var user = _data.GetUser(context.GetParam<string>("contactid"), UsivityContext.Current.Organization);
-            if(user == null) {
-                response.Return(DreamMessage.NotFound("The requested user could not be located"));
+        internal Yield PostUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var userDoc = GetRequestXml(request);
+            var name = userDoc["name"].Contents;
+            var password = userDoc["password"].Contents;
+
+            if(string.IsNullOrEmpty(name)) {
+                response.Return(DreamMessage.BadRequest("Request is missing a value for \"name\""));
                 yield break;
             }
+            if(name == User.ANONYMOUS_USER) {
+                response.Return(DreamMessage.BadRequest("\"" + User.ANONYMOUS_USER + "\" is not a valid user name"));
+                yield break;
+            }
+            if(string.IsNullOrEmpty(password)) {
+                response.Return(DreamMessage.BadRequest("Request is missing a value for \"password\""));
+                yield break;
+            }
+            if(_data.UserExists(name)) {
+                response.Return(DreamMessage.Conflict("The requested user name has already been taken"));
+            }
+            var user = new User(name);
+            user.SetOrganizationRole(UsivityContext.Current.Organization.Id, User.UserRoles.Member);
+            user.Password = _auth.GetSaltedPassword(password);
+            _data.SaveUser(user);
+
             var doc = GetUserXml(user);
             response.Return(DreamMessage.Ok(doc));
             yield break;
-           
         }
 
         [DreamFeature("PUT:users/{userid}/password", "Change user password")]
         [DreamFeatureParam("userid", "string", "User id")]
         protected Yield UpdateUserPassword(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var user = _data.GetUser(context.GetParam<string>("contactid"), UsivityContext.Current.Organization);
-            if(user == null) {
-                response.Return(DreamMessage.NotFound("The requested user could not be located"));
+            if(context.GetParam<string>("userid") != UsivityContext.Current.User.Id) {
+                response.Return(DreamMessage.Forbidden("You can only change your own user password"));
                 yield break;
             }
-            var doc = GetUserXml(user);
-            response.Return(DreamMessage.Ok(doc));
+            var password = request.ToText();
+            UsivityContext.Current.User.Password = _auth.GetSaltedPassword(password);
+            _data.SaveUser(UsivityContext.Current.User);
+            response.Return(DreamMessage.Ok(MimeType.TEXT_UTF8, "Your password has been successfully updated"));
             yield break;
-           
         }
-
 
         //--- Methods ---
         private XDoc GetUserXml(User user, string relation = null) {

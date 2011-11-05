@@ -58,8 +58,7 @@ namespace Usivity.Data {
                 cm.MapIdProperty("Id");
                 cm.MapProperty("Name");
                 cm.MapProperty("Password");
-                cm.MapProperty("Role");
-                cm.MapProperty("Organizations");
+                cm.MapField("_organizations");
                 cm.MapField("_connections");
             });
             BsonClassMap.RegisterClassMap<Contact>(cm => {

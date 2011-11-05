@@ -5,7 +5,6 @@ using log4net;
 using MindTouch;
 using MindTouch.Dream;
 using MindTouch.Tasking;
-using MindTouch.Web;
 using MindTouch.Xml;
 using Usivity.Core.Libraries;
 using Usivity.Core.Libraries.Json;
@@ -36,6 +35,7 @@ namespace Usivity.Core.Services {
         private double _refresh;
         private UsivityDataSession _data;
         private IList<ISource> _sources;
+        private int _authExpiration;
 
         private XUri _usersUri;
         private XUri _messagesUri;
@@ -61,7 +61,7 @@ namespace Usivity.Core.Services {
             _log.Debug("Setting Master API Key");
             MasterApiKey = config["apikey"].AsText ?? string.Empty;
             if(string.IsNullOrEmpty(MasterApiKey)) {
-                throw new DreamException("Core apikey has not been set in startup config");
+                throw new DreamInternalErrorException("Core apikey has not been set in startup config");
             }
 
             _log.Debug("Initializing current data session");
@@ -75,7 +75,9 @@ namespace Usivity.Core.Services {
             if(string.IsNullOrEmpty(securitySalt)) {
                 throw new DreamInternalErrorException("Security salt string has not been configured");
             }
-            _auth = UsivityAuth.Factory(securitySalt);
+            var securityCookieUri = config["security/uri.cookie"].AsUri ?? Self.Uri.AsPublicUri();
+            _auth = UsivityAuth.Factory(securitySalt, securityCookieUri, _data);
+            _authExpiration = config["security/expiration"].AsInt ?? 561600;
 
             // setup sources
             _sources = new List<ISource> {
@@ -89,9 +91,12 @@ namespace Usivity.Core.Services {
             }
 
             // setup anonymous user
-            _anonymous = _data.GetAnonymousUser()
-                ?? new User(User.ANONYMOUS_USER) { Role = User.UserRoles.None };
+            _anonymous = _data.GetAnonymousUser();
+            if(_anonymous == null) {
+                throw new DreamInternalErrorException("Anonymous user has not been configured");
+            }
 
+            //TODO: clean up api uris
             var apiUri = Self.Uri.AsPublicUri();
             _usersUri = apiUri.At("users");
             _messagesUri = apiUri.At("messages");
@@ -109,7 +114,8 @@ namespace Usivity.Core.Services {
         protected override DreamAccess DetermineAccess(DreamContext context, string key) {
             var usivityContext = UsivityContext.CurrentOrNull;
             if(usivityContext != null) {
-                switch(usivityContext.User.Role) {
+                var role = usivityContext.User.GetOrganizationRole(usivityContext.Organization.Id);
+                switch(role) {
                     case User.UserRoles.Owner:
                     case User.UserRoles.Admin:
                         return DreamAccess.Internal;
@@ -121,15 +127,8 @@ namespace Usivity.Core.Services {
         }
 
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var user = _auth.GetAuthenticatedUser(request);
-            if(request.Headers.Authenticate != null) {
-                string username, password;
-                HttpUtil.GetAuthentication(context.Uri.ToUri(), request.Headers, out username, out password);
-                user = _data.GetAuthenticatedUser(username, password);
-            }
-            if(user == null) {
-                user = _anonymous;
-            }
+            var authToken = _auth.GetAuthToken(request);
+            var user = _auth.GetAuthenticatedUser(authToken) ?? _anonymous;
 
             //TODO: dynamic selection of team
             var organization = _data.GetOrganization("1");
