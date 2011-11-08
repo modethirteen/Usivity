@@ -11,9 +11,9 @@ namespace Usivity.Core.Services {
     public partial class CoreService {
 
         //--- Features ---
-        /*[DreamFeature("GET:organizations", "Get all organizations")]
-        public Yield GetOrganizations(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var organizations = _data.GetOrganizations();
+        [DreamFeature("GET:organizations", "Get organizations")]
+        protected Yield GetOrganizations(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var organizations = _data.GetOrganizations(UsivityContext.Current.User);
             var doc = new XDoc("organizations")
                 .Attr("count", organizations.Count())
                 .Attr("href", _organizationsUri);
@@ -27,8 +27,8 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("GET:organizations/{organizationid}", "Get organization")]
         [DreamFeatureParam("organizationid", "string", "Organization id")]
-        public Yield GetOrganization(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var organization = _data.GetOrganization(context.GetParam<string>("contactid"));
+        protected Yield GetOrganization(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var organization = _data.GetOrganization(context.GetParam<string>("organizationid"), UsivityContext.Current.User);
             if(organization == null) {
                 response.Return(DreamMessage.NotFound("The requested organization could not be located"));
                 yield break;
@@ -43,6 +43,6 @@ namespace Usivity.Core.Services {
         private XDoc GetOrganizationXml(Organization organization, string relation = null) {
             return organization.ToDocument(relation)
                 .Attr("href", _organizationsUri.At(organization.Id));
-        }*/
+        }
     }
 }

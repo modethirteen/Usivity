@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MindTouch.Xml;
 
 namespace Usivity.Data.Entities {
@@ -14,8 +15,9 @@ namespace Usivity.Data.Entities {
 
         //--- Properties ---
         public string Id { get; private set; }
-        public string Name { get; set; }
+        public string Name { get; private set; }
         public string Password { get; set; }
+        public string CurrentOrganizataion { get; set; }
 
         //--- Fields ---
         private Dictionary<string, IConnection> _connections;
@@ -52,6 +54,10 @@ namespace Usivity.Data.Entities {
 
         public void SetOrganizationRole(string organizationId, UserRoles role) {
             _organizations[organizationId] = role;
+        }
+
+        public IEnumerable<string> GetOrganizationIds() {
+            return _organizations.Select(organization => organization.Key).ToList();
         }
     }
 }

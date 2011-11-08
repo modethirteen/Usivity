@@ -86,7 +86,7 @@ namespace Usivity.Core.Services {
             }
             var connection = UsivityContext.Current.User.GetConnection(source.Id);
             if(connection == null) {
-                throw new DreamBadRequestException(string.Format("Cannot subscribe to unauthenticated source network, \"{0}\"", source.Id));
+                throw new DreamBadRequestException(string.Format("Cannot subscribe to unconnected source network, \"{0}\"", source.Id));
             }
             
             var constraints = context.GetParam<string>("constraints").Split(',');
