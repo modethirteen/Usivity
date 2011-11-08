@@ -178,3 +178,10 @@ button:hover,
 	border-top-right-radius: 5px;
 	border-bottom:0px;
 }
+
+/*Loading*/
+.loading {
+	background-image:url(/img/icon_loading.gif);
+	background-repeat:no-repeat;
+	background-position:center center;	
+}

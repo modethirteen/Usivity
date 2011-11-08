@@ -37,6 +37,10 @@ usivity.openmessages.datapath = "/usivity/messages/";  	//TODO: MORE SPECIFIC VA
 usivity.openstream = {};
 usivity.openstream.url = "/usivity/messages";
 
+// CONTACTS
+usivity.contacts = {};
+usivity.contacts.url = "/usivity/contacts";
+
 // SOURCES
 usivity.sourcetwitter = {};
 usivity.sourcetwitter.url = "/usivity/sources/twitter/connection";
