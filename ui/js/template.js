@@ -8,11 +8,11 @@
 */
 
 //TODO:  	RENAME OBJECT to OBJECTREF.  ADD PARAMTER FOR OBJECT TO PASS IN AN OBJECT, NOT JUST A REFERENCE
-function preparedata(markup, object, objecturl, callback) {
+function preparedata(templatehtml, objectref, objecturl, callback) {
 	/*
-	markup 		- Template HTML
-	object 		- JSONP Object Reference stored in the data library
-	objecturl 	- URL of API to retrieve the JSONP Object
+	templatehtml	- Template HTML
+	objectref		- JSONP Object Reference stored in the data library //TODO:  STORE OBJECT REQUESTS BY URL SO A URL CAN ALSO BE A REFERENCE.  HAVE PREPAREDATA() CONDUCT THE CHECK
+	objecturl 		- URL of API to retrieve the JSONP Object
 	*/
 
 	/*IF A URL IS PROVIDED, LOAD THE DATA FROM THE URL SOURCE*/
@@ -29,23 +29,23 @@ function preparedata(markup, object, objecturl, callback) {
 			contentType: 'application/json;',
 			success: function(results)
 			{
-				var returnhtml = injecttemplate(markup,results);
+				var returnhtml = injecttemplate(templatehtml,results);
 				callback(returnhtml);
 			}
 		});	
 	}
 	else 
 	{
-		return injecttemplate(markup,object);
+		return injecttemplate(templatehtml,objectref);
 	}
 }
 
-function injecttemplate (markup,object) {
+function injecttemplate (templatehtml,objectref) {
 	// TODO:  CREATE RESOURCE LIBRARY FOR GLOBAL VARIABLES  // TODO:  ADD SUPPORT FOR SETTING VARIABLES FROM SETTINGS.JS
 	
 	
 	// LOOK THROUGH ALL FOREACH STATEMENTS
-	var foreach = markup.match(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"));
+	var foreach = templatehtml.match(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"));
 	if (foreach)
 	{
 		$.each(foreach, function(key, value){
@@ -67,7 +67,7 @@ function injecttemplate (markup,object) {
 			if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
 			{
 				var arr = val.split("_");
-				var pointer = object[arr[0]];
+				var pointer = objectref[arr[0]];
 				arr.splice(0,1);
 				
 				// TODO: REPLACE WITH $.EACH
@@ -79,7 +79,7 @@ function injecttemplate (markup,object) {
 			}
 			else
 			{
-				obj =  object[val];
+				obj =  objectref[val];
 			}	
 			
 			if (obj)
@@ -99,18 +99,18 @@ function injecttemplate (markup,object) {
 			}	
 		
 			// REMOVE THE {FOREACH FOREACH} STATEMENTS
-			markup = markup.replace(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"),loopmarkup);
+			templatehtml = templatehtml.replace(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"),loopmarkup);
 			
 		});
 	}
-	markup = replacevariable(markup,object);	
+	markup = replacevariable(templatehtml,objectref);	
 	
-	return markup;	
+	return templatehtml;	
 }
 
-function replacevariable(markup,object) {
+function replacevariable(templatehtml,objectref) {
 	// REPLACE ALL TEMPLATE VARIABLES
-	var matches = markup.match(new RegExp('\{(.*?)\}', "g"));
+	var matches = templatehtml.match(new RegExp('\{(.*?)\}', "g"));
 	if (matches)
 	{
 		$.each(matches, function(key, value){
@@ -120,7 +120,7 @@ function replacevariable(markup,object) {
 			if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
 			{
 				var arr = val.split("_");
-				var pointer = object[arr[0]];
+				var pointer = objectref[arr[0]];
 				arr.splice(0,1);
 				
 				for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
@@ -128,14 +128,14 @@ function replacevariable(markup,object) {
 					pointer = pointer[arr[i]];
 				}
 				
-				markup = markup.replace(value, pointer);
+				templatehtml = templatehtml.replace(value, pointer);
 			}
 			else
 			{
-				markup = markup.replace(value, object[val]);
+				templatehtml = templatehtml.replace(value, object[val]);
 			}	
 		});
 	}
 	 
-	return markup;		
+	return templatehtml;		
 }

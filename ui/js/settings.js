@@ -31,7 +31,7 @@ usivity.messagelimit.value = 10; //TODO:  ADD BACK INTO CODE, NOT CURRENTLY BEIN
 usivity.connectionsapi = {};
 usivity.connectionsapi.url = "/usivity/sources";
 
-// OPENMESSAGES
+// OPENMESSAGES  // TODO:  CHANGE TO MESSAGES, GET RID OF OPENSTREAM
 usivity.openmessages = {};
 usivity.openmessages.datapath = "/usivity/messages/";  	//TODO: MORE SPECIFIC VARIABLE NAME  -- TRY TO REMOVE THIS DEPENDENCY
 usivity.openstream = {};

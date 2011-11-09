@@ -31,12 +31,18 @@ $(document).ready(function() {
 // LOAD THE OPEN STREAM
 function loadopenstream()
 {
-	var src = "/template/message_open.htm";
-	var dataurl 	= "http://api.usivity.com/usivity/messages?stream=open&dream.out.format=jsonp&dream.out.pre=callback"; //TODO: REPLACE WITH APIURI()
-	var datahtml	= ""; // TODO: DEAL WITH THIS SITUATION MORE CONSISTENTLY.  NOT NICE ATALL
+	var templateuri = "/template/message_open.htm"; // TODO:  PUT IN SETTINGS.jS
+	openstreamparams = {
+		"stream" : "open",
+		"dream.out.format" : "jsonp",
+		"dream.out.pre", "callback"
+	};
+	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
+	//var objecturi 	= "http://api.usivity.com/usivity/messages?stream=open&dream.out.format=jsonp&dream.out.pre=callback"; //TODO: REPLACE WITH APIURI()
+	var objectref	= ""; // TODO: DEAL WITH THIS SITUATION MORE CONSISTENTLY.  NOT NICE ATALL
  	
- 	$.get(src, function(markup) {
-		var html = preparedata(markup, datahtml, dataurl, function(html) {
+ 	$.get(templateuri, function(templatehtml) {
+		var html = preparedata(templatehtml, objectref, objecturi, function(html) {
 			$(".openstream .target").html(html);
 		});
 	});	
@@ -47,12 +53,18 @@ function loadopenstream()
 // LOAD THE USER STREAM - DELAYED FOR 2 SECOND TO AVOID TIMING CONFLICTS WITH THE TEMPLATING ENGINE
 function loaduserstream()
 {
-	var src = "/template/message_user.htm";
-	var dataurl 	= "http://api.usivity.com/usivity/messages?stream=user&dream.out.format=jsonp&dream.out.pre=callback"; //TODO: REPLACE WITH APIURI()
-	var datahtml	= ""; // TODO: DEAL WITH THIS SITUATION MORE CONSISTENTLY.  NOT NICE ATALL
+	var templateuri = "/template/message_user.htm";  //TODO:  PUT IN SETTINGS.JS
+	userstreamparams = {
+		"stream" : "user",
+		"dream.out.format" : "jsonp",
+		"dream.out.pre", "callback"
+	};
+	var objecturi = apiuri(usivity.openstream.url,userstreamparams);
+	//var dataurl 	= "http://api.usivity.com/usivity/messages?stream=user&dream.out.format=jsonp&dream.out.pre=callback"; //TODO: REPLACE WITH APIURI()
+	var objectref	= ""; // TODO: DEAL WITH THIS SITUATION MORE CONSISTENTLY.  NOT NICE ATALL
  	
- 	$.get(src, function(markup) {
-		var html = preparedata(markup, datahtml, dataurl, function(html) {
+ 	$.get(src, function(templatehtml) {
+		var html = preparedata(templatehtml, objectref, objecturi, function(html) {
 			$(".mystream .target").html(html); // TODO:  CHANGE MYSTREAM TO USERSTREAM
 		});
 	});	
@@ -65,12 +77,17 @@ function loadusercontacts()
 {
 	
 	//TODO: PUT LOADING ICON ON MY CONTACTS
- 	var src = "/template/contact.htm";
-	var dataurl 	= "http://api.usivity.com/usivity/contacts?dream.out.format=jsonp&dream.out.pre=callback";  //TODO: REPLACE WITH APIURI()
-	var datahtml	= ""; // TODO: DEAL WITH THIS MORE CONSISTENTLY.  NOT NICE ATALL
+ 	var templateuri = "/template/contact.htm";
+ 	contactparams = {
+		"dream.out.format" : "jsonp",
+		"dream.out.pre", "callback"
+	};
+	var objecturi = apiuri(usivity.contacts.url,contactparams);
+	//var dataurl 	= "http://api.usivity.com/usivity/contacts?dream.out.format=jsonp&dream.out.pre=callback";  //TODO: REPLACE WITH APIURI()
+	var objectref	= ""; // TODO: DEAL WITH THIS MORE CONSISTENTLY.  NOT NICE ATALL
  	
- 	$.get(src, function(markup) {
-		var html = preparedata(markup, datahtml, dataurl, function(html) {
+ 	$.get(src, function(templatehtml) {
+		var html = preparedata(templatehtml, objectref, objecturi, function(html) {
 			$(".contacts .target").html(html);
 		});
 	});

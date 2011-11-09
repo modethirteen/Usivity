@@ -156,27 +156,11 @@ button,
 	color: #666;
 	font-family: 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
 	font-weight: bold;
+	text-decoration:none;
 }
 button:hover,
 .button:hover {
 	color:#000;	
-}
-
-/*Tabs*/
-.tab {
-	display:block;
-	float:left;
-	overflow:hidden;
-	padding:5px 20px;
-	border:1px solid #ccc;
-	margin:5px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-bottom:0px;
 }
 
 /*Loading*/
