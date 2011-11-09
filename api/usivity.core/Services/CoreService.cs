@@ -129,9 +129,9 @@ namespace Usivity.Core.Services {
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var authToken = _auth.GetAuthToken(request);
             var user = _auth.GetAuthenticatedUser(authToken) ?? _anonymous;
-
-            //TODO: dynamic selection of team
-            var organization = _data.GetOrganization("1");
+            var organization = user != null
+                ? _data.GetOrganization(user.CurrentOrganizataion)
+                : Organization.NewMockOrganization();
 
             var usivityContext = new UsivityContext {
                 User = user,
@@ -179,6 +179,11 @@ namespace Usivity.Core.Services {
             var organizations = _data.GetOrganizations();
             foreach (var message in messages.Where(message => message.Timestamp >= span)) {
                 foreach(var organization in organizations) {
+
+                    // messages from existing contacts go into user stream
+                    if(_data.GetContact(message) != null) {
+                        message.MoveToStream(Message.MessageStreams.User);
+                    }
                     _data.QueueMessage(organization, message);
                 }
             }

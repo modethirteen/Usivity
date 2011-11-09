@@ -20,10 +20,10 @@ namespace Usivity.Core.Services.Sources {
         private const string OAUTH_AUTHORIZE_URI = "http://api.twitter.com/oauth/authorize";
         private const string API_URI = "http://api.twitter.com/1";
 #else
-        private const string OAUTH_REQUEST_TOKEN_URI = "http://api.twitter.com/oauth/request_token";
-        private const string OAUTH_ACCESS_TOKEN_URI = "http://api.twitter.com/oauth/access_token";
-        private const string OAUTH_AUTHORIZE_URI = "http://api.twitter.com/oauth/authorize";
-        private const string API_URI = "http://api.twitter.com/1";
+        private const string OAUTH_REQUEST_TOKEN_URI = "https://api.twitter.com/oauth/request_token";
+        private const string OAUTH_ACCESS_TOKEN_URI = "https://api.twitter.com/oauth/access_token";
+        private const string OAUTH_AUTHORIZE_URI = "https://api.twitter.com/oauth/authorize";
+        private const string API_URI = "https://api.twitter.com/1";
 #endif
 
         //--- Properties ---

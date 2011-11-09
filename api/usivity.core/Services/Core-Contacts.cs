@@ -12,7 +12,7 @@ namespace Usivity.Core.Services {
     public partial class CoreService {
 
         //--- Features ---
-        [DreamFeature("GET:contacts", "Get all contacts claimed by user")]
+        [DreamFeature("GET:contacts", "Get all contacts")]
         protected Yield GetContacts(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var contacts = _data.GetContacts(UsivityContext.Current.User);
             var doc = new XDoc("contacts")
@@ -50,7 +50,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
-        [DreamFeature("PUT:contacts/{contactid}", "Update a contact information")]
+        [DreamFeature("PUT:contacts/{contactid}", "Update contact information")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
         protected Yield UpdateContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var contactDoc = GetRequestXml(request);
@@ -60,7 +60,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
-        [DreamFeature("DELETE:contacts/{contactid}", "Remove a contact")]
+        [DreamFeature("DELETE:contacts/{contactid}", "Remove contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
         protected Yield RemoveContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             throw new NotImplementedException();
@@ -68,8 +68,7 @@ namespace Usivity.Core.Services {
 
         //--- Methods ---
         private Contact GetContact(XDoc contactDoc, string id = null) {
-            Contact contact = null;
-            contact = !string.IsNullOrEmpty(id)
+            var contact = !string.IsNullOrEmpty(id)
                 ? _data.GetContact(id, UsivityContext.Current.User)
                 : new Contact(UsivityContext.Current.User);
             contact.FirstName = contactDoc["firstname"].Contents;
