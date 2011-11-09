@@ -32,8 +32,8 @@ namespace Usivity.Data.Entities {
             }
             return new XDoc(resource)
                 .Attr("id", Id)
-                .Elem("firstname", FirstName)
-                .Elem("lastname", LastName);
+                .Elem("firstname", FirstName ?? string.Empty)
+                .Elem("lastname", LastName ?? string.Empty);
         }
 
         public void SetSourceIdentity(string source, SourceIdentity identity) {

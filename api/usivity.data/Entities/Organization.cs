@@ -4,6 +4,11 @@ namespace Usivity.Data.Entities {
 
     public class Organization : IEntity {
 
+        //--- Class Methods ---
+        public static Organization NewMockOrganization() {
+            return new Organization(string.Empty, string.Empty); 
+        }
+
         //--- Properties ---
         public string Id { get; private set; }
         public string Name { get; private set; }
@@ -14,6 +19,12 @@ namespace Usivity.Data.Entities {
             Name = name;
         }
 
+        private Organization(string name, string id) {
+            Id = id;
+            Name = name;
+        }
+
+        //--- Methods ---
         public XDoc ToDocument(string relation = null) {
             var resource = "organization";
             if(!string.IsNullOrEmpty(relation)) {

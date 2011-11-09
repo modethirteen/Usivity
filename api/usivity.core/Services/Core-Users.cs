@@ -93,6 +93,7 @@ namespace Usivity.Core.Services {
             }
             var user = new User(name);
             user.SetOrganizationRole(UsivityContext.Current.Organization.Id, User.UserRoles.Member);
+            user.CurrentOrganizataion = UsivityContext.Current.Organization.Id;
             user.Password = _auth.GetSaltedPassword(password);
             _data.SaveUser(user);
 

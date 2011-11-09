@@ -129,7 +129,9 @@ namespace Usivity.Core.Services {
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var authToken = _auth.GetAuthToken(request);
             var user = _auth.GetAuthenticatedUser(authToken) ?? _anonymous;
-            var organization = _data.GetOrganization(user.CurrentOrganizataion);
+            var organization = user != null
+                ? _data.GetOrganization(user.CurrentOrganizataion)
+                : Organization.NewMockOrganization();
 
             var usivityContext = new UsivityContext {
                 User = user,
