@@ -35,10 +35,10 @@ namespace Usivity.Core.Services {
             }
 
             var redirect = XUri.TryParse(context.GetParam("redirect", null));
-            var auth = redirect != null ? DreamMessage.Redirect(redirect) : DreamMessage.Ok(MimeType.TEXT_UTF8, authToken);
             var expires = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_authExpiration));
-            var cookie = _auth.GetAuthCookie(authToken, expires);
-            auth.Headers["Set-Cookie"] = cookie.ToSetCookieHeader();
+            var setCookie = _auth.GetAuthCookie(authToken, expires).ToSetCookieHeader();
+            var auth = redirect != null ? DreamMessage.Redirect(redirect) : DreamMessage.Ok(MimeType.TEXT_UTF8, setCookie);
+            auth.Headers["Set-Cookie"] = setCookie;
             response.Return(auth);
             yield break;
         }
