@@ -1,0 +1,76 @@
+/*Modal*/
+.modal_bg {
+	width:100%;
+	background:#333;
+	opacity:.5;
+	position:absolute;
+	top:0;
+	display:none;
+}
+.modal {
+	width:600px;
+	background:#fff;
+	max-height:320px;
+	position:absolute;
+	padding:5px;
+	border-radius:5px;
+	display:none;
+	box-shadow: 3px 3px 3px #666;
+}
+.modal .target {
+	overflow-x:hidden;
+	overflow-y:hidden;	
+}
+/* DIALOG TITLE*/
+.modal .title {
+	background: -moz-linear-gradient(top, #666666 0%, #000000 62%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#666666), color-stop(62%,#000000)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #666666 0%,#000000 62%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #666666 0%,#000000 62%); /* Opera 11.10+ */
+	padding:3px;
+	border-radius:5px;
+	margin-bottom:5px;
+}
+.modal .title h2 {
+	border:0;
+	margin:0;
+	padding:0;
+	font-size:1em;
+	color: #fff;
+	font-family: 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
+	font-weight: bold;
+	text-shadow: #333 1px 1px;
+}
+/* DIALOG MODAL - USED FOR YES/NO FUNCTIONS*/
+.modalsmall {
+	width:350px;
+	max-height:200px;	
+}
+.modalsmall .prompt {
+	display:block;
+	color:#999;
+	padding:5px 0 20px 0;
+	font-size:.9em;
+}
+/* LARGE MODAL - USED FOR EXTERNAL URL'S*/
+.modallarge {
+	width:900px;
+	max-height:none;
+}
+.modallarge iframe {
+	border:0;
+	padding:0;
+	width:900px;
+	height:500px;
+}
+/* MODAL FUNCTIONS*/
+.modal .close {
+	float:right;
+	font-size:0;
+	display:block;
+	width:30px;
+	height:30px;
+	background-image:url(/img/modal_close.png);	
+	margin:-15px -15px 0 0;
+}
+
