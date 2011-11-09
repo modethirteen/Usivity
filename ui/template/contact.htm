@@ -1,8 +1,13 @@
-<span class="contact_picture">
-	pic
-</span>
-<div class="contact_contents">
-	<span class="contact_name">
-		DamienH
-	</span>
-</div>
+{foreach
+	{in:contacts_contact}
+	<div id="{@id}" class="contact">
+		<span class="contact_picture">
+			pic
+		</span>
+		<div class="contact_contents">
+			<span class="contact_name">
+				{@id}
+			</span>
+		</div>
+	</div>
+foreach}

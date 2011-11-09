@@ -64,39 +64,25 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	/*LOAD THE OPEN STREAM*/
-	$(window).load(function() {
-		var uri	= usivity.openstream.url;
-		openparams = { // TODO:  MOVE TO SETTINGS.JS
-			"uri" : uri,
-			"dream.out.format" 	: "jsonp",
-			"dream.out.pre"	: "callback",
-			"stream" : "open",
-			"template" 	: "/template/message.htm",
-			"target" 	: ".openstream .target"
-		};
-		fillqueue(uri,openparams,function(x) {
-			outputmessages(openparams);
-			setInterval("outputmessages(openparams)",usivity.messageinterval.value);
-		});
-	});	
-	
-	/*LOAD MY STREAM*/
-	$(window).load(function() {
-		var uri	= usivity.openstream.url;
-		userparams = { // TODO:  MOVE TO SETTINGS.JS
-			"uri" : uri,
-			"dream.out.format" 	: "jsonp",
-			"dream.out.pre"	: "callback",
-			"stream" : "user",
-			"template" 	: "/template/message.htm",
-			"target" 	: ".mystream .target"
-		};
-		fillqueue(uri,userparams,function(x) { // TODO: LOAD ALL OF THE MY MESSAGES
-			outputall(userparams);
-		});
-	});	
+// 	/*LOAD THE OPEN STREAM*/
+// 	$(window).load(function() {
+// 		// TODO:  BREAK UP INTO TWO SETS OF PARAMS.  URI PARAMS AND TEMPLATE PARAMS
+// 		openparams = { // TODO:  MOVE TO SETTINGS.JS
+// 			"stream"	: "open",
+// 			"template" 	: "/template/message_open.htm",
+// 			"target" 	: ".openstream .target",
+// 			"node" : ["messages","message"]
+// 		};
+// 		var uri = "http://api.usivity.com/usivity/messages?stream=open&dream.out.format=jsonp&dream.out.pre=callback";
+// 		fillqueue(uri,openparams,function(x) {
+// 			outputmessages(openparams);
+// 			setInterval("outputmessages(openparams)",usivity.messageinterval.value);
+// 		});
+// 	});	
+
 });
+
+
 
 function outputmessages(params) 
 {
@@ -131,40 +117,41 @@ function outputmessages(params)
 	// TODO:  Empty the stream for limit
 	
 }
-//TODO: GET RID OF DUPLICATE FUN
-function outputall(params) 
+
+function fillqueue(uri,params,callback)
 {
-	// GET LAST ID FROM ARRAY
 	var storage = params.stream;
-	var ids 	= usivity.ids[storage];  
-	
-	var template	= params.template; 
-	var target		= params.target;
-	
-	if (ids.length)
-	{
-		$.get(template, function(markup)
+	$.ajax({
+		crossDomain:true, 
+		url: uri,
+		dataType: 'jsonp',
+		jsonp: false,
+		jsonpCallback: 'callback',
+		mimeType: 'application/json',
+		contentType: 'application/json;',
+		success: function(results)
 		{
-			$.each(ids, function(key, value){
-				var data 	= usivity[value]; 
-				var html = preparedata(markup, data);
-				var newele = $(document.createElement('div'));
-				newele.html(html);
-				newele.css("display","none");
-				$(target).prepend(newele); //TODO:  GET RID OF .WRAP
-				newele.show();
-				//TODO:  ADD DELETE FOR OBJECTS - REMOVE USED OBJECT FROM DATA LIBRARY ONLY WHEN DONE
+			// Loop Through the Node Param
+			var val = results;
+			$.each(params.node, function(key,value) { 
+				val = val[value];
 			});
-		});
-	}
+			
+			// Loop Through each of the Object Values
+			$.each(val, function() { 
+				this.body = fixmessage(this.body);  // TODO: Relocate this...only applies to message and openmessage
+				var id = this["@id"];
+				usivity[id] = this; 
+				usivity.ids[storage].push(id);  // TODO: NO NEED FOR STORAGE
+			});
+			if (callback)
+			{
+				callback(uri);
+			}
+		}
+	});
 	
-	// Refresh the datastore from the API
-// 	if (usivity.ids.length == 3) //TODO: TRY TO GET RID OF .LENGTH, CAUSES JS PROBLEMS
-// 	{
-// 		fillmessagequeue(usivity.openstream.url);//TODO: CHANGE TO fillqueue()
-// 	}
 	
-	// TODO:  Empty the stream for limit
 	
 }
 

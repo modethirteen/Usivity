@@ -8,13 +8,14 @@
 	
 	<!--Interaction Libraries-->
 	<script language="JavaScript" src="/js/settings.js"></script>
+	<script language="JavaScript" src="/js/utility.js"></script>
 	<script language="JavaScript" src="/js/template.js"></script>
-	<script language="JavaScript" src="/js/loaddata.js"></script>
 	<script language="JavaScript" src="/js/dropdowns.js"></script>
 	<script language="JavaScript" src="/js/modal.js"></script>
 	<script language="JavaScript" src="/js/forms.js"></script>
 	<script language="JavaScript" src="/js/animations.js"></script>
 	<script language="JavaScript" src="/js/search.js"></script>
+	<script language="JavaScript" src="/js/loaddata.js"></script>
 	
 	<!--API Libraries-->
 	<script language="JavaScript" src="/js/connections.js"></script>
@@ -53,8 +54,9 @@
 	</div>
 	<div class="col col1">
 		<div class="streams">
-			<div class="openstream fwrap first last">
+			<div class="openstream fwrap first last loading">
 				<div class="title">
+					<a href="" class="tools">subscriptions</a>
 					<h2>Open Message Stream</h2>
 				</div>
 				<div class="target">
@@ -65,7 +67,7 @@
 	</div>
 	<div class="col col2">
 		<div class="streams">
-			<div class="mystream fwrap first last">
+			<div class="mystream fwrap first last loading">
 				<div class="title">
 					<h2>My Message Stream</h2>
 				</div>
@@ -76,8 +78,9 @@
 		</div>
 	</div>
 	<div class="col col3">
-		<div class="contacts fwrap first last">
+		<div class="contacts fwrap first last loading">
 			<div class="title">
+				<a href="/template/contact_post.htm" id="/usivity/contacts" class="popup tools">new contact</a>
 				<h2>Contacts</h2>
 			</div>
 			<div class="target">

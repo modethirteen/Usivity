@@ -16,7 +16,35 @@ $(document).ready( function() {
 		resize();
 	});
 	
-	/*MENU*/
+	// POST AUTHENTICATION
+	$(".login").live("submit", function() {
+		var user = $(this).find(".user");
+		var pass = $(this).find(".pass");
+		
+		var apiurl = ("http://api.usivity.com/usivity/users/authentication");
+		
+		$.ajax({
+			type: "GET",
+			crossDomain:true,
+			url: apiurl,
+			beforeSend : function(xhr) {
+  				var hash = $.base64Encode(user + ':' + pass);
+				xhr.setRequestHeader("Authorization", "Basic " + "ZGFtaWVuaDpmb28=");
+			},
+			success: function(results)
+			{
+				console.log("authenticated dude");
+				console.log(results);
+			},
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+			} 
+		});
+		
+		return false;	
+	});
+	
+	// MENU
 	$(".menu").click( function() {
 		var src = $(this).attr("href");
 		dialog(src);

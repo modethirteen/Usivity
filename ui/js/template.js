@@ -6,7 +6,7 @@
 		-
 		
 */
-//TODO: 	BUILD FOREACH TEMPLATING CAPABILITY
+
 //TODO:  	RENAME OBJECT to OBJECTREF.  ADD PARAMTER FOR OBJECT TO PASS IN AN OBJECT, NOT JUST A REFERENCE
 function preparedata(markup, object, objecturl, callback) {
 	/*
@@ -14,15 +14,14 @@ function preparedata(markup, object, objecturl, callback) {
 	object 		- JSONP Object Reference stored in the data library
 	objecturl 	- URL of API to retrieve the JSONP Object
 	*/
-	//TODO:  CHANGE NAME TO SOMETHING LIKE PREPARE DATA
 
 	/*IF A URL IS PROVIDED, LOAD THE DATA FROM THE URL SOURCE*/
 	if (objecturl)
 	{
-		var uri = apiuri(objecturl);
+		var uri = apiuri(objecturl);// TODO, GET RID OF THIS
 		$.ajax({
 			crossDomain:true, 
-			url: uri,
+			url: objecturl,
 			dataType: 'jsonp',
 			jsonp: false,
 			jsonpCallback: 'callback',
@@ -42,8 +41,9 @@ function preparedata(markup, object, objecturl, callback) {
 }
 
 function injecttemplate (markup,object) {
-	
 	// TODO:  CREATE RESOURCE LIBRARY FOR GLOBAL VARIABLES  // TODO:  ADD SUPPORT FOR SETTING VARIABLES FROM SETTINGS.JS
+	
+	
 	// LOOK THROUGH ALL FOREACH STATEMENTS
 	var foreach = markup.match(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"));
 	if (foreach)
@@ -109,7 +109,6 @@ function injecttemplate (markup,object) {
 }
 
 function replacevariable(markup,object) {
-	
 	// REPLACE ALL TEMPLATE VARIABLES
 	var matches = markup.match(new RegExp('\{(.*?)\}', "g"));
 	if (matches)

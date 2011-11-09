@@ -96,15 +96,19 @@ body {
 	width:20%;	
 }
 /*Streams*/
-.mystream {
-	
+.mystream .target { /*TODO: Replace "My" with "User"*/
+	display:none;	
 }
-.openstream {
-	
+
+.openstream .target {
+	display:none;
 }
 /*Contacts*/
-.contacts {
-
+.contacts .target {
+	display:none;
+}
+.contact {
+	overflow:hidden;
 }
 /*Details*/
 .details {
@@ -152,7 +156,7 @@ body {
 .message .profile {
 	font-weight:bold;	
 }
-/*contact*/
+/*Contact*/
 .contact {
 	background:#efefef;
 	margin:0 0 5px 0;
