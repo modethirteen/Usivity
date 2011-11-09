@@ -56,6 +56,9 @@ namespace Usivity.Data {
             // Entity serialization maps
             BsonClassMap.RegisterClassMap<User>(cm => {
                 cm.MapIdProperty("Id");
+                cm.MapProperty("Name");
+                cm.MapProperty("Password");
+                cm.MapField("_organizations");
                 cm.MapField("_connections");
             });
             BsonClassMap.RegisterClassMap<Contact>(cm => {

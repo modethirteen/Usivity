@@ -13,7 +13,7 @@ namespace Usivity.Core.Services {
 
         //--- Features ---
         [DreamFeature("GET:contacts", "Get all contacts claimed by user")]
-        public Yield GetContacts(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetContacts(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var contacts = _data.GetContacts(UsivityContext.Current.User);
             var doc = new XDoc("contacts")
                 .Attr("count", contacts.Count())
@@ -28,7 +28,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("GET:contacts/{contactid}", "Get contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
-        public Yield GetContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield GetContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var contact = _data.GetContact(context.GetParam<string>("contactid"), UsivityContext.Current.User);
             if(contact == null) {
                 response.Return(DreamMessage.NotFound("The requested contact could not be located"));
@@ -42,7 +42,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("POST:contacts", "Create a new contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
-        public Yield PostContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield PostContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var contactDoc = GetRequestXml(request);
             var contact = GetContact(contactDoc);
             _data.SaveContact(contact);
@@ -52,7 +52,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("PUT:contacts/{contactid}", "Update a contact information")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
-        public Yield UpdateContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield UpdateContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var contactDoc = GetRequestXml(request);
             var contact = GetContact(contactDoc, context.GetParam<string>("contactid"));
             _data.SaveContact(contact);
@@ -62,7 +62,7 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("DELETE:contacts/{contactid}", "Remove a contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
-        public Yield RemoveContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        protected Yield RemoveContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             throw new NotImplementedException();
         }
 

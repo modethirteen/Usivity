@@ -6,15 +6,26 @@ namespace Usivity.Data.Entities {
 
     public class User : IEntity {
 
+        //--- Constants ---
+        public const string ANONYMOUS_USER = "Anonymous";
+
+        //--- Class Properties ---
+        public enum UserRoles { Owner, Admin, Member, None }
+
         //--- Properties ---
         public string Id { get; private set; }
+        public string Name { get; set; }
+        public string Password { get; set; }
 
         //--- Fields ---
         private Dictionary<string, IConnection> _connections;
+        private Dictionary<string, UserRoles> _organizations;
 
         //--- Constructors ---
-        public User () {
+        public User(string name) {
             Id = UsivityDataSession.GenerateEntityId(this);
+            Name = name;
+            _organizations = new Dictionary<string, UserRoles>();
             _connections = new Dictionary<string, IConnection>();
         }
 
@@ -33,6 +44,14 @@ namespace Usivity.Data.Entities {
 
         public void SetConnection(string sourceId, IConnection connection) {
             _connections[sourceId] = connection;
+        }
+
+        public UserRoles GetOrganizationRole(string organizationId) {
+            return _organizations.TryGetValue(organizationId, UserRoles.None);
+        }
+
+        public void SetOrganizationRole(string organizationId, UserRoles role) {
+            _organizations[organizationId] = role;
         }
     }
 }

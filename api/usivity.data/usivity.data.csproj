@@ -31,7 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="mindtouch.dream">
+    <Reference Include="mindtouch.dream, Version=2.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\redist\mindtouch.dream.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Bson, Version=1.1.0.4184, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">

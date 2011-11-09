@@ -30,25 +30,38 @@ namespace Usivity.Core.Services {
         public static Dictionary<string, OAuthRequestToken> ActiveOAuthRequestTokens { get; set; }
 
         //--- Fields ---
+        private UsivityAuth _auth;
+        private User _anonymous;
         private double _refresh;
         private UsivityDataSession _data;
         private IList<ISource> _sources;
+        private int _authExpiration;
 
+        private XUri _usersUri;
         private XUri _messagesUri;
         private XUri _sourcesUri;
         private XUri _contactsUri;
+        private XUri _organizationsUri;
 
         //--- Properties ---
         public string MasterApiKey { get; private set; }
 
         //--- Methods ---
+        public override DreamFeatureStage[] Prologues {
+            get {
+                return new[] { 
+                    new DreamFeatureStage("set-context", PrologueContext, DreamAccess.Public)
+                };
+            }
+        }
+
         protected override Yield Start(XDoc config, Result result) {
             yield return Coroutine.Invoke(base.Start, config, new Result());
 
             _log.Debug("Setting Master API Key");
             MasterApiKey = config["apikey"].AsText ?? string.Empty;
             if(string.IsNullOrEmpty(MasterApiKey)) {
-                throw new DreamException("Core apikey has not been set in startup config");
+                throw new DreamInternalErrorException("Core apikey has not been set in startup config");
             }
 
             _log.Debug("Initializing current data session");
@@ -58,21 +71,38 @@ namespace Usivity.Core.Services {
             UsivityDataSession.Initialize(dataSessionConfig);
             _data = UsivityDataSession.CurrentSession;
 
+            var securitySalt = config["security/salt"].AsText ?? string.Empty;
+            if(string.IsNullOrEmpty(securitySalt)) {
+                throw new DreamInternalErrorException("Security salt string has not been configured");
+            }
+            var securityCookieUri = config["security/uri.cookie"].AsUri ?? Self.Uri.AsPublicUri();
+            _auth = UsivityAuth.Factory(securitySalt, securityCookieUri, _data);
+            _authExpiration = config["security/expiration"].AsInt ?? 561600;
+
             // setup sources
             _sources = new List<ISource> {
                 new TwitterSource(config["sources/twitter"])
             };
             foreach(var source in _sources) {
-                var subscriptions = _data.GetSubscriptions(source.Id, null);
+                var subscriptions = _data.GetSubscriptions(source.Id);
                 foreach(var subscription in subscriptions) {
                     source.Subscriptions.Add(subscription);
                 }               
             }
 
+            // setup anonymous user
+            _anonymous = _data.GetAnonymousUser();
+            if(_anonymous == null) {
+                throw new DreamInternalErrorException("Anonymous user has not been configured");
+            }
+
+            //TODO: clean up api uris
             var apiUri = Self.Uri.AsPublicUri();
+            _usersUri = apiUri.At("users");
             _messagesUri = apiUri.At("messages");
             _sourcesUri = apiUri.At("sources");
             _contactsUri = apiUri.At("contacts");
+            _organizationsUri = apiUri.At("organizations");
 
             ActiveOAuthRequestTokens = new Dictionary<string, OAuthRequestToken>();
             _refresh = config["refresh"].AsDouble ?? MINUTES_TO_REFRESH;
@@ -81,19 +111,27 @@ namespace Usivity.Core.Services {
             result.Return();
         }
 
-        public override DreamFeatureStage[] Prologues {
-            get {
-                return new[] { 
-                    new DreamFeatureStage("set-context", PrologueContext, DreamAccess.Public)
-                };
+        protected override DreamAccess DetermineAccess(DreamContext context, string key) {
+            var usivityContext = UsivityContext.CurrentOrNull;
+            if(usivityContext != null) {
+                var role = usivityContext.User.GetOrganizationRole(usivityContext.Organization.Id);
+                switch(role) {
+                    case User.UserRoles.Owner:
+                    case User.UserRoles.Admin:
+                        return DreamAccess.Internal;
+                    case User.UserRoles.Member:
+                        return DreamAccess.Private;
+                }
             }
+            return base.DetermineAccess(context, key);
         }
 
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var authToken = _auth.GetAuthToken(request);
+            var user = _auth.GetAuthenticatedUser(authToken) ?? _anonymous;
 
-            //TODO: get current context from request
-            var user = _data.GetUser("1");
-            var organization = _data.GetOrganization("foo");
+            //TODO: dynamic selection of team
+            var organization = _data.GetOrganization("1");
 
             var usivityContext = new UsivityContext {
                 User = user,
