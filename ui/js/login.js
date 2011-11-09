@@ -18,25 +18,25 @@ $(document).ready( function() {
 	
 	// POST AUTHENTICATION
 	$(".login").live("submit", function() {
-		var user = $(this).find(".user");
-		var pass = $(this).find(".pass");
+		var user = $(this).find(".user").val();
+		var pass = $(this).find(".password").val();
 		
 		var apiurl = ("http://api.usivity.com/usivity/users/authentication");
-		
+
 		$.ajax({
 			type: "GET",
 			crossDomain:true,
 			url: apiurl,
 			beforeSend : function(xhr) {
   				var hash = $.base64Encode(user + ':' + pass);
-				xhr.setRequestHeader("Authorization", "Basic " + "ZGFtaWVuaDpmb28=");
+				xhr.setRequestHeader("Authorization", "Basic " + hash);
 			},
-			success: function(results)
+			success: function(results, status, xhr)
 			{
-				console.log("authenticated dude");
-				console.log(results);
+				document.cookie = results;
+				window.location.href = "http://www.usivity.com/";
 			},
-			error:function (xhr, ajaxOptions, thrownError){
+			error: function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);
 			} 
 		});
