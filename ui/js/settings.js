@@ -11,6 +11,10 @@ usivity.ids.open 		= [];
 usivity.ids.user		= [];
 usivity.ids.contacts 	= [];
 
+
+// DATA
+usivity.data = {};
+
 // API SETTINGS
 usivity.apiroot = {};
 usivity.apiroot.url = "http://api.usivity.com";
@@ -23,7 +27,7 @@ usivity.apiformat.value = {
 
 // MESSAGES (BOTH OPENS AND MY)
 usivity.messageinterval = {};
-usivity.messageinterval.value = 15000;
+usivity.messageinterval.value = 10000;
 usivity.messagelimit = {};
 usivity.messagelimit.value = 10; //TODO:  ADD BACK INTO CODE, NOT CURRENTLY BEING USED
 

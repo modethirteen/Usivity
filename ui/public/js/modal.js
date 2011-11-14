@@ -67,6 +67,7 @@ function closeModal() {
 }
 
 function showmodal(type) {
+
 	// Apply Type
 	$(".modal").addClass(type);
 	

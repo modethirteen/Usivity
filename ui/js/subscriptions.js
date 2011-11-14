@@ -2,8 +2,8 @@
 	subscriptions.js - manage all stream subscriptions.  Example - words that are searched on twitter
 	
 	FUNCTIONS
-		- 
-		-
+		- Delete Subscriptions
+		- Post Subscriptions
 */
 
 $(document).ready(function() {

@@ -2,16 +2,18 @@
 	loaddata.js - Batch loads data into the data library
 	
 	FUNCTIONS
-		-
-		-
+		- loadopenstream()
+		- loaduserstream()
+		- loadusercontacts()
 */
 
 $(document).ready(function() {
 
-	/*LOAD MY STREAM*/	
+	/*LOAD OPEN STREAM*/	
  	$(window).load(function() {	
 	 	// 0 second delay for loading my stream
 	 	loadopenstream();
+	 	setInterval("newopenstreammessage()",usivity.messageinterval.value);
  	});
 	
 	/*LOAD MY STREAM*/	
@@ -35,19 +37,17 @@ function loadopenstream()
 	openstreamparams = {
 		"stream" : "open",
 		"dream.out.format" : "jsonp",
-		"dream.out.pre", "callback"
+		"dream.out.pre": "callback"
 	};
 	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
-	//var objecturi 	= "http://api.usivity.com/usivity/messages?stream=open&dream.out.format=jsonp&dream.out.pre=callback"; //TODO: REPLACE WITH APIURI()
-	var objectref	= ""; // TODO: DEAL WITH THIS SITUATION MORE CONSISTENTLY.  NOT NICE ATALL
  	
  	$.get(templateuri, function(templatehtml) {
-		var html = preparedata(templatehtml, objectref, objecturi, function(html) {
+		preparedata(templatehtml, objecturi, function(html) {
 			$(".openstream .target").html(html);
+			$(".openstream").removeClass("loading");
+			$(".openstream .target").fadeIn();
 		});
 	});	
-	$(".openstream").removeClass("loading");
-	$(".openstream .target").fadeIn();
 }
 
 // LOAD THE USER STREAM - DELAYED FOR 2 SECOND TO AVOID TIMING CONFLICTS WITH THE TEMPLATING ENGINE
@@ -57,19 +57,18 @@ function loaduserstream()
 	userstreamparams = {
 		"stream" : "user",
 		"dream.out.format" : "jsonp",
-		"dream.out.pre", "callback"
+		"dream.out.pre": "callback"
 	};
 	var objecturi = apiuri(usivity.openstream.url,userstreamparams);
-	//var dataurl 	= "http://api.usivity.com/usivity/messages?stream=user&dream.out.format=jsonp&dream.out.pre=callback"; //TODO: REPLACE WITH APIURI()
-	var objectref	= ""; // TODO: DEAL WITH THIS SITUATION MORE CONSISTENTLY.  NOT NICE ATALL
+	
  	
- 	$.get(src, function(templatehtml) {
-		var html = preparedata(templatehtml, objectref, objecturi, function(html) {
+ 	$.get(templateuri, function(templatehtml) {
+		preparedata(templatehtml, objecturi, function(html) {
 			$(".mystream .target").html(html); // TODO:  CHANGE MYSTREAM TO USERSTREAM
+			$(".mystream").removeClass("loading");
+			$(".mystream .target").fadeIn();
 		});
 	});	
-	$(".mystream").removeClass("loading");
-	$(".mystream .target").fadeIn();
 }
 
 // LOAD THE CONTACTS - DELAYED FOR 4 SECOND TO AVOID TIMING CONFLICTS WITH THE TEMPLATING ENGINE
@@ -80,19 +79,17 @@ function loadusercontacts()
  	var templateuri = "/template/contact.htm";
  	contactparams = {
 		"dream.out.format" : "jsonp",
-		"dream.out.pre", "callback"
+		"dream.out.pre": "callback"
 	};
 	var objecturi = apiuri(usivity.contacts.url,contactparams);
-	//var dataurl 	= "http://api.usivity.com/usivity/contacts?dream.out.format=jsonp&dream.out.pre=callback";  //TODO: REPLACE WITH APIURI()
-	var objectref	= ""; // TODO: DEAL WITH THIS MORE CONSISTENTLY.  NOT NICE ATALL
  	
- 	$.get(src, function(templatehtml) {
-		var html = preparedata(templatehtml, objectref, objecturi, function(html) {
+ 	$.get(templateuri, function(templatehtml) {
+		preparedata(templatehtml, objecturi, function(html) {
 			$(".contacts .target").html(html);
+			$(".contacts").removeClass("loading");
+			$(".contacts .target").fadeIn();
 		});
 	});
-	$(".contacts").removeClass("loading");
-	$(".contacts .target").fadeIn();
 }
 
 

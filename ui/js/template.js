@@ -2,115 +2,124 @@
 	template.js - combine HTML and a javascript object
 	
 	FUNCTIONS
-		- 
-		-
+		- preparedata(templatehtml, objecturl, callback)
+		- injecttemplate (templatehtml,objectref)
+		- replacevariable(templatehtml,objectref)
 		
 */
 
-//TODO:  	RENAME OBJECT to OBJECTREF.  ADD PARAMTER FOR OBJECT TO PASS IN AN OBJECT, NOT JUST A REFERENCE
-function preparedata(templatehtml, objectref, objecturl, callback) {
+function preparedata(templatehtml, objecturi, callback) {
 	/*
 	templatehtml	- Template HTML
 	objectref		- JSONP Object Reference stored in the data library //TODO:  STORE OBJECT REQUESTS BY URL SO A URL CAN ALSO BE A REFERENCE.  HAVE PREPAREDATA() CONDUCT THE CHECK
 	objecturl 		- URL of API to retrieve the JSONP Object
 	*/
 
-	/*IF A URL IS PROVIDED, LOAD THE DATA FROM THE URL SOURCE*/
-	if (objecturl)
+	// RETURN ERROR IF NO URI PROVIDED
+	if (!objecturi)
 	{
-		var uri = apiuri(objecturl);// TODO, GET RID OF THIS
-		$.ajax({
-			crossDomain:true, 
-			url: objecturl,
-			dataType: 'jsonp',
-			jsonp: false,
-			jsonpCallback: 'callback',
-			mimeType: 'application/json',
-			contentType: 'application/json;',
-			success: function(results)
+		return false
+	};
+	
+	// TODO:  CHECK IF URI DATA IS ALREADY STORED
+	
+	// LOAD THE DATA FROM THE OBJECTURL
+	$.ajax({
+		crossDomain:true, 
+		url: objecturi,
+		dataType: 'jsonp',
+		jsonp: false,
+		jsonpCallback: 'callback',
+		mimeType: 'application/json',
+		contentType: 'application/json;',
+		success: function(json)
+		{
+			// STORE HTML AND OBJECT IN AN OBJECT
+			usivity.data[objecturi] = {};
+			usivity.data[objecturi].json	 = json;
+			usivity.data[objecturi].templatehtml = templatehtml;
+			
+			
+			// LOOP THROUGH FOREACH VARIABLE STATEMENTS
+			var foreachhtml = templatehtml.match(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"));
+			
+			if (foreachhtml)
 			{
-				var returnhtml = injecttemplate(templatehtml,results);
-				callback(returnhtml);
+				var replacehtml = foreach(foreachhtml[0],json);
+				templatehtml = templatehtml.replace(foreachhtml[0],replacehtml);
 			}
-		});	
-	}
-	else 
-	{
-		return injecttemplate(templatehtml,objectref);
-	}
+			
+			// LOOP THROUGH SINGLE VARIABLES
+			templatehtml = replacevariable(templatehtml,json);
+
+			callback (templatehtml);
+		}
+	});	
+
 }
 
-function injecttemplate (templatehtml,objectref) {
-	// TODO:  CREATE RESOURCE LIBRARY FOR GLOBAL VARIABLES  // TODO:  ADD SUPPORT FOR SETTING VARIABLES FROM SETTINGS.JS
-	
-	
-	// LOOK THROUGH ALL FOREACH STATEMENTS
-	var foreach = templatehtml.match(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"));
-	if (foreach)
-	{
-		$.each(foreach, function(key, value){
-			// Remove foreach statements from template variable
- 			var loop = value.replace("{foreach","");
- 			var loop = loop.replace("foreach}","");
- 			loopmarkup = "";  //TODO: RENAME BETTER OR ADD VAR
- 			
- 			// Find the object (Strip away the foreach markup)
-			var matches = loop.match(new RegExp('\{in:(.*?)\}', "g"));
-			var val = matches[0];
-			var val = val.replace("{in:","");
-			var val = val.substring(0,val.length-1);
+function foreach (foreachhtml,json) 
+{	
+		// Remove foreach statements from template variable
+		var loop = foreachhtml.replace("{foreach","");
+		var loop = loop.replace("foreach}","");
+		var loopmarkup = "";  //TODO: RENAME BETTER OR ADD VAR
+		
+		// Find the object (Strip away the foreach markup)
+		var matches = loop.match(new RegExp('\{in:(.*?)\}', "g"));
+		var val = matches[0];
+		var val = val.replace("{in:","");
+		var val = val.substring(0,val.length-1);
+		
+		// Clean the content of all template markup
+		var content = loop.replace(new RegExp('\{in:(.*?)\}', "g"),"");
+		
+		// Load the data from the object
+		if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
+		{
+			var arr = val.split("_");
+			var pointer = json[arr[0]];
+			arr.splice(0,1);
 			
-			// Clean the content of all template markup
-			var content = loop.replace(new RegExp('\{in:(.*?)\}', "g"),"");
-			
-			// Load the data from the object
-			if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
+			// TODO: REPLACE WITH $.EACH
+			for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
 			{
-				var arr = val.split("_");
-				var pointer = objectref[arr[0]];
-				arr.splice(0,1);
-				
-				// TODO: REPLACE WITH $.EACH
-				for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
-				{
-					pointer = pointer[arr[i]];
-				}
-				obj = pointer;
+				pointer = pointer[arr[i]];
+			}
+			obj = pointer;
+		}
+		else
+		{
+			obj =  json[val];
+		}	
+		
+		if (obj)
+		{
+			// Check for the correct formatting of the object
+			if (obj.length)
+			{
+				// Loop through each occurance of the object to templatize
+				$.each(obj, function(key,value){
+					loopmarkup = loopmarkup + replacevariable(content, value);
+				});	
 			}
 			else
 			{
-				obj =  objectref[val];
-			}	
-			
-			if (obj)
-			{
-				// Check for the correct formatting of the object
-				if (obj.length)
-				{
-					// Loop through each occurance of the object to templatize
-					$.each(obj, function(key,value){
-						loopmarkup = loopmarkup + replacevariable(content, value);
-					});	
-				}
-				else
-				{
-					loopmarkup = loopmarkup + replacevariable(content, obj);
-				}
-			}	
-		
-			// REMOVE THE {FOREACH FOREACH} STATEMENTS
-			templatehtml = templatehtml.replace(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"),loopmarkup);
-			
-		});
-	}
-	markup = replacevariable(templatehtml,objectref);	
+				loopmarkup = loopmarkup + replacevariable(content, obj);
+			}
+		}	
 	
-	return templatehtml;	
+		// REMOVE THE {FOREACH FOREACH} STATEMENTS
+		foreachhtml = foreachhtml.replace(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"),loopmarkup);
+			
+		return foreachhtml;
 }
 
-function replacevariable(templatehtml,objectref) {
+function replacevariable(templatehtml,objectref) 
+{
 	// REPLACE ALL TEMPLATE VARIABLES
 	var matches = templatehtml.match(new RegExp('\{(.*?)\}', "g"));
+	
 	if (matches)
 	{
 		$.each(matches, function(key, value){
@@ -132,7 +141,7 @@ function replacevariable(templatehtml,objectref) {
 			}
 			else
 			{
-				templatehtml = templatehtml.replace(value, object[val]);
+				templatehtml = templatehtml.replace(value, objectref[val]);
 			}	
 		});
 	}

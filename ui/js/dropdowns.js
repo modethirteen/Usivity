@@ -2,30 +2,39 @@
 	dropdown.js - show, hide messages in both the openstream and mystream.  Handle message interactions
 	
 	FUNCTIONS
-		-
-		-
+		- No-click
+		- Show dropdown
+		- Hide dropdown
+		- positiondrop()
 */
 
 
 $(document).ready(function() {
 	
+	// No-Click
 	$(".drop").live("click", function() {
 		return false;	
 	});
+	
+	// Show dropdown
 	$(".drop").live("hover", function() {
 		$(".down").hide();
-		var src = $(this).attr("href");
+		var templateuri = $(this).attr("href");
 		var id = $(this).attr("id");
-		var datahtml 	= usivity[id].markup; // TODO:  CHANGE THE LOCATION OF WHERE DATA IS STORED IN DATA.JS to match this format
-		var dataurl 	= usivity[id].url;
+		
+		dropparams = {
+			"dream.out.format" : "jsonp",
+			"dream.out.pre": "callback"
+		};
+		var objecturi = apiuri(usivity[id].url,dropparams); //TODO:  clear up the first param.  Not sure if this looks good
 		var drop 		= $(this);
 		var down		= $(this).next(".down");
-				
+		
 		// GET MARKUP
 		if (down.length == 0)
 		{
-			$.get(src, function(markup) {
-				var html = preparedata(markup, datahtml, dataurl, function(html) {
+			$.get(templateuri, function(templatehtml) {
+				preparedata(templatehtml, objecturi, function(html) {  // TODO:  CHANGE THE INPUT PARAMETERS FOR PREPAREDATA()
 					var down = $(document.createElement('div'));
 					down.html(html);
 					down.addClass('down');
@@ -42,6 +51,8 @@ $(document).ready(function() {
 		
 	});
 	
+	
+	// Hide Dropdown
 	$("body").click( function() {
 		$(".down").hide();
 	});

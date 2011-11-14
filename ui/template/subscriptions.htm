@@ -1,6 +1,6 @@
 <ul>
 {foreach
-	{in:sources_source}
-	<li class="{connection_authorized}"><a href="/template/subscriptions_form.htm" id="{@href}" class="{@id} popup connection">{@id}</a></li>
+	{in:sources}
+	<li class="{source_connection_active}"><a href="/template/subscriptions_form.htm" id="{source_@href}" class="{source_@id} popup connection">{source_@id}</a></li>
 foreach}
 </ul>

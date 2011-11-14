@@ -25,33 +25,22 @@ $(document).ready( function() {
 	
 	// "NORMAL" POPUP LINK
 	$(".popup, .dialog").live("click", function() {
-		var link	= $(this);
-		var src 	= link.attr("href");
-		var id 		= link.attr("id");
+		var link		= $(this);
+		var src 		= link.attr("href");
+		var objecturi	= link.attr("id");
 		var type	= "";
-		
+	
 		if (link.hasClass("dialog"))
 		{
 			var type = "modalsmall";
 		}
 		
-		if (id)
-		{
-			//TODO:  REPLACE ALL HREF'S STORED IN SETTINGS.JS WITH HREF FROM API
-			if (id.indexOf("/") >= 0)
-			{
-				var datahtml = "";
-				var dataurl = id;
-			}
-			else
-			{
-				var datahtml 	= usivity[id].markup; // TODO:  CHANGE THE LOCATION OF WHERE DATA IS STORED IN DATA.JS
-				var dataurl 	= usivity[id].url;  //TODO:  DON'T STORE OBJECT URL'S IN DATA STORAGE, ACCEPT URL'S DIRECTLY.  TRY TO GET RID OF DATA STORED IN SETTINGS.JS
-			}
-			
-			$.get(src, function(data) {		
-				//TODO: CHANGE PARAMETER NAMES TO MATCH FUNCTION PARAMETERS
-				var html = preparedata(data, datahtml, dataurl, function(html) {
+		// TODO:  GET RID OF THIS IF STATEMENT
+		if (objecturi)
+		{		
+			var objecturi = apiuri(objecturi,usivity.apiformat.value);
+			$.get(src, function(templatehtml) {		
+				preparedata(templatehtml, objecturi, function(html) {
 					$(".modal .target").html(html);
 					showmodal(type);	
 				});
