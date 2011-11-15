@@ -17,7 +17,7 @@ usivity.data = {};
 
 // API SETTINGS
 usivity.apiroot = {};
-usivity.apiroot.url = "http://api.usivity.com";
+usivity.apiroot.url = "http://usivity.com/api/1";
 
 usivity.apiformat = {};
 usivity.apiformat.value = {
@@ -33,25 +33,25 @@ usivity.messagelimit.value = 10; //TODO:  ADD BACK INTO CODE, NOT CURRENTLY BEIN
 
 // CONNECTIONS
 usivity.connectionsapi = {};
-usivity.connectionsapi.url = "/usivity/sources";
+usivity.connectionsapi.url = "/sources";
 
 // OPENMESSAGES  // TODO:  CHANGE TO MESSAGES, GET RID OF OPENSTREAM
 usivity.openmessages = {};
-usivity.openmessages.datapath = "/usivity/messages/";  	//TODO: MORE SPECIFIC VARIABLE NAME  -- TRY TO REMOVE THIS DEPENDENCY
+usivity.openmessages.datapath = "/messages/";  	//TODO: MORE SPECIFIC VARIABLE NAME  -- TRY TO REMOVE THIS DEPENDENCY
 usivity.openstream = {};
-usivity.openstream.url = "/usivity/messages";
+usivity.openstream.url = "/messages";
 
 // CONTACTS
 usivity.contacts = {};
-usivity.contacts.url = "/usivity/contacts";
+usivity.contacts.url = "/contacts";
 
 // SOURCES
 usivity.sourcetwitter = {};
-usivity.sourcetwitter.url = "/usivity/sources/twitter/connection";
+usivity.sourcetwitter.url = "/sources/twitter/connection";
 
 // SUBSCRIPTIONS
 usivity.subtwitter = {};
-usivity.subtwitter.url = "/usivity/sources/twitter/subscriptions";   // TODO: THIS IS NOT NICE FORMATTING.  MAYBE INTRODUCE MULTI DIMENSIONAL SETTING OBJECTS.  VARIABLES WOULD BE NICE TOO
+usivity.subtwitter.url = "/sources/twitter/subscriptions";   // TODO: THIS IS NOT NICE FORMATTING.  MAYBE INTRODUCE MULTI DIMENSIONAL SETTING OBJECTS.  VARIABLES WOULD BE NICE TOO
 
 
 

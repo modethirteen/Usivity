@@ -19,17 +19,19 @@ $(document).ready(function() {
 	
 	// SEND A MESSAGE
 	$(".message_send").live("submit", function() {
-		var href	= $(this).attr("action");
+		var href		= $(this).attr("action");
+		var message 	= $(this).find(".message_data").val();
+		console.log(message);
 		
 		// TODO:  ADD RESPONSE FOR FAIL EVENT
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
-			data: "sample message", //TODO:  PUT IN REAL MESSAGE STRING
+			data: message, 
 			url: href,
 			success: function(results)
 			{
-				console.log("worked");	
+				closeModal();
 			},
 			error: function(results) 
 			{
@@ -44,23 +46,25 @@ $(document).ready(function() {
 	// DELETE MESSAGE
 	$(".message_delete").live("submit", function() {
 		
-		var id = $(this).attr("id");
-		var apiaction = "?dream.in.verb=DELETE";
-		//TODO: URL HREF FROM API, DON'T CONSTRUCT URI
-		var apiurl = (usivity.apiroot.url + usivity.openstream.url + "/" + id + apiaction);
+		var href 	= $(this).attr("id");
+		var id		= $(this).find(".id").val();
+		
+		deleteparams = {
+			"dream.in.verb" : "DELETE"
+		};
+		
+		var deleteuri = apiuri(href,deleteparams);
 		
 		$.ajax({
 			type: "POST",
 			crossDomain:true, 
-			url: apiurl,
+			url: deleteuri,
 			success: function(results)
-			{
+			{		
+				$("#" + id).slideUp();
 				closeModal();	
 			}
 		});
-		
-		
-		$("#" + id).parents(".parent").remove();
 		
 		return false;
 	});

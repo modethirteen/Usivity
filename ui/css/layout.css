@@ -190,6 +190,12 @@ body {
 .contact_new {
 	display:none;	
 }
+.contact_actions a {
+	float:right;
+	display:block;
+	margin:0 0 0 10px;
+	font-size:.7em;	
+}
 /*My Connections*/
 .connections li {
 	background-repeat:no-repeat;

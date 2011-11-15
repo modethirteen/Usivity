@@ -45,6 +45,19 @@ $(document).ready(function() {
 			"constraints" : constraints
 		};
 		
+// 		{
+// 		    subscription:{
+// 		        constraints:{
+// 		            constraint:[
+// 		                'ccms',
+// 		                'documentation'
+// 		            ]
+// 		        },
+// 		        language:'en'
+// 		    }
+// 		}
+		
+		
 		var uri = apiuri(url, subscriptionparams);
 		$.ajax({
 			type: "POST",

@@ -21,7 +21,7 @@ $(document).ready( function() {
 		var user = $(this).find(".user").val();
 		var pass = $(this).find(".password").val();
 		
-		var apiurl = ("http://api.usivity.com/usivity/users/authentication");
+		var apiurl = ("http://usivity.com/api/usivity/users/authentication");
 
 		$.ajax({
 			type: "GET",
@@ -34,7 +34,7 @@ $(document).ready( function() {
 			success: function(results, status, xhr)
 			{
 				document.cookie = results;
-				window.location.href = "http://www.usivity.com/";
+				window.location.href = "http://usivity.com/index.htm";
 			},
 			error: function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);

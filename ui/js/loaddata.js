@@ -40,7 +40,6 @@ function loadopenstream()
 		"dream.out.pre": "callback"
 	};
 	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
- 	
  	$.get(templateuri, function(templatehtml) {
 		preparedata(templatehtml, objecturi, function(html) {
 			$(".openstream .target").html(html);
