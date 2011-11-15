@@ -11,7 +11,7 @@ namespace Usivity.Data.Entities {
         public const string ANONYMOUS_USER = "Anonymous";
 
         //--- Class Properties ---
-        public enum UserRoles { Owner, Admin, Member, None }
+        public enum UserRole { Owner, Admin, Member, None }
 
         //--- Properties ---
         public string Id { get; private set; }
@@ -21,13 +21,13 @@ namespace Usivity.Data.Entities {
 
         //--- Fields ---
         private Dictionary<string, IConnection> _connections;
-        private Dictionary<string, UserRoles> _organizations;
+        private Dictionary<string, UserRole> _organizations;
 
         //--- Constructors ---
         public User(string name) {
             Id = UsivityDataSession.GenerateEntityId(this);
             Name = name;
-            _organizations = new Dictionary<string, UserRoles>();
+            _organizations = new Dictionary<string, UserRole>();
             _connections = new Dictionary<string, IConnection>();
         }
 
@@ -37,7 +37,8 @@ namespace Usivity.Data.Entities {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            return new XDoc(resource).Attr("id", Id);
+            return new XDoc(resource).Attr("id", Id)
+                .Elem("name", Name);
         }
 
         public IConnection GetConnection(string sourceId) {
@@ -48,11 +49,11 @@ namespace Usivity.Data.Entities {
             _connections[sourceId] = connection;
         }
 
-        public UserRoles GetOrganizationRole(string organizationId) {
-            return _organizations.TryGetValue(organizationId, UserRoles.None);
+        public UserRole GetOrganizationRole(string organizationId) {
+            return _organizations.TryGetValue(organizationId, UserRole.None);
         }
 
-        public void SetOrganizationRole(string organizationId, UserRoles role) {
+        public void SetOrganizationRole(string organizationId, UserRole role) {
             _organizations[organizationId] = role;
         }
 

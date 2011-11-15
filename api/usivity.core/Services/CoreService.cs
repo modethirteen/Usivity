@@ -116,10 +116,10 @@ namespace Usivity.Core.Services {
             if(usivityContext != null) {
                 var role = usivityContext.User.GetOrganizationRole(usivityContext.Organization.Id);
                 switch(role) {
-                    case User.UserRoles.Owner:
-                    case User.UserRoles.Admin:
+                    case User.UserRole.Owner:
+                    case User.UserRole.Admin:
                         return DreamAccess.Internal;
-                    case User.UserRoles.Member:
+                    case User.UserRole.Member:
                         return DreamAccess.Private;
                 }
             }

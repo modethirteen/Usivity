@@ -77,7 +77,6 @@ namespace Usivity.Core.Services {
 
         [DreamFeature("POST:sources/{sourceid}/subscriptions", "Subscribe to a source network")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
-        [DreamFeatureParam("constraints", "string", "Comma seperated list of constraints")]
         protected Yield PostSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var source = _sources.FirstOrDefault(s => s.Id == context.GetParam<string>("sourceid"));
             if(source == null) {
@@ -89,8 +88,17 @@ namespace Usivity.Core.Services {
                 throw new DreamBadRequestException(string.Format("Cannot subscribe to unconnected source network, \"{0}\"", source.Id));
             }
             
-            var constraints = context.GetParam<string>("constraints").Split(',');
-            var subscription = source.GetNewSubscription(constraints);
+            var subscriptionDoc = GetRequestXml(request);
+
+            var lang = Subscription.SubscriptionLanguage.English;
+            var langKey = subscriptionDoc["language"].AsText ?? string.Empty;
+            if(!string.IsNullOrEmpty(langKey) && !Subscription.SubscriptionLanguages.TryGetValue(langKey, out lang)) {
+                response.Return(DreamMessage.BadRequest("Requested language key \"" + langKey + "\" is unsupported"));
+                yield break;
+            }
+            var constraints = subscriptionDoc["constraints/constraint"].Select(constraint => constraint.AsText).ToList();
+
+            var subscription = source.GetNewSubscription(constraints, lang);
             subscription.UserId = UsivityContext.Current.User.Id;
             source.Subscriptions.Add(subscription);
             _data.SaveSubscription(subscription);
@@ -132,7 +140,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
-        [DreamFeature("DELETE:sources/{source}/subscriptions/{subscriptionid}", "Delete subscription to a source network")]
+        [DreamFeature("DELETE:sources/{sourceid}/subscriptions/{subscriptionid}", "Delete subscription to a source network")]
         [DreamFeatureParam("sourceid", "string", "Source network id")]
         [DreamFeatureParam("subscriptionid", "string", "Subscription id")]
         protected Yield DeleteSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
