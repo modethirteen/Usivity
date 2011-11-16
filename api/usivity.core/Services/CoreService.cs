@@ -170,7 +170,7 @@ namespace Usivity.Core.Services {
             foreach(var source in _sources) {
                 messages.AddRange(source.GetMessages(Message.MessageStreams.Open));
                 foreach(var subscription in source.Subscriptions) {
-                    _data.SaveSubscription(subscription);
+                    _data.UpdateSubscription(subscription);
                 }
             }
 
