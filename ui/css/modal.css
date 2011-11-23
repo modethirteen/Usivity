@@ -10,7 +10,7 @@
 .modal {
 	width:600px;
 	background:#fff;
-	max-height:320px;
+	max-height:620px;
 	position:absolute;
 	padding:5px;
 	border-radius:5px;
@@ -19,7 +19,8 @@
 }
 .modal .target {
 	overflow-x:hidden;
-	overflow-y:hidden;	
+	overflow-y:auto;
+	max-height:580px;	
 }
 /* DIALOG TITLE*/
 .modal .title {
@@ -28,8 +29,8 @@
 	background: -webkit-linear-gradient(top, #666666 0%,#000000 62%); /* Chrome10+,Safari5.1+ */
 	background: -o-linear-gradient(top, #666666 0%,#000000 62%); /* Opera 11.10+ */
 	padding:3px;
-	border-radius:5px;
-	margin-bottom:5px;
+	border-radius:3px;
+	margin-bottom:3px;
 }
 .modal .title h2 {
 	border:0;
@@ -72,5 +73,8 @@
 	height:30px;
 	background-image:url(/img/modal_close.png);	
 	margin:-15px -15px 0 0;
+}
+.modal .close:hover {
+		
 }
 

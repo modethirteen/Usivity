@@ -17,15 +17,24 @@ a:hover {
 .last {
 	margin-bottom:0;	
 }
+.break {
+	overflow:hidden;
+	clear:left;
+}
 /*Headers*/
 h2, h3, h4, h5, h6 {
 	color:#666;
 	font-family:myriad pro;
 	margin:0 0 5px 0;
 	padding:0 0 5px 0;
+	clear:left;
 }
 h2 {
 	font-size:1.2em;
+	border-bottom:1px dotted #dcdcdc;
+}
+h3 {
+	padding-top:15px;	
 }
 /*Title*/
 .title a {
@@ -34,6 +43,7 @@ h2 {
 	display:block;
 	text-decoration:none;
 	padding:7px 0 0 0;
+	margin:0 0 0 10px;
 }
 /*FORMS*/
 form {
@@ -44,22 +54,39 @@ form {
 	padding:10px 0 0 0;
 	font-size:.7em;
 	color:#333;	
-	clear:both;
+	clear:left;
 }
-input {
+textarea,
+select,
+input {/*TODO:  GET RID OF THIS, USE START INSTEAD*/
 	padding:3px;
 	min-width:150px;
 	border-radius:3px;
 	color:#666;
 	border:1px solid #ccc;
 	float:left;
-	margin-right:5px;
+	margin:0 10px 5px 0;
+}
+select {
+	padding:2px;	
+}
+textarea {
+	padding:0;	
+}
+input.long {
+	min-width:250px;	
+}
+select.short,
+input.short {
+	min-width:75px;
+	width:75px;	
 }
 .twrap {
 	padding:3px;
 	min-width:200px;
 	border-radius:3px;
 	border:1px solid #ccc;	
+	overflow:hidden;
 }
 textarea {
 	padding:0;
@@ -95,6 +122,17 @@ textarea {
 	font-size:.75em;
 	margin:0 0 0 10px;	
 }
+.start {
+	opacity:.5;
+}
+/*HIGHLIGHT*/
+.highlight {
+	background:#efefef;
+	margin:0 0 5px 0;
+	border-radius:5px;
+	padding:5px;	
+	overflow:hidden;
+}
 /*TABLES*/
 table {
 	width:100%;
@@ -121,7 +159,7 @@ tr:hover {
 .buttons {
 	overflow:hidden;
 	margin:0;
-	clear:both;
+	clear:left;
 	padding:10px 0 0 0;
 }
 .buttons .button {
@@ -167,20 +205,4 @@ button:hover,
 	background-image:url(/img/icon_loading.gif);
 	background-repeat:no-repeat;
 	background-position:center center;	
-}
-
-/*Columns*/
-.columns .inner {
-	margin:10px;
-	border-right:1px dotted #ccc;
-}
-.columns .col3 {
-	width:33%;	
-	display:block;
-	float:left;
-	padding:0;
-	margin:0;
-}
-.columns .last .inner {
-	border:0;	
 }

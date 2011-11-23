@@ -46,7 +46,11 @@ body {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
-	height:200px;	;
+	height:200px;
+	background: -moz-linear-gradient(top, #ee9c47 0%, #dc8021 62%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ee9c47), color-stop(62%,#dc8021)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #ee9c47 0%,#dc8021 62%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #ee9c47 0%,#dc8021 62%); /* Opera 11.10+ */
 }
 
 /*ACCOUNT*/
@@ -66,27 +70,17 @@ body {
 	display:none;
 	background:#fff;
 }
-.accounts .tabs li {
-	width:50%;
-	margin:0;
-	font-size:.9em;
-	text-align:center;
-	height:20px;
-	background:#e7a664;
-	line-height:20px;
-}
-.accounts .tabs li.active {
-	background:#fff;
-	font-weight:bold;
-}
-/*Tabs*/
-.tabs {
-	overflow:hidden;	
-}
-.tabs li {
-	display:block;
-	float:left;
+
+/*CONTEXTUAL HELP*/
+.contextual_help {
+	background:#efefef;
+	border-radius:3px;
+	float:right;
 	overflow:hidden;
-	border-bottom:0px;
-	cursor:pointer;
+	width:200px;
+	min-height:180px;
+	padding:10px;	
+}
+.contextual_help h3 {
+	padding-top:0;
 }

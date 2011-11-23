@@ -4,8 +4,12 @@
 	<title>Usivity | Collaborative CRM</title> 
 	
 	<script language="JavaScript" src="js/jquery-1.6.1.min.js"></script>
+	<script language="JavaScript" src="js/base64.js"></script>
 	<script language="JavaScript" src="js/usivity.js"></script>
 	<script language="JavaScript" src="js/modal.js"></script>
+	<script language="JavaScript" src="js/login.js"></script>
+	<script language="JavaScript" src="js/forms.js"></script>
+	<script language="JavaScript" src="js/response.js"></script>
 	
 	<link rel="stylesheet" type="text/css" media="screen" href="css/reset.css" />    
 	<link rel="stylesheet" type="text/css" media="screen" href="css/content.css" /> 

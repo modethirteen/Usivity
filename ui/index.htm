@@ -7,23 +7,7 @@
 	<script language="JavaScript" src="/js/jquery-1.6.1.min.js"></script>
 	
 	<!--Interaction Libraries-->
-	<script language="JavaScript" src="/js/settings.js"></script>
-	<script language="JavaScript" src="/js/utility.js"></script>
-	<script language="JavaScript" src="/js/template.js"></script>
-	<script language="JavaScript" src="/js/dropdowns.js"></script>
-	<script language="JavaScript" src="/js/modal.js"></script>
-	<script language="JavaScript" src="/js/forms.js"></script>
-	<script language="JavaScript" src="/js/animations.js"></script>
-	<script language="JavaScript" src="/js/search.js"></script>
-	<script language="JavaScript" src="/js/loaddata.js"></script>
-	<script language="JavaScript" src="/js/stream.js"></script>
-	
-	<!--API Libraries-->
-	<script language="JavaScript" src="/js/connections.js"></script>
-	<script language="JavaScript" src="/js/messages.js"></script>
-	<script language="JavaScript" src="/js/subscriptions.js"></script>
-	<script language="JavaScript" src="/js/contacts.js"></script>
-	
+	<script language="JavaScript" src="/js/usivity.js"></script>
 	
 	<!--CSS Libraries-->
 	<link rel="stylesheet" type="text/css" href="/css/reset.css" />
@@ -43,10 +27,9 @@
 		</div>
 		<div class="menu">
 			<ul>
-				<li class="settings"><a href="template/settings.htm" class="popup">settings</a></li>
+				<li class="settings"><a href="template/user_put.htm" class="popup">profile</a></li>
 				<!--<li><a href="template/reports.htm" class="popup reports">reports</a></li>-->
 				<li class="connections"><a href="template/connections.htm" id="connectionsapi" class="drop">connections</a></li>
-				<li class="subscriptions"><a href="template/subscriptions.htm" id="connectionsapi" class="drop">subscriptions</a></li>
 				<!--<li class="recent"><a href="template/recent.htm" class="popup">recent</a></li>-->
 				<!--<li class="team"><a href="template/team.htm" class="popup">team</a></li>-->
 			</ul>
@@ -57,8 +40,8 @@
 		<div class="streams">
 			<div class="openstream fwrap first last loading">
 				<div class="title">
-					<a href="" class="tools">subscriptions</a>
-					<a href="" class="tools">filters</a>
+					<a href="template/subscriptions.htm" id="connectionsapi" class="drop">subscriptions</a>
+					<a href="template/filter_post" class="popup">filters</a>
 					<h2>Open Message Stream</h2>
 				</div>
 				<div class="target">
@@ -82,7 +65,7 @@
 	<div class="col col3">
 		<div class="contacts fwrap first last loading">
 			<div class="title">
-				<a href="/template/contact_post.htm" id="/usivity/contacts" class="popup tools">new contact</a>
+				<a href="/template/contact_post.htm" class="popup tools">new contact</a>
 				<h2>Contacts</h2>
 			</div>
 			<div class="target">

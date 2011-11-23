@@ -1,6 +1,3 @@
-// DATA LIBRARIES
-$.getScript("/js/loaddata.js");
-
 // Iteraction Libraries
 $.getScript("/js/settings.js");
 $.getScript("/js/utility.js");
@@ -10,6 +7,9 @@ $.getScript("/js/modal.js");
 $.getScript("/js/forms.js");
 $.getScript("/js/animations.js");
 $.getScript("/js/search.js");
+$.getScript("/js/loaddata.js");
+$.getScript("/js/stream.js");
+$.getScript("/js/response.js");
 
 // API Libraries
 $.getScript("/js/connections.js");

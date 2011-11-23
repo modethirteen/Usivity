@@ -91,6 +91,12 @@ function showmodal(type) {
 	// Wrap Textareas with trap
 	$("textarea").wrap('<div class="twrap"></div>');
 	
+	// SETUP "START" FIELDS
+	startset();
+	
+	// SETUP THE RESPONSE (ERROR/SUCCESS) BOXES
+	setupresponse();
+	
 	// Show Modal
 	$(".modal_bg").fadeIn();
 	$(".modal").fadeIn();

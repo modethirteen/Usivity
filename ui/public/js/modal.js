@@ -25,22 +25,35 @@ $(document).ready( function() {
 	
 	// "NORMAL" POPUP LINK
 	$(".popup, .dialog").live("click", function() {
-		var link	= $(this);
-		var src 	= link.attr("href");
-		var id 		= link.attr("id");
+		var link		= $(this);
+		var src 		= link.attr("href");
+		var objecturi	= link.attr("id");
 		var type	= "";
-		
+	
 		if (link.hasClass("dialog"))
 		{
 			var type = "modalsmall";
 		}
 		
-		// LOAD PAGES THAT DON'T NEED TO HAVE DATA FROM AN API
-		$.get(src, function(data) {		
-			$(".modal .target").html(data);
-			showmodal(type);	
-		});
-		
+		// TODO:  GET RID OF THIS IF STATEMENT
+		if (objecturi)
+		{		
+			var objecturi = apiuri(objecturi,usivity.apiformat.value);
+			$.get(src, function(templatehtml) {		
+				preparedata(templatehtml, objecturi, function(html) {
+					$(".modal .target").html(html);
+					showmodal(type);	
+				});
+			});
+		}
+		else
+		{
+			// LOAD PAGES THAT DON'T NEED TO HAVE DATA FROM AN API
+			$.get(src, function(data) {		
+				$(".modal .target").html(data);
+				showmodal(type);	
+			});
+		}
 		return false;
 	});
 	
@@ -67,7 +80,6 @@ function closeModal() {
 }
 
 function showmodal(type) {
-
 	// Apply Type
 	$(".modal").addClass(type);
 	
@@ -78,6 +90,12 @@ function showmodal(type) {
 	
 	// Wrap Textareas with trap
 	$("textarea").wrap('<div class="twrap"></div>');
+	
+	// SETUP "START" FIELDS
+	startset();
+	
+	// SETUP THE RESPONSE (ERROR/SUCCESS) BOXES
+	setupresponse();
 	
 	// Show Modal
 	$(".modal_bg").fadeIn();

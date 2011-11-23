@@ -13,19 +13,19 @@ $(document).ready(function() {
  	$(window).load(function() {	
 	 	// 0 second delay for loading my stream
 	 	loadopenstream();
-	 	setInterval("newopenstreammessage()",usivity.messageinterval.value);
+	 	setInterval("newopenstreammessage()",usivity.messageinterval.value);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	});
 	
 	/*LOAD MY STREAM*/	
  	$(window).load(function() {	
 	 	// 2 second delay for loading my stream
-	 	setTimeout("loaduserstream();",2000);
+	 	setTimeout("loaduserstream();",2000); //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	});
  	
  	/*LOAD MY CONTACTS*/	
  	$(window).load(function() {	
 	 	// 4 second delay for loading my contacts
-	 	setTimeout("loadusercontacts();",4000);
+	 	setTimeout("loadusercontacts();",4000);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	});
  	
 });

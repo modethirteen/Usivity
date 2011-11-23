@@ -110,21 +110,7 @@ body {
 .contact {
 	overflow:hidden;
 }
-/*Details*/
-.details {
-	
-}
 /*Messages*/
-.message {
-	background:#efefef;
-	margin:0 0 5px 0;
-	border-radius:5px;
-	padding:5px;	
-	overflow:hidden;
-}
-.message:hover {
-	background:#dff5f5;	
-}
 .message_contents {
 	padding:0 0 0 10px;
 	margin:0 0 0 50px;
@@ -150,35 +136,25 @@ body {
 	margin:0 0 0 10px;
 	font-size:.7em;	
 }
-.message_new {
-	display:none;	
-}
 .message .profile {
 	font-weight:bold;	
 }
 /*Contact*/
-.contact {
-	background:#efefef;
-	margin:0 0 5px 0;
-	border-radius:5px;
-	padding:5px;	
-	overflow:hidden;
-}
-.contact:hover {
-	background:#dff5f5;	
-}
 .contact_contents {
 	padding:0 0 0 10px;
-	margin:0 0 0 45px;
+	margin:0 0 0 50px;
 }
 .contact_picture {
 	border:2px solid #fff;
 	display:block;
 	width:48px;
 	height:48px;
-	background:#ccc;
+	background-image:url(/img/avatar_blank.png);
 	float:left;	
 	cursor:pointer;
+}
+.contact_picture:hover {
+	background-image:url(/img/avatar_blank_hover.png);	
 }
 .contact_picture img {
 	width:48px;
@@ -187,14 +163,39 @@ body {
 	font-weight:bold;
 	font-size:.9em;	
 }
-.contact_new {
-	display:none;	
-}
 .contact_actions a {
 	float:right;
 	display:block;
 	margin:0 0 0 10px;
 	font-size:.7em;	
+}
+.contact_numbers {
+	float:right;
+	width:85px;	
+}
+.liklihood_low {
+	color:#ff0000;
+}
+.liklihood_high {
+	color:#009900;
+}
+/*Response*/
+.response {
+	display:none;
+	padding:5px;
+	margin:5px 0 10px 0;
+	font-size:.8em;	
+	border-radius:3px;
+	background-color:#ffffcc;
+	border:2px solid #ffff99;
+}
+.error {
+	background-color:#ffcccc;
+	border:2px solid #ff9999;
+}
+.success {
+	background-color:#ccffcc;
+	border:2px solid #66cc66;
 }
 /*My Connections*/
 .connections li {
