@@ -37,40 +37,41 @@ $(document).ready(function() {
 	/*POST SUBSCRIPTIONS*/
 	$(".subscriptionsform form").live("submit", function() {
 		var form 		= $(this);
-		var url 		= form.attr("action");
+		var uri 		= form.attr("action");
 		var input		= form.find(".constraints");
 		var constraints = input.val();
 		
+		data = {
+		    subscription:{
+		        constraints:{
+		            constraint:[
+		                constraints
+		            ]
+		        },
+		        language:'en'
+		    }
+		}
+		
 		subscriptionparams = {
-			"constraints" : constraints
+			"dream.out.format" : "json"
 		};
 		
-// 		{
-// 		    subscription:{
-// 		        constraints:{
-// 		            constraint:[
-// 		                'ccms',
-// 		                'documentation'
-// 		            ]
-// 		        },
-// 		        language:'en'
-// 		    }
-// 		}
+		var uri = apiuri(uri,subscriptionparams);
 		
-		
-		var uri = apiuri(url, subscriptionparams);
 		$.ajax({
 			type: "POST",
-			crossDomain:true, 
+			crossDomain:true,
+			data: JSON.stringify(data),
 			url: uri,
+			dataType: "json",
+			mimeType: 'application/json',
+			contentType: 'application/json',
 			success: function(results)
 			{
-				// TODO: GET RESULTS FROM API (TALK TO ANDY) - CAN'T HAVE DELETE FOR NEWLY ADDED SUBSCRIPTIONS
-				console.log("success");
 				input.val("");
 				input.focus("");
 				var newele = $(document.createElement('li'));
-				newele.html('<span>' + constraints + '</span>');
+				newele.html('<span>' + results.constraints + '</span><a href="' + results['@href'] + '" class="delete">delete</a>');
 				$(".subscriptionsform ul").append(newele);
 				
 			},

@@ -19,13 +19,13 @@ $(document).ready(function() {
 	/*LOAD MY STREAM*/	
  	$(window).load(function() {	
 	 	// 2 second delay for loading my stream
-	 	setTimeout("loaduserstream();",2000); //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
+	 	setTimeout("loaduserstream();",1000); //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	});
  	
  	/*LOAD MY CONTACTS*/	
  	$(window).load(function() {	
 	 	// 4 second delay for loading my contacts
-	 	setTimeout("loadusercontacts();",4000);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
+	 	setTimeout("loadusercontacts();",2000);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	});
  	
 });
@@ -37,11 +37,12 @@ function loadopenstream()
 	openstreamparams = {
 		"stream" : "open",
 		"dream.out.format" : "jsonp",
-		"dream.out.pre": "callback"
+		"dream.out.pre": cb()
 	};
 	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
+	
  	$.get(templateuri, function(templatehtml) {
-		preparedata(templatehtml, objecturi, function(html) {
+		template(templatehtml, objecturi, "messages_message", function(html) {
 			$(".openstream .target").html(html);
 			$(".openstream").removeClass("loading");
 			$(".openstream .target").fadeIn();
@@ -56,13 +57,13 @@ function loaduserstream()
 	userstreamparams = {
 		"stream" : "user",
 		"dream.out.format" : "jsonp",
-		"dream.out.pre": "callback"
+		"dream.out.pre": cb()
 	};
 	var objecturi = apiuri(usivity.openstream.url,userstreamparams);
 	
  	
  	$.get(templateuri, function(templatehtml) {
-		preparedata(templatehtml, objecturi, function(html) {
+		template(templatehtml, objecturi, "messages_message", function(html) {
 			$(".mystream .target").html(html); // TODO:  CHANGE MYSTREAM TO USERSTREAM
 			$(".mystream").removeClass("loading");
 			$(".mystream .target").fadeIn();
@@ -78,12 +79,12 @@ function loadusercontacts()
  	var templateuri = "/template/contact.htm";
  	contactparams = {
 		"dream.out.format" : "jsonp",
-		"dream.out.pre": "callback"
+		"dream.out.pre": cb()
 	};
 	var objecturi = apiuri(usivity.contacts.url,contactparams);
  	
  	$.get(templateuri, function(templatehtml) {
-		preparedata(templatehtml, objecturi, function(html) {
+		template(templatehtml, objecturi, "contacts_contact", function(html) {
 			$(".contacts .target").html(html);
 			$(".contacts").removeClass("loading");
 			$(".contacts .target").fadeIn();

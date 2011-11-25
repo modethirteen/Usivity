@@ -68,7 +68,34 @@ function fixmessage(text)
 }
 
 // VALIDATE EMAIL ADDRESS
-function checkemail(email) { 
+function checkemail(email) 
+{ 
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 } 
+
+// GENERATE A DYNAMIC FUNCTION NAME TO USE AS A CALLBACK
+function cb()
+{
+	return("cb" + Math.floor(Math.random()*11111)); //USED FOR A DYNAMIC FUNCTION	
+}
+
+// EXTRACT A QUERYPARAM BY NAME
+function queryparam(name, url)
+{
+	name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+	var regexS = "[\\?&]" + name + "=([^&#]*)";
+	var regex = new RegExp(regexS);
+	if (url)
+	{
+		var results = regex.exec(url);
+	}
+	else
+	{
+		var results = regex.exec(window.location.href);
+	}
+	if(results == null)
+		return "";
+	else
+		return decodeURIComponent(results[1].replace(/\+/g, " "));
+}

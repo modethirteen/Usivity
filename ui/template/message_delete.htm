@@ -1,9 +1,12 @@
+{foreach
+{in:message}
 <h1>Delete Message</h1>
-<form class="message_delete" id="{message_@href}">
-	<input type="hidden" name="id" class="id" value="{message_@id}">
-	<span class="prompt">Are you sure you want to delete the message from <b>{message_author_name}</b></span>
+<form class="message_delete" id="{@href}">
+	<input type="hidden" name="id" class="id" value="{@id}">
+	<span class="prompt">Are you sure you want to delete the message from <b>{author_name}</b></span>
 	<div class="buttons">
 		<button type="submit" class="button apply">yes</button>
 		<button type="submit" class="button cancel">no</button>
 	</div>
 </form>
+foreach}

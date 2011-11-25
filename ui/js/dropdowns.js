@@ -34,7 +34,7 @@ $(document).ready(function() {
 		if (down.length == 0)
 		{
 			$.get(templateuri, function(templatehtml) {
-				preparedata(templatehtml, objecturi, function(html) {  // TODO:  CHANGE THE INPUT PARAMETERS FOR PREPAREDATA()
+				template(templatehtml, objecturi, null, function(html) {  // TODO:  CHANGE THE INPUT PARAMETERS FOR PREPAREDATA()
 					var down = $(document.createElement('div'));
 					down.html(html);
 					down.addClass('down');

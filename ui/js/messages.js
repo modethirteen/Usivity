@@ -21,7 +21,6 @@ $(document).ready(function() {
 	$(".message_send").live("submit", function() {
 		var href		= $(this).attr("action");
 		var message 	= $(this).find(".message_data").val();
-		console.log(message);
 		
 		// TODO:  ADD RESPONSE FOR FAIL EVENT
 		$.ajax({

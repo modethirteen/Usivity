@@ -40,7 +40,7 @@ $(document).ready( function() {
 		{		
 			var objecturi = apiuri(objecturi,usivity.apiformat.value);
 			$.get(src, function(templatehtml) {		
-				preparedata(templatehtml, objecturi, function(html) {
+				template(templatehtml, objecturi, "null",function(html) {
 					$(".modal .target").html(html);
 					showmodal(type);	
 				});

@@ -17,7 +17,7 @@ function newopenstreammessage()
 	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
  	
  	$.get(templateuri, function(templatehtml) {
-		preparedata(templatehtml, objecturi, function(html) {
+		template(templatehtml, objecturi, "null", function(html) {
 			var newele = $(document.createElement('div'));
 			newele.html(html);
 			newele.css("display","none");

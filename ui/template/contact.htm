@@ -1,16 +1,13 @@
-{foreach
-	{in:contacts_contact}
-	<div id="{@id}" class="contact highlight">
-		<span class="contact_picture">
-			<img src="" />
+<div id="{@id}" class="contact highlight">
+	<span class="contact_picture">
+		<img src="" />
+	</span>
+	<div class="contact_contents">
+		<span class="contact_name">
+			{firstname} {lastname}
 		</span>
-		<div class="contact_contents">
-			<span class="contact_name">
-				{firstname} {lastname}
-			</span>
-			<div class="contact_actions">
-				<a href="/template/contact_delete.htm" id="{@href}" class="dialog delete">delete</a>
-			</div>
+		<div class="contact_actions">
+			<a href="/template/contact_delete.htm" id="{@href}" class="dialog delete">delete</a>
 		</div>
 	</div>
-foreach}
+</div>
