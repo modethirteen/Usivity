@@ -22,10 +22,14 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 		// REPLACE THE TEMPLATE HTML WITH THE HTML FROM WITHIN THE {FOREACH...FOREACH}
 		var templatehtml = fhtml[0].replace("{foreach","");	
 		var templatehtml = templatehtml.replace("foreach}","");	
-		
-		// LOAD THE XPATH FROM THE TEMPLATE HTML
-		var xpath = templatehtml.match(new RegExp('\{in:(.*?)\}', "g"));
-		var xpath = xpath[0];
+	}
+	
+	// IF THERE IS AN IN STATEMENT, USE THAT AS THE XPATH
+	var fxpath = templatehtml.match(new RegExp('\{in:(.*?)\}', "g"));
+	if (fxpath)
+	{
+		// LOAD THE XPATH FROM THE TEMPLATE HTML	
+		var xpath = fxpath[0];
 		var xpath = xpath.replace("{in:","");
 		var xpath = xpath.substring(0,xpath.length-1);
 		var templatehtml = templatehtml.replace(new RegExp('\{in:(.*?)\}', "g"),"");
