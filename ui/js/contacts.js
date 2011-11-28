@@ -9,6 +9,7 @@ $(document).ready( function() {
 	
 	// DELETE A CONTACT
 	$(".contact_delete").live("submit", function() {
+		alert("delete not implemented yet");
 		var href 	= $(this).attr("id");
 		var id		= $(this).find(".id").val();
 		
@@ -38,18 +39,15 @@ $(document).ready( function() {
 		clearstart($(this)); // ONLY DO THIS IF THE MODAL IS GOING TO CLOSE
 		return false;		
 	});
+
 	
-// 	{
-//     user:{
-//         firstname:'foo',
-//         lastname:'bar'
-//     }
-// 	}
+	
 	
 	// LOAD DATA FROM LIVECONTACT WHEN EMAIL IS ENTERED
 	$(".contact_email").live("blur", function() {
 		
-		var email = $(this).val();
+		var input	= $(this);
+		var email 	= input.val();
 		
 		if (checkemail(email))
 		{
@@ -64,11 +62,33 @@ $(document).ready( function() {
 				jsonpCallback: 'callback',
 				mimeType: 'application/json',
 				contentType: 'application/json;',
-				success: function(json)
-				{
-					console.log(json);
-					$(".contact_firstname").val(json.contactInfo.givenName);
-					$(".contact_lastname").val(json.contactInfo.familyName);
+				success: function(json, textStatus, xhr) { 
+					
+					if(json.status == "200")
+					{
+						//TODO:  ADD FUNCTION TO CHECK IF OBJECT EXISTS BEFORE SETTING IT.
+						
+						console.log(json);
+						// Demographics
+						$(".contact_age").val(json.demographics.age);
+						$(".contact_gender").val(json.demographics.gender);
+						$(".contact_locationgeneral").val(json.demographics.locationGeneral);
+						
+						// Contact Info
+						$(".contact_firstname").val(json.contactInfo.givenName);
+						$(".contact_lastname").val(json.contactInfo.familyName);
+						
+						// Organizations
+						
+						// Photos
+						var newele = $(document.createElement('img'));
+						newele.attr("src",json.photos[0].url);
+						$(".contact_new .contact_picture").html(newele);
+					}
+					else
+					{
+						error(input,"Sorry, we can't find any additional information about " + email + ", please add it manually for now.");	
+					}
 				}
 			});
 		}

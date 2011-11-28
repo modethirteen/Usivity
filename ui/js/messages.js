@@ -19,17 +19,25 @@ $(document).ready(function() {
 	
 	// SEND A MESSAGE
 	$(".message_send").live("submit", function() {
-		var href		= $(this).attr("action");
+		var uri		= $(this).attr("action");
 		var message 	= $(this).find(".message_data").val();
+		
+		messageparams = {
+			"dream.out.format" : "json"
+		};
+		
+		var uri = apiuri(uri,messageparams);
 		
 		// TODO:  ADD RESPONSE FOR FAIL EVENT
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
 			data: message, 
-			url: href,
+			url: uri,
 			success: function(results)
 			{
+				loadusercontacts();
+				loaduserstream();
 				closeModal();
 			},
 			error: function(results) 

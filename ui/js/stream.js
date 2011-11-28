@@ -11,7 +11,7 @@ function newopenstreammessage()
 	openstreamparams = {
 		"stream" : "open",
 		"dream.out.format" : "jsonp",
-		"dream.out.pre": "callback",
+		"dream.out.pre": cb(),
 		"limit": "1"
 	};
 	var objecturi = apiuri(usivity.openstream.url,openstreamparams);

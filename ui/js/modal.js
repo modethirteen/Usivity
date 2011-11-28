@@ -50,6 +50,11 @@ $(document).ready( function() {
 		{
 			// LOAD PAGES THAT DON'T NEED TO HAVE DATA FROM AN API
 			$.get(src, function(data) {		
+				var data = data.replace(new RegExp('\{in:(.*?)\}', "g"),"");
+				var data = data.replace(new RegExp('\{(.*?)\}', "g"),"");
+				var data = data.replace("{foreach","");	
+				var data = data.replace("foreach}","");	
+		
 				$(".modal .target").html(data);
 				showmodal(type);	
 			});

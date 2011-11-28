@@ -1,3 +1,4 @@
+{in:contact}
 <h1>New Contact</h1>
 <form class="contact_new">
 		<div class="contact highlight">
@@ -18,11 +19,18 @@
 					</select>
 				</div>
 				<div class="contact_name">
-					<input type="text" start="first name" class="contact_firstname"/>
-					<input type="text" start="last name" class="contact_lastname"/>
+					<input type="text" start="first name" class="contact_firstname" value="{firstname}"/>
+					<input type="text" start="last name" class="contact_lastname" value="{lastname}"/>
 				</div>
 					<input type="text" start="email address*" class="contact_email long"/>
 			</div>
+		</div>
+		
+		<h3>Demographics</h3>
+		<input type="text" start="age" class="contact_age contactdetail short"/>
+		<input type="text" start="gender" class="contact_gender contactdetail short"/>
+		<div class="break">
+			<input type="text" start="general location" class="contact_locationgeneral contactdetail long"/>
 		</div>
 		
 		<h3>Contact Details</h3>
@@ -55,9 +63,12 @@
 		<input type="text" start="twitter" class="contact_twitter contactdetail"/>
 		<input type="text" start="google" class="contact_google contactdetail"/>
 	
+		
+		<h3>Activity</h3>
+		Putt message activity here
+		
 		<div class="buttons">
 			<button type="submit" class="button apply">save</button>
 			<button type="submit" class="button cancel">cancel</button>
 		</div>
-		
 </form>

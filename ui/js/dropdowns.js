@@ -24,7 +24,7 @@ $(document).ready(function() {
 		
 		dropparams = {
 			"dream.out.format" : "jsonp",
-			"dream.out.pre": "callback"
+			"dream.out.pre": cb()
 		};
 		var objecturi = apiuri(usivity[id].url,dropparams); //TODO:  clear up the first param.  Not sure if this looks good
 		var drop 		= $(this);

@@ -31,7 +31,11 @@ $(document).ready(function() {
 			input.val("");
 			input.removeClass("start");
 			input.focus();	
-		}	
+		}
+		if (val != start && val != "")
+		{
+			input.removeClass("start");
+		}
 	});
 	
 	// CHANGE "START" FIELDS ON BLUR
@@ -51,9 +55,14 @@ $(document).ready(function() {
 function startset()
 {
 	$("[start]").each( function() {
-		var start = $(this).attr("start");
-		$(this).addClass("start");
-		$(this).val(start);
+		var start 	= $(this).attr("start");
+		var val		= $(this).val();
+		
+		if (val == "")
+		{
+			$(this).addClass("start");
+			$(this).val(start);
+		}
 	});	
 }
 

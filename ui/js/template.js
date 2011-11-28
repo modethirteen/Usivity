@@ -45,6 +45,7 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 		contentType: 'application/json;',
 		success: function(objectref) // TODO:  Change ObjectRef to a better name
 		{
+			
 			// Load the data from the object with XPATH
 			if (xpath.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
 			{

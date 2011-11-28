@@ -22,7 +22,7 @@ usivity.apiroot.url = "http://usivity.com/api/1";
 usivity.apiformat = {};
 usivity.apiformat.value = {
 	"dream.out.format" 	: "jsonp",
-	"dream.out.pre"	: "callback"  // TODO:  TAKE THIS OUT OF SETTINGS
+	"dream.out.pre"	: "callback"  // TODO:  TAKE THIS OUT OF SETTINGS  // TODO:  CHANGE TO CB()  (currently breaks)
 };
 
 // MESSAGES (BOTH OPENS AND MY)
