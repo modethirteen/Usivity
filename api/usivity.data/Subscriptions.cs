@@ -25,6 +25,12 @@ namespace Usivity.Data {
             SaveEntity(_subscriptions, subscription);
         }
 
+        public void UpdateSubscription(Subscription subscription) {
+            var query = Query.EQ("_id", subscription.Id);
+            var update = Update.Replace(subscription);
+            _subscriptions.Update(query, update);
+        }
+
         public void DeleteSubscription(Subscription subscription) {
             _subscriptions.Remove(Query.EQ("_id", subscription.Id));
         }

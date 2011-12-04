@@ -92,7 +92,7 @@ namespace Usivity.Core.Services {
                 response.Return(DreamMessage.Conflict("The requested user name has already been taken"));
             }
             var user = new User(name);
-            user.SetOrganizationRole(UsivityContext.Current.Organization.Id, User.UserRoles.Member);
+            user.SetOrganizationRole(UsivityContext.Current.Organization.Id, User.UserRole.Member);
             user.CurrentOrganizataion = UsivityContext.Current.Organization.Id;
             user.Password = _auth.GetSaltedPassword(password);
             _data.SaveUser(user);

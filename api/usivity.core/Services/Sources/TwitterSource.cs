@@ -26,6 +26,12 @@ namespace Usivity.Core.Services.Sources {
         private const string API_URI = "https://api.twitter.com/1";
 #endif
 
+        //--- Class Properties ---
+        private static readonly IDictionary<Subscription.SubscriptionLanguage, string> SubscriptionLanguagesMap = 
+            new Dictionary<Subscription.SubscriptionLanguage, string>() {
+                { Subscription.SubscriptionLanguage.English, "en" }
+        };
+
         //--- Properties ---
         public string Id { get; private set; }
         public IList<Subscription> Subscriptions { get; set; }
@@ -78,11 +84,11 @@ namespace Usivity.Core.Services.Sources {
             var messages = new List<Message>();
             foreach (var subscription in Subscriptions) {
                 if(!subscription.Active) {
-                    return messages;
+                    continue;
                 }
                 DreamMessage msg = Plug.New(subscription.Uri).Get();
                 if(!msg.IsSuccessful) {
-                    return messages;
+                    continue;
                 }
                 var response = new JDoc(msg.ToText()).ToDocument("response");
                 var nextPage = response["next_page"].Contents;
@@ -123,13 +129,19 @@ namespace Usivity.Core.Services.Sources {
             return connection;
         }
 
-        public Subscription GetNewSubscription(IEnumerable<string> constraints) {
-            var query = "?q=" + string.Join(",", constraints.ToArray());
-            var uri = new Uri(SEARCH_URI + query);
-            return new Subscription(Id) {
-                Uri = uri,
-                Constraints = constraints
+        public Subscription GetNewSubscription(IEnumerable<string> constraints, Subscription.SubscriptionLanguage language) {
+            var subscription = new Subscription(Id) {
+                Constraints = constraints,
             };
+            string lang;
+            SubscriptionLanguagesMap.TryGetValue(language, out lang);
+            var uri = new XUri(SEARCH_URI).With("q", string.Join(",", constraints.ToArray()));
+            if(!string.IsNullOrEmpty(lang)) {
+                uri = uri.With("lang", lang);
+                subscription.Language = language;
+            }
+            subscription.Uri = uri.ToUri();
+            return subscription;
         }
 
         public Message PostMessageReply(Message message, string reply, IConnection connection) {

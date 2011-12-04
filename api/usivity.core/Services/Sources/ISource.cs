@@ -14,7 +14,7 @@ namespace Usivity.Core.Services.Sources {
         IList<Message> GetMessages(Message.MessageStreams stream);
         XDoc GetConnectionXml(User user);
         IConnection GetNewConnection(XDoc connectionRequest);
-        Subscription GetNewSubscription(IEnumerable<string> constraints);
+        Subscription GetNewSubscription(IEnumerable<string> constraints, Subscription.SubscriptionLanguage lang);
         Message PostMessageReply(Message message, string reply, IConnection connection);
     }
 }
