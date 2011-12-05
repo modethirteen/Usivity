@@ -75,5 +75,33 @@ $(document).ready(function() {
 		
 		return false;
 	});
+	
+	
+	// View Message Thread
+	$(".message_view_thread").live("click", function() {
+	
+		var parent		= $(this).parents(".message");
+		var href	 	= $(this).attr("id");
+		var templateuri	= "/template/message_thread.htm";
+		
+		threadparams = {
+			"dream.out.format" : "jsonp",
+			"dream.out.pre" : cb(),
+			"include" : "children"
+		};
+		
+		var objecturi = apiuri(href,threadparams);
+		
+		$.get(templateuri, function(templatehtml) {
+			template(templatehtml, objecturi, null, function(html) {
+				var newele = $(document.createElement('div'));
+				newele.html(html);
+				newele.css("display","none");
+				parent.append(newele);
+				newele.show();
+			});
+		});	
+		return false;	
+	});
 });
 

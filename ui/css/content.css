@@ -125,14 +125,7 @@ textarea {
 .start {
 	opacity:.5;
 }
-/*HIGHLIGHT*/
-.highlight {
-	background:#efefef;
-	margin:0 0 5px 0;
-	border-radius:5px;
-	padding:5px;	
-	overflow:hidden;
-}
+
 /*TABLES*/
 table {
 	width:100%;
