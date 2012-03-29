@@ -1,74 +1,101 @@
-{in:contact}
-<h1>New Contact</h1>
-<form class="contact_new">
-		<div class="contact highlight">
-			<span class="contact_picture">
-				
-			</span>
-			<div class="contact_contents">
-				<div class="contact_numbers">
-					<input type="text" start="value" class="contact_value short"/>
-					
-					<select class="contact_liklihood short">
-						<option value="0">0%</option>
-						<option value="20">20%</option>
-						<option value="40">40%</option>
-						<option value="60">60%</option>
-						<option value="80">80%</option>
-						<option value="100">100%</option>
-					</select>
-				</div>
-				<div class="contact_name">
-					<input type="text" start="first name" class="contact_firstname" value="{firstname}"/>
-					<input type="text" start="last name" class="contact_lastname" value="{lastname}"/>
-				</div>
-					<input type="text" start="email address*" class="contact_email long"/>
+<h1>Contact Details</h1>
+
+<div class="panel">
+	<form class="contact_post" id="{@id}" >
+			<div class="buttons">
+				<button type="submit" class="button apply">save</button>
+				<button type="submit" class="button cancel">cancel</button>
 			</div>
-		</div>
-		
-		<h3>Demographics</h3>
-		<input type="text" start="age" class="contact_age contactdetail short"/>
-		<input type="text" start="gender" class="contact_gender contactdetail short"/>
-		<div class="break">
-			<input type="text" start="general location" class="contact_locationgeneral contactdetail long"/>
-		</div>
-		
-		<h3>Contact Details</h3>
-		<input type="text" start="phone number" class="contact_phonenumber contactdetail"/>
-		<input type="text" start="fax number" class="contact_faxnumber contactdetail"/>
-		<input type="text" start="address" class="contact_address contactdetail long"/>
-		<div class="break">
-			<input type="text" start="city" class="contact_city contactdetail"/>
-			<input type="text" start="state" class="contact_state contactdetail"/>
-			<input type="text" start="zip" class="contact_zip contactdetail short"/>
-		</div>
-		
-		<h3>Company Details</h3>
-		<input type="text" start="company name" class="company_name contactdetail"/>
-		<input type="text" start="fax number" class="company_faxnumber contactdetail"/>
-		<input type="text" start="address" class="company_address contactdetail long"/>
-		<div class="break">
-			<input type="text" start="city" class="company_city contactdetail"/>
-			<input type="text" start="state" class="company_state contactdetail"/>
-			<input type="text" start="zip" class="company_zip contactdetail short"/>
-		</div>
-		<input type="text" start="industry" class="company_zip contactdetail short"/>
-		<input type="text" start="revenue" class="company_zip contactdetail short"/>
-		<input type="text" start="competitors" class="company_zip contactdetail"/>
-		
-		
-		<h3>Social Networks</h3>
-		<input type="text" start="linkedin" class="contact_linkedin contactdetail"/>
-		<input type="text" start="facebook" class="contact_facebook contactdetail"/>
-		<input type="text" start="twitter" class="contact_twitter contactdetail"/>
-		<input type="text" start="google" class="contact_google contactdetail"/>
+			
+			
+			<h3>Personal</h3>
 	
+			<span class="contact_details">
+				<span class="contact_picture contact_picture_large"></span>
+				<input type="text" start="first name" class="contact_firstname" value="{contact_firstname}"/>
+				<input type="text" start="last name" class="contact_lastname" value="{contact_lastname}"/>
+			</span>
+			<input type="text" start="email address*" value="{contact_email}" class="contact_email long"/>
+			
+			
+			
+			<h3>Demographics</h3>
+			<input type="text" start="age" class="contact_age contactdetail short"/>
+			<input type="text" start="gender" class="contact_gender contactdetail short"/>
+			<div class="break">
+				<input type="text" start="general location" class="contact_locationgeneral contactdetail long"/>
+			</div>
+			
+			<h3>Contact Details</h3>
+			<input type="text" start="phone number" class="contact_phonenumber contactdetail"/>
+			<!--<input type="text" start="fax number" class="contact_faxnumber contactdetail"/>-->
+			<input type="text" start="address" class="contact_address contactdetail long"/>
+			<div class="break">
+				<input type="text" start="city" class="contact_city contactdetail"/>
+				<input type="text" start="state" class="contact_state contactdetail"/>
+				<input type="text" start="zip" class="contact_zip contactdetail short"/>
+			</div>
+			
+			<h3>Company Details</h3>
+			<input type="text" start="company name" class="company_name contactdetail"/>
+			<input type="text" start="company phone" class="company_phonenumber contactdetail"/>
+			<!--<input type="text" start="fax number" class="company_faxnumber contactdetail"/>-->
+			<input type="text" start="address" class="company_address contactdetail long"/>
+			<div class="break">
+				<input type="text" start="city" class="company_city contactdetail"/>
+				<input type="text" start="state" class="company_state contactdetail"/>
+				<input type="text" start="zip" class="company_zip contactdetail short"/>
+			</div>
+			<input type="text" start="industry" class="company_zip contactdetail long"/>
+			<input type="text" start="revenue" class="company_zip contactdetail"/>
+			<input type="text" start="competitors" class="company_zip contactdetail long"/>
+			
+			
+			<h3>Social Networks</h3>
+			<input type="text" start="linkedin" class="contact_socialnetwork contact_linkedin contactdetail long"/>
+			<input type="text" start="facebook" class="contact_socialnetwork contact_facebook contactdetail long"/>
+			<input type="text" start="twitter" class="contact_socialnetwork contact_twitter contactdetail long"/>
+			<input type="text" start="google" class="contact_socialnetwork contact_google contactdetail long"/>
+	</form>
+</div>
+<div class="panel_main">
 		
-		<h3>Activity</h3>
-		Putt message activity here
-		
+	<form class="message_send" id="{@id}" action="{@href}">	
+	<h3>Post a Message</h3>
+		<textarea name="message" class="message_data" start="enter your message"></textarea>
 		<div class="buttons">
-			<button type="submit" class="button apply">save</button>
+			<button type="submit" class="button apply">send</button>
 			<button type="submit" class="button cancel">cancel</button>
 		</div>
-</form>
+	</form>
+
+
+	<h3>Message Thread</h3>
+	<div class="message_threads" empty="There are no messages in the queue.">
+{foreach
+{in:message}
+		<div class="message_thread">
+			<span class="contact_picture contact_picture_large"> 
+				<img src="{author_uri.avatar}" />
+			</span>
+			<div class="message_details">
+				<span class="contact_name">
+					<a target="_new" class="profile" href="http://twitter.com/author_name">{author_name}</a>
+				</span>
+				<div class="message_text">
+					{body}
+				</div>
+				<span class="message_meta">
+					<span class="message_time">
+						{timestamp}
+					</span>
+					<span class="message_source">
+						{source}
+					</span>
+				</span>
+			</div>
+		</div>
+foreach}
+	</div>
+
+</div>

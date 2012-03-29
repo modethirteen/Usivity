@@ -5,7 +5,7 @@ body {
 
 /*Links*/
 a {
-	color:#179fcc;
+	color:#1F8DD6;
 }
 a:hover {
 	color:#dc8121;
@@ -21,6 +21,9 @@ a:hover {
 	overflow:hidden;
 	clear:left;
 }
+.clear {
+	clear:both;	
+}
 /*Headers*/
 h2, h3, h4, h5, h6 {
 	color:#666;
@@ -32,19 +35,12 @@ h2, h3, h4, h5, h6 {
 h2 {
 	font-size:1.2em;
 	border-bottom:1px dotted #dcdcdc;
+	text-shadow: #fff 1px 1px;
 }
 h3 {
 	padding-top:15px;	
 }
-/*Title*/
-.title a {
-	float:right;
-	font-size:.75em;
-	display:block;
-	text-decoration:none;
-	padding:7px 0 0 0;
-	margin:0 0 0 10px;
-}
+
 /*FORMS*/
 form {
 		
@@ -61,11 +57,11 @@ select,
 input {/*TODO:  GET RID OF THIS, USE START INSTEAD*/
 	padding:3px;
 	min-width:150px;
-	border-radius:3px;
 	color:#666;
 	border:1px solid #ccc;
 	float:left;
 	margin:0 10px 5px 0;
+	-webkit-box-shadow: 1px 1px 1px #999;
 }
 select {
 	padding:2px;	
@@ -74,7 +70,7 @@ textarea {
 	padding:0;	
 }
 input.long {
-	min-width:250px;	
+	min-width:230px;	
 }
 select.short,
 input.short {
@@ -82,19 +78,20 @@ input.short {
 	width:75px;	
 }
 .twrap {
-	padding:3px;
+	padding:5px;
 	min-width:200px;
-	border-radius:3px;
 	border:1px solid #ccc;	
 	overflow:hidden;
+	background:#fff;
 }
 textarea {
 	padding:0;
 	border:0;
 	margin:0;
-	min-height:100px;
+	min-height:70px;
 	width:100%;
 	color:#666;
+	font-family:arial;
 }
 .stitle {
 	display:block;
@@ -124,29 +121,49 @@ textarea {
 }
 .start {
 	opacity:.5;
+	-webkit-box-shadow: none;
 }
 
 /*TABLES*/
 table {
 	width:100%;
 	margin-top:20px;
+	border-collapse:separate;
 }
+tr.intoff {
+	background:#fbfafa;	
+}
+
 th {
-	font-size:.7em;
-	color:#999;
-	border-bottom:2px solid #ccc;
-	background:#fff;
+	font-size:1em;
+	border:0;
+	padding:5px;
+	color:#000;
+	font-family: 'Myriad Pro','Helvetica';
+	text-shadow: #fff 1px 1px;
+	vertical-align:top;
+	background:url(/img/th_bg.gif) repeat-x center 23px;
 }
 td {
 	border-bottom:1px dotted #ccc;
-	padding:2px 0;
+	padding:5px;
 	font-size:.8em;
 }
 td.even {
 	background:#ffffda;	
 }
-tr:hover {
-	background:#dff5f5;
+.time_row td {
+	font-size:.8em;
+	border-bottom:2px dotted #ccc;
+	font-family: 'Myriad Pro','Helvetica';
+	text-shadow: #fff 1px 1px;
+	padding-top:20px;	
+}
+tbody tr:hover {
+	background:#fff;
+}
+tbody tr.time_row:hover {
+	background:none;	
 }
 /*BUTTONS*/
 .buttons {

@@ -10,6 +10,7 @@ $.getScript("/js/search.js");
 $.getScript("/js/loaddata.js");
 $.getScript("/js/stream.js");
 $.getScript("/js/response.js");
+$.getScript("/js/timeago.js");
 
 // API Libraries
 $.getScript("/js/connections.js");

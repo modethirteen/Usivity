@@ -8,39 +8,59 @@
 	display:none;
 }
 .modal {
-	width:600px;
+	width:800px;
 	background:#fff;
-	max-height:620px;
+	max-height:580px;
 	position:absolute;
 	padding:5px;
-	border-radius:5px;
 	display:none;
 	box-shadow: 3px 3px 3px #666;
+	border:1px solid #333;
+	background: -moz-linear-gradient(top, #f4f4f4 0%, #ffffff 50%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(50%,#ffffff)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* IE10+ */
+	background: linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* W3C */
 }
 .modal .target {
 	overflow-x:hidden;
 	overflow-y:auto;
-	max-height:580px;	
+	max-height:540px;	
 }
 /* DIALOG TITLE*/
 .modal .title {
-	background: -moz-linear-gradient(top, #666666 0%, #000000 62%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#666666), color-stop(62%,#000000)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #666666 0%,#000000 62%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #666666 0%,#000000 62%); /* Opera 11.10+ */
+	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* IE10+ */
+	background: linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* W3C */
 	padding:3px;
-	border-radius:3px;
 	margin-bottom:3px;
+	border:1px solid #ccc;
 }
 .modal .title h2 {
 	border:0;
 	margin:0;
 	padding:0;
 	font-size:1em;
-	color: #fff;
-	font-family: 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
-	font-weight: bold;
-	text-shadow: #333 1px 1px;
+	color: #000;
+	font-family: 'Myriad Pro','Helvetica';
+	text-shadow: #fff 1px 1px;
+}
+/* DIALOG PANEL*/
+.modal .panel {
+	width:250px;
+	float:left;
+	overflow:hidden;
+}
+.modal .panel_main {
+	float:left;	
+	width:495px;
+	padding:0 0 0 20px;
+	border-left:1px dotted #ccc;
+	overflow:hidden;
 }
 /* DIALOG MODAL - USED FOR YES/NO FUNCTIONS*/
 .modalsmall {
@@ -77,4 +97,3 @@
 .modal .close:hover {
 		
 }
-

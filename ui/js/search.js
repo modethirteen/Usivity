@@ -17,15 +17,17 @@ $(document).ready(function() {
 	/*SEARCH*/
 	$(".search input").keyup( function() {
 		var q = $(this).val();
-		$(".highlight").each(function(){
+		
+		// Get Rid of Existing Highlighted Search Terms
+		$(".search_highlight").each(function(){
 			$(this).replaceWith( $(this).text() ); 
 		});
+		
+		// Loop through the messages and look for matching search terms
 		$(".streams .message_text").each( function() {
 			highlight(q,$(this));
-		});	
-		$(".contacts .contact_name").each( function() {
-			highlight(q,$(this));
 		});
+	
 	});
 });
 
@@ -34,15 +36,16 @@ function highlight(q,ele,parent)
 	
 	if (q == "") 
 	{
-		$(".parent").show();
+		$(".target tbody tr").show();
 	}
 	else
 	{
-		var content = ele.html().replace(new RegExp( '(' + q + ')', 'gi'), '<span class="highlight">$1</span>');
+		
+		
+		var content = ele.html().replace(new RegExp( '(' + q + ')', 'gi'), '<span class="search_highlight">$1</span>');
 		ele.html(content);
 		ele.show();
-		$(".streams .parent").hide();
-		$(".contacts .parent").hide();
-		$(".parent .highlight").parents(".parent").show();	
+		$(".target tbody tr").hide();
+		$(".search_highlight").parents("tbody tr").show();	
 	}
 }

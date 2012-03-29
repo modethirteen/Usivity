@@ -42,6 +42,7 @@ $(document).ready( function() {
 			$.get(src, function(templatehtml) {		
 				template(templatehtml, objecturi, "null",function(html) {
 					$(".modal .target").html(html);
+					fill_empty();
 					showmodal(type);	
 				});
 			});

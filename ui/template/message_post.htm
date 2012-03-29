@@ -1,29 +1,31 @@
 {in:message}
 <h1>Send Message</h1>
-<div class="message highlight">
-	<span class="contact_picture minimize">
-		<img src="{author_uri.avatar}">
-	</span>
-	<div class="message_contents">
-		<span class="contact_name">
-			<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
-		</span>
-		<div class="message_text">
-			{body}
-		</div>
-		<span class="message_meta">
-			<span class="message_time">
-				{timestamp}
+<table class="message highlight">
+	<tr>
+		<td class="contact_picture contact_picture_large">
+			<img src="{author_uri.avatar}">
+		</td>
+		<td class="message_contents">
+			<span class="contact_name">
+				<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
 			</span>
-			<span class="message_source">
-				{source}
+			<div class="message_text">
+				{body}
+			</div>
+			<span class="message_meta">
+				<span class="message_time">
+					{timestamp}
+				</span>
+				<span class="message_source">
+					{source}
+				</span>
 			</span>
-		</span>
-	</div>
-</div>
+		</td>
+	</tr>
+</table>
 
 
-<form class="message_send" id="{@id}" action="{@href}">	
+<form class="message_send" >	
 	<textarea name="message" class="message_data" start="enter your message"></textarea>
 	<div class="buttons">
 		<button type="submit" class="button apply">send</button>
