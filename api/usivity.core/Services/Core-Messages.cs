@@ -50,7 +50,7 @@ namespace Usivity.Core.Services {
                 response.Return(DreamMessage.NotFound("The requested message could not be located"));
                 yield break;
             }
-            var doc = GetMessageXml(message);
+            var doc = GetMessageXml(message).Add(GetMessageChildrenXml(message));
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
