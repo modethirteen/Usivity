@@ -9,7 +9,7 @@
 $(document).ready(function() {
 	
 	// DELETE SUBSCRIPTION
-	$(".subscriptionsform .delete").live("click", function() {
+	$(".subscriptions .delete").live("click", function() {
 		var link	= $(this);
 		var href	= link.attr("href");
 		
@@ -35,7 +35,7 @@ $(document).ready(function() {
 	
 	
 	/*POST SUBSCRIPTIONS*/
-	$(".subscriptionsform form").live("submit", function() {
+	$(".subscriptions form").live("submit", function() {
 		var form 		= $(this);
 		var uri 		= form.attr("action");
 		var input		= form.find(".constraints");
@@ -72,7 +72,7 @@ $(document).ready(function() {
 				input.focus("");
 				var newele = $(document.createElement('li'));
 				newele.html('<span>' + results.constraints + '</span><a href="' + results['@href'] + '" class="delete">delete</a>');
-				$(".subscriptionsform ul").append(newele);
+				$(".subscriptions ul").append(newele);
 				
 			},
 			error:function (xhr, ajaxOptions, thrownError){

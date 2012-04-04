@@ -17,7 +17,7 @@ usivity.data = {};
 
 // API SETTINGS
 usivity.apiroot = {};
-usivity.apiroot.url = "http://usivity.com/api/1";
+usivity.apiroot.url = "/api/1";
 
 usivity.apiformat = {};
 usivity.apiformat.value = {

@@ -8,15 +8,19 @@
 */
 
 $(document).ready(function() {
-
-	/*LOAD OPEN STREAM*/	
+	
+	// LOAD OPEN STREAM
+	// TODO: ONLY TRY TO LOAD THE STREAMS IF THE USER IS AUTHENTICATED
+	
  	$(window).load(function() {	
 	 	// 0 second delay for loading my stream
 	 	loadopenstream();
 	 	setInterval("newopenstreammessage()",usivity.messageinterval.value);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	});
 
- 	/*LOAD MY CONTACTS*/	
+ 	// LOAD MY CONTACTS	
+ 	// TODO: ONLY TRY TO LOAD THE STREAMS IF THE USER IS AUTHENTICATED
+ 	
  	$(window).load(function() {	
 	 	// 1 second delay for loading my contacts
 	 	setTimeout("loadusercontacts();",1000);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
@@ -27,7 +31,7 @@ $(document).ready(function() {
 // LOAD THE OPEN STREAM
 function loadopenstream()
 {
-	var templateuri = "/template/message_open.htm"; // TODO:  PUT IN SETTINGS.jS
+	var templateuri = "/template/message.htm"; // TODO:  PUT IN SETTINGS.jS
 	
 	// Calculate $timeago = 120 minutes ago
 	var now = new Date();

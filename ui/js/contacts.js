@@ -8,13 +8,16 @@
 $(document).ready( function() {
 	
 	// DELETE A CONTACT
-	$(".contact_delete").live("submit", function() {
-		var href 	= $(this).attr("id");
-		var id		= $(this).find(".id").val();
+	$(".contact_delete").live("click", function() {
+		var href 	= $(this).attr("href");
+		var id		= $(this).attr("id");
 		
 		deleteparams = {
 			"dream.in.verb" : "DELETE"
 		};
+		
+		console.log(href);
+		console.log(id);
 		
 		var deleteuri = apiuri(href,deleteparams);
 		
@@ -23,7 +26,7 @@ $(document).ready( function() {
 			crossDomain:true, 
 			url: deleteuri,
 			success: function(results)
-			{		
+			{	
 				$("#" + id).slideUp();
 				closeModal();	
 			}
@@ -33,7 +36,7 @@ $(document).ready( function() {
 	});
 	
 	
-	// MANAGE CONTACTS
+	// MANAGE CONTACTS  
 	$(".contact_post").live("submit", function() {
 		
 		var form	= $(this);
@@ -78,6 +81,7 @@ $(document).ready( function() {
 				{
 					console.log("success");
 					loadusercontacts();
+					closeModal();	
 				},
 				error: function(results) 
 				{
@@ -104,19 +108,6 @@ $(document).ready( function() {
 			var api = 'https://api.fullcontact.com/v2/person.json?email=' + email + '&apiKey=e7ff635bfe5e9987&callback=callback';
 			resetstart(form);
 			$(this).val(email);
-			full_contact($(this),api);
-		}
-	});
-	
-	// LOAD DATA FROM LIVECONTACT WHEN TWITTER IS ENTERED
-	$(".contact_twitter").live("blur", function() {
-		var twitter = $(this).val();
-		var form	= $(this).parents("form");
-		if (twitter)
-		{
-			var api = 'https://api.fullcontact.com/v2/person.json?twitter=' + twitter + '&apiKey=e7ff635bfe5e9987&callback=callback';
-			resetstart(form);
-			$(this).val(twitter);
 			full_contact($(this),api);
 		}
 	});

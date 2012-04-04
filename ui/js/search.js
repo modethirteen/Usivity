@@ -23,29 +23,30 @@ $(document).ready(function() {
 			$(this).replaceWith( $(this).text() ); 
 		});
 		
-		// Loop through the messages and look for matching search terms
-		$(".streams .message_text").each( function() {
-			highlight(q,$(this));
-		});
+		if (q == "") 
+		{
+			$(".target tbody tr").show();
+		}
+		else if (q.length >= 3)
+		{		
+			// Loop through the messages and look for matching search terms
+			$(".streams .message_text").each( function() {
+				highlight(q,$(this));
+			});
+			
+			$(".contacts .contact_name").each( function() {
+				highlight(q,$(this));
+			});
+		}
 	
 	});
 });
 
 function highlight(q,ele,parent) 
 {
-	
-	if (q == "") 
-	{
-		$(".target tbody tr").show();
-	}
-	else
-	{
-		
-		
-		var content = ele.html().replace(new RegExp( '(' + q + ')', 'gi'), '<span class="search_highlight">$1</span>');
-		ele.html(content);
-		ele.show();
-		$(".target tbody tr").hide();
-		$(".search_highlight").parents("tbody tr").show();	
-	}
+	var content = ele.html().replace(new RegExp( '(' + q + ')', 'gi'), '<span class="search_highlight">$1</span>');
+	ele.html(content);
+	ele.show();
+	$(".target tbody tr").hide();
+	$(".search_highlight").parents("tbody tr").show();	
 }

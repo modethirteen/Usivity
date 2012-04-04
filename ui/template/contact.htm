@@ -3,16 +3,15 @@
 {in:contacts_contact}
 <tr id="{@id}" class="contact highlight">
 	<td class="contact_picture">
-		<img src="" />
+		<span>
+			<img src="{uri.avatar}" />
+		</span>
 	</td>
 	<td class="contact_name">
 		{firstname} {lastname}
 	</td>
-	<td class="contact_delete">
-		<a href="/template/contact_delete.htm" id="{@href}" class="dialog contact_delete">delete</a>
-	</td>
 	<td class="contact_edit">
-		<a href="/template/contact_post.htm" id="{@href}" class="popup contact_edit">edit</a>
+		<a href="/template/contact_edit_post.htm" id="{@href}" class="popup contact_edit">message</a>
 	</td>
 </tr>
 foreach}

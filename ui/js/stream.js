@@ -7,7 +7,7 @@
 */
 function newopenstreammessage()
 {
-	var templateuri = "/template/message_open.htm"; // TODO:  PUT IN SETTINGS.jS
+	var templateuri = "/template/message.htm"; // TODO:  PUT IN SETTINGS.jS
 	openstreamparams = {
 		"stream" : "open",
 		"dream.out.format" : "jsonp",

@@ -102,10 +102,6 @@ body {
 	width:20%;	
 }
 /*Streams*/
-.mystream .target { /*TODO: Replace "My" with "User"*/
-	display:none;	
-}
-
 .openstream .target {
 	display:none;
 }
@@ -187,9 +183,17 @@ th:hover .filter {
 .contact_picture {
 	cursor:pointer;
 }
+.contact_picture span {
+	display:block;
+	height:26px;
+	width:26px;
+	overflow:hidden;
+	border: 2px solid #fff;
+	background-image:url(/img/usivity_logo_26.gif);
+	box-shadow: 2px 2px 2px #ccc;
+}
 .contact_picture img {
-	width:24px;
-	border:1px solid #333;
+	width:26px;
 }
 .contact_picture_large {
 	overflow:hidden;
@@ -215,6 +219,9 @@ th:hover .filter {
 	float:right;
 	width:85px;	
 }
+.contact_post {
+	padding-bottom:200px;	
+}
 .contact_post .buttons {
 	position:absolute;
 	margin-top:485px;
@@ -225,7 +232,7 @@ th:hover .filter {
 	height:25px;
 	z-index:5;
 }
-/*Response*/
+/*Response - Error, Success*/
 .response {
 	display:none;
 	padding:5px;
@@ -243,7 +250,7 @@ th:hover .filter {
 	background-color:#ccffcc;
 	border:2px solid #66cc66;
 }
-/*Sources*/
+/*MESSAGES - Sources Column*/
 .source_badge {
 	display:block;
 	height:16px;
@@ -276,7 +283,7 @@ th:hover .filter {
 	text-align:center;
 	margin:0 auto;
 }
-/*Tools*/
+/*Tools Menu - Search, Control Panel, etcc*/
 .tools {
 	float:right;
 	font-size:.7em;	
@@ -284,7 +291,7 @@ th:hover .filter {
 	line-height:.7em;
 	padding:10px 0 0 10px;
 }
-/*Sentiment*/
+/*Messages - Sentiment Column*/
 .sentiment_badge {
 	display:block;
 	height:16px;
@@ -301,7 +308,7 @@ th:hover .filter {
 .sentiment_negative {
 	background-image:url(/img/icon_sentiment_negative.png);	
 }
-/*Dropdown*/
+/*Messages - Filter Dropdown*/
 .filter_dropdown {
 	background:#fff;
 	position:absolute;
@@ -346,7 +353,7 @@ th:hover .filter {
 	margin:0 5px 0 0;
 }
 
-/* MODAL CONTACT DETAILS */
+/* MODAL - Contact Details */
 
 .modal .contact_socialnetwork {
 	background-repeat:no-repeat;
@@ -367,11 +374,60 @@ th:hover .filter {
 	background-image:url(/img/icon_google.png);	
 }
 
-/* EMPTY */
+/* EMPTY */  /*TODO:  GET RID OF .EMPTY, RENAME WITH .NOTICE*/
+.notice, 
 .empty {
-	padding:30px 50px;
+	padding:20px 40px;
 	display:block;
-	color:#999;
+	color:#666;
 	text-shadow: #fff 1px 1px;
-	background:url(/img/icon_alert.png) no-repeat left center ;
+	background:url(/img/icon_alert.png) no-repeat left center;
+	line-height:1.3;
+}
+
+/* CONTROL PANEL */
+.control_panel a {
+	background-position:top center;
+	background-repeat:no-repeat;
+	padding:60px 0 0 0;
+	display:block;
+	text-align:center;	
+	float:left;
+	width:25%;
+	height:30px;	
+}
+.control_panel .cp_subscriptions {
+	background-image:url(/img/icon_subscriptions.png);
+}
+.control_panel .cp_users {
+	background-image:url(/img/icon_users.png);
+}
+.control_panel .cp_sources {
+	background-image:url(/img/icon_sources.png);
+}
+.control_panel .cp_billing {
+	background-image:url(/img/icon_billing.png);
+}
+
+/* CONTROL PANEL - SOURCES*/
+.sources a {
+	background-position:top center;
+	background-repeat:no-repeat;
+	padding:60px 0 0 0;
+	display:block;
+	text-align:center;	
+	float:left;
+	width:25%;
+	height:30px;
+}
+.sources .sources_twitter {
+	background-image:url(/img/icon_twitter_large.png);
+}
+/* HELP */
+.help {
+	padding:10px 0 20px 0;
+	display:block;
+	color:#666;
+	font-size:.9em;
+	text-shadow: #fff 1px 1px;
 }

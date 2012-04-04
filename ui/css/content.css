@@ -6,9 +6,11 @@ body {
 /*Links*/
 a {
 	color:#1F8DD6;
+	text-decoration:none;
 }
 a:hover {
 	color:#dc8121;
+	text-decoration:underline;
 }
 /*Flow*/
 .first {
@@ -208,6 +210,7 @@ button,
 button:hover,
 .button:hover {
 	color:#000;	
+	text-decoration:none;
 }
 
 /*Loading*/

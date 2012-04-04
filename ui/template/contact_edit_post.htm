@@ -1,9 +1,10 @@
-<h1>Reply</h1>
-{in:message}
+<h1>Contact Details</h1>
+
 <div class="panel">
 	<form class="contact_post" id="{@id}" >
 			<div class="buttons">
 				<button type="submit" class="button apply">save</button>
+				<a href="{contact_@href}" id="{contact_@id}" class="button contact_delete">delete</a>
 				<button type="submit" class="button cancel">cancel</button>
 			</div>
 			
@@ -12,19 +13,20 @@
 	
 			<span class="contact_details">
 				<span class="contact_picture contact_picture_large">
+					<img src="{contact_uri.avatar}"/>
 				</span>
-				<input type="text" start="first name" class="contact_firstname"/>
-				<input type="text" start="last name" class="contact_lastname"/>
+				<input type="text" start="first name" class="contact_firstname" value="{contact_firstname}"/>
+				<input type="text" start="last name" class="contact_lastname" value="{contact_lastname}"/>
 			</span>
-			<input type="text" start="email address*" class="contact_email long"/>
+			<input type="text" start="email address*" value="{contact_email}" class="contact_email long"/>
 			
 			
 			
 			<h3>Demographics</h3>
-			<input type="text" start="age" class="contact_age contactdetail short"/>
-			<input type="text" start="gender" class="contact_gender contactdetail short"/>
+			<input type="text" start="age" value="{contact_age}" class="contact_age contactdetail short"/>
+			<input type="text" start="gender" value="{contact_gender}" class="contact_gender contactdetail short"/>
 			<div class="break">
-				<input type="text" start="general location" class="contact_locationgeneral contactdetail long"/>
+				<input type="text" start="general location" value="{contact_locationgeneral}" class="contact_locationgeneral contactdetail long"/>
 			</div>
 			
 			<h3>Contact Details</h3>
@@ -73,6 +75,8 @@
 
 	<h3>Message Thread</h3>
 	<div class="message_threads" empty="There are no messages in the queue.">
+{foreach
+{in:message}
 		<div class="message_thread">
 			<span class="contact_picture contact_picture_large"> 
 				<img src="{author_uri.avatar}" />
@@ -94,6 +98,7 @@
 				</span>
 			</div>
 		</div>
+foreach}
 	</div>
 
 </div>

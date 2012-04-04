@@ -99,8 +99,12 @@ function resetstart(form)
 {
 	$("[start]").each( function() {
 		var start 	= $(this).attr("start");
+		var val		= $(this).val();
 		
-		$(this).addClass("start");
-		$(this).val(start);
+		if (val == start)
+		{
+			$(this).addClass("start");
+			$(this).val(start);
+		}
 	});
 }
