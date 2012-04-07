@@ -6,13 +6,12 @@ using MindTouch;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Xml;
-using Usivity.Core.Libraries;
-using Usivity.Core.Libraries.Json;
 using Usivity.Data;
+using Usivity.Data.Connections;
 using Usivity.Data.Entities;
+using Usivity.Util.Json;
 
 namespace Usivity.Core.Services {
-    using Sources;
     using Yield = IEnumerator<IYield>;
 
     [DreamService("Usivity Core API Service", "",
@@ -26,22 +25,22 @@ namespace Usivity.Core.Services {
         //--- Class Fields ---
         private static readonly ILog _log = LogUtils.CreateLog();
 
-        //--- Class Properties ---
-        public static Dictionary<string, OAuthRequestToken> ActiveOAuthRequestTokens { get; set; }
-
         //--- Fields ---
         private UsivityAuth _auth;
         private User _anonymous;
         private double _refresh;
         private UsivityDataSession _data;
-        private IList<ISource> _sources;
         private int _authExpiration;
+
+        private TwitterConnectionFactory _twitterConnectionFactory;
+        private TwitterPublicConnection _publicTwitterConnection;
 
         private XUri _usersUri;
         private XUri _messagesUri;
-        private XUri _sourcesUri;
+        private XUri _connectionsUri;
         private XUri _contactsUri;
         private XUri _organizationsUri;
+        private XUri _subscriptionsUri;
 
         //--- Properties ---
         public string MasterApiKey { get; private set; }
@@ -49,9 +48,7 @@ namespace Usivity.Core.Services {
         //--- Methods ---
         public override DreamFeatureStage[] Prologues {
             get {
-                return new[] { 
-                    new DreamFeatureStage("set-context", PrologueContext, DreamAccess.Public)
-                };
+                return new[] { new DreamFeatureStage("set-context", PrologueContext, DreamAccess.Public) };
             }
         }
 
@@ -66,8 +63,7 @@ namespace Usivity.Core.Services {
 
             _log.Debug("Initializing current data session");
             var dataSessionConfig = new XDoc("config")
-                .Elem("host", config["mongodb/host"].AsText)
-                .Elem("database", config["mongodb/database"].AsText);
+                .Elem("connection", config["mongodb/connection"].AsText);
             UsivityDataSession.Initialize(dataSessionConfig);
             _data = UsivityDataSession.CurrentSession;
 
@@ -79,19 +75,8 @@ namespace Usivity.Core.Services {
             _auth = UsivityAuth.Factory(securitySalt, securityCookieUri, _data);
             _authExpiration = config["security/expiration"].AsInt ?? 561600;
 
-            // setup sources
-            _sources = new List<ISource> {
-                new TwitterSource(config["sources/twitter"])
-            };
-            foreach(var source in _sources) {
-                var subscriptions = _data.GetSubscriptions(source.Id);
-                foreach(var subscription in subscriptions) {
-                    source.Subscriptions.Add(subscription);
-                }               
-            }
-
             // setup anonymous user
-            _anonymous = _data.GetAnonymousUser();
+            _anonymous = _data.Users.GetAnonymous();
             if(_anonymous == null) {
                 throw new DreamInternalErrorException("Anonymous user has not been configured");
             }
@@ -100,21 +85,23 @@ namespace Usivity.Core.Services {
             var apiUri = Self.Uri.AsPublicUri();
             _usersUri = apiUri.At("users");
             _messagesUri = apiUri.At("messages");
-            _sourcesUri = apiUri.At("sources");
+            _connectionsUri = apiUri.At("connections");
             _contactsUri = apiUri.At("contacts");
             _organizationsUri = apiUri.At("organizations");
+            _subscriptionsUri = apiUri.At("subscriptions");
 
-            ActiveOAuthRequestTokens = new Dictionary<string, OAuthRequestToken>();
+            _twitterConnectionFactory = new TwitterConnectionFactory(config["sources/twitter"]);
+            _publicTwitterConnection = TwitterPublicConnection.GetInstance();
+
             _refresh = config["refresh"].AsDouble ?? MINUTES_TO_REFRESH;
             TaskTimerFactory.Current.New(TimeSpan.Zero, QueueMessages, null, TaskEnv.None);
-            TaskTimerFactory.Current.New(TimeSpan.Zero, CleanUpOAuthRequestTokens, null, TaskEnv.None);
             result.Return();
         }
 
         protected override DreamAccess DetermineAccess(DreamContext context, string key) {
             var usivityContext = UsivityContext.CurrentOrNull;
             if(usivityContext != null) {
-                var role = usivityContext.User.GetOrganizationRole(usivityContext.Organization.Id);
+                var role = usivityContext.User.GetOrganizationRole(usivityContext.Organization);
                 switch(role) {
                     case User.UserRole.Owner:
                     case User.UserRole.Admin:
@@ -130,7 +117,7 @@ namespace Usivity.Core.Services {
             var authToken = _auth.GetAuthToken(request);
             var user = _auth.GetAuthenticatedUser(authToken) ?? _anonymous;
             var organization = user != null
-                ? _data.GetOrganization(user.CurrentOrganizataion)
+                ? _data.Organizations.Get(user.CurrentOrganization)
                 : Organization.NewMockOrganization();
 
             var usivityContext = new UsivityContext {
@@ -163,45 +150,39 @@ namespace Usivity.Core.Services {
         }
     
         private void QueueMessages(TaskTimer tt) {
-            _data.RemoveExpiredOpenStreamMessages();
-
-            // get messages from sources
-            var messages = new List<Message>();
-            foreach(var source in _sources) {
-                messages.AddRange(source.GetMessages(Message.MessageStreams.Open));
-                foreach(var subscription in source.Subscriptions) {
-                    _data.UpdateSubscription(subscription);
-                }
-            }
-
-            // queue messages
-            var span = DateTime.UtcNow.Subtract(TimeSpan.FromDays(4));
-            var organizations = _data.GetOrganizations();
-            foreach (var message in messages.Where(message => message.Timestamp >= span)) {
-                foreach(var organization in organizations) {
-
-                    // messages from existing contacts go into user stream
-                    if(_data.GetContact(message) != null) {
-                        message.MoveToStream(Message.MessageStreams.User);
-                    }
-                    _data.QueueMessage(organization, message);
-                }
+            foreach(var organization in _data.Organizations.Get()) {
+                _data.GetMessageStream(organization).RemoveExpired();
+                Coroutine.Invoke(QueueOrganizationMessages, organization, new Result());    
             }
             tt.Change(TimeSpan.FromMinutes(1), TaskEnv.None);
         }
 
-        private void CleanUpOAuthRequestTokens(TaskTimer tt) {
-            var expiredTokenKeys = new List<string>();
-            foreach(var requestToken in ActiveOAuthRequestTokens) {
-                TimeSpan ts = DateTime.UtcNow - requestToken.Value.Created;
-                if(ts.Hours >= 1) {
-                    expiredTokenKeys.Add(requestToken.Key);
+        private Yield QueueOrganizationMessages(Organization organization, Result result) {
+            var messages = new List<Message>();
+            foreach(var subscription in _data.Subscriptions.Get(organization)) {
+
+                // if any organization twitter connections exist get public messages
+                if(organization.GetConnectionsBySource(SourceType.Twitter).Count() <= 0) {
+                    if(subscription.GetSourceUri(SourceType.Twitter) == null) {
+                        _publicTwitterConnection.SetNewSubscriptionUri(subscription);
+                    }
+                    messages.AddRange(_publicTwitterConnection.GetMessages(subscription));
+                    _data.Subscriptions.Save(subscription);
                 }
             }
-            foreach(var key in expiredTokenKeys) {
-                ActiveOAuthRequestTokens.Remove(key);
+            
+            var span = DateTime.UtcNow.Subtract(TimeSpan.FromDays(4));
+            foreach(var message in messages.Where(message => message.Timestamp >= span)) {
+                _data.GetMessageStream(organization).Queue(message);
             }
-            tt.Change(TimeSpan.FromHours(1), TaskEnv.None);
+            result.Return();
+            yield break;
+        }
+
+        private void SetMessageReceipient(Message message) {
+            
+
+            //User GetMessageReceipient(Message message);
         }
     }
 }

@@ -67,7 +67,7 @@ namespace Usivity.Core.Services {
             if(!m.Success) {
                 return null;
             }
-            var user = _data.GetUser(m.Groups["id"].Value);
+            var user = _data.Users.Get(m.Groups["id"].Value);
             if(user != null) {
                 var validationToken = GenerateAuthTokenHelper(user, m.Groups["ts"].Value);
                 if(authToken != validationToken) {

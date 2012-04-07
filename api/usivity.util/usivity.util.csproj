@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{407F79A0-C9DD-4DF8-822C-4E6AB58171F9}</ProjectGuid>
+    <ProjectGuid>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Usivity.Core</RootNamespace>
-    <AssemblyName>usivity.core</AssemblyName>
+    <RootNamespace>Usivity.Util</RootNamespace>
+    <AssemblyName>usivity.util</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,51 +25,36 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="log4net">
       <HintPath>..\redist\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="mindtouch.dream, Version=2.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="mindtouch.dream">
       <HintPath>..\redist\mindtouch.dream.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json.Net20">
+      <HintPath>..\redist\Newtonsoft.Json.Net20.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Services\Core-Subscriptions.cs" />
-    <Compile Include="Services\Core-Organizations.cs" />
-    <Compile Include="Services\Core-Users.cs" />
-    <Compile Include="Services\Core-Contacts.cs" />
-    <Compile Include="Services\Core-Messages.cs" />
-    <Compile Include="Services\Core-Connections.cs" />
-    <Compile Include="Services\CoreService.cs" />
+    <Compile Include="Aws\AwsSignature.cs" />
+    <Compile Include="Aws\Sqs\SqsClient.cs" />
+    <Compile Include="Aws\Sqs\SqsClientConfig.cs" />
+    <Compile Include="Aws\Sqs\SqsMessage.cs" />
+    <Compile Include="Extension.cs" />
+    <Compile Include="ImmutableDictionary.cs" />
+    <Compile Include="Json\JDoc.cs" />
+    <Compile Include="Json\PlugEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\UsivityAuth.cs" />
-    <Compile Include="Services\UsivityContext.cs" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\usivity.data\usivity.data.csproj">
-      <Project>{62996F95-997C-481D-BBE6-F9BC9DF16D48}</Project>
-      <Name>usivity.data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\usivity.util\usivity.util.csproj">
-      <Project>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</Project>
-      <Name>usivity.util</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(SolutionDir)redist\*" "$(SolutionDir)bin"</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

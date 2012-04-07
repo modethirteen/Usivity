@@ -22,7 +22,7 @@ namespace Usivity.Core.Services {
                 string username, password;
                 HttpUtil.GetAuthentication(context.Uri.ToUri(), request.Headers, out username, out password);
                 password = _auth.GetSaltedPassword(password);
-                user = _data.GetAuthenticatedUser(username, password);
+                user = _data.Users.GetAuthenticated(username, password);
                 authToken = _auth.GenerateAuthToken(user);
             }
             else {
@@ -44,8 +44,8 @@ namespace Usivity.Core.Services {
         }
 
         [DreamFeature("GET:users", "Get all users")]
-        protected Yield GetUsers(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var users = _data.GetUsers(UsivityContext.Current.Organization);
+        internal Yield GetUsers(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var users = _data.Users.Get(UsivityContext.Current.Organization);
             var doc = new XDoc("users")
                 .Attr("count", users.Count())
                 .Attr("href", _usersUri);
@@ -57,10 +57,17 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        [DreamFeature("GET:users/current", "Get current user")]
+        protected Yield GetCurrentUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var doc = GetUserXml(UsivityContext.Current.User);
+            response.Return(DreamMessage.Ok(doc));
+            yield break;
+        }
+
         [DreamFeature("GET:users/{userid}", "Get user")]
         [DreamFeatureParam("userid", "string", "User id")]
-        protected Yield GetUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var user = _data.GetUser(context.GetParam<string>("userid"), UsivityContext.Current.Organization);
+        internal Yield GetUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var user = _data.Users.Get(context.GetParam<string>("userid"), UsivityContext.Current.Organization);
             if(user == null) {
                 response.Return(DreamMessage.NotFound("The requested user could not be located"));
                 yield break;
@@ -88,14 +95,14 @@ namespace Usivity.Core.Services {
                 response.Return(DreamMessage.BadRequest("Request is missing a value for \"password\""));
                 yield break;
             }
-            if(_data.UserExists(name)) {
+            if(_data.Users.Exists(name)) {
                 response.Return(DreamMessage.Conflict("The requested user name has already been taken"));
             }
             var user = new User(name);
-            user.SetOrganizationRole(UsivityContext.Current.Organization.Id, User.UserRole.Member);
-            user.CurrentOrganizataion = UsivityContext.Current.Organization.Id;
+            user.SetOrganizationRole(UsivityContext.Current.Organization, User.UserRole.Member);
+            user.CurrentOrganization = UsivityContext.Current.Organization.Id;
             user.Password = _auth.GetSaltedPassword(password);
-            _data.SaveUser(user);
+            _data.Users.Save(user);
 
             var doc = GetUserXml(user);
             response.Return(DreamMessage.Ok(doc));
@@ -111,7 +118,7 @@ namespace Usivity.Core.Services {
             }
             var password = request.ToText();
             UsivityContext.Current.User.Password = _auth.GetSaltedPassword(password);
-            _data.SaveUser(UsivityContext.Current.User);
+            _data.Users.Save(UsivityContext.Current.User);
             response.Return(DreamMessage.Ok(MimeType.TEXT_UTF8, "Your password has been successfully updated"));
             yield break;
         }

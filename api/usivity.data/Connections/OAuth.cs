@@ -6,40 +6,25 @@ using System.Text;
 using MindTouch.Dream;
 using MindTouch.Xml;
 
-namespace Usivity.Core.Libraries {
-
-    public class OAuthRequestToken {
-     
-        //--- Properties ---
-        public XUri AuthorizeUri { get; private set; }
-        public string OAuthToken { get; private set; }
-        public string OAuthTokenSecret { get; private set; }
-        public string OAuthVerifier { get; set; }
-        public DateTime Created { get; private set; }
-
-        //--- Constructors ---
-        public OAuthRequestToken(XUri authorize, string token, string secret) {
-            AuthorizeUri = authorize;
-            OAuthToken = token;
-            OAuthTokenSecret = secret;
-            Created = DateTime.UtcNow;
-        }
-    }
+namespace Usivity.Data.Connections {
 
 	public class OAuth {
 
-        private readonly Random _random = new Random();
-
+        //--- Constants ---
 	    public const string SignatureMethod = "HMAC-SHA1";
 	    public const string Version = "1.0";
 
+        //--- Properties ---
         public string ConsumerKey { get; private set; }
         public string ConsumerSecret { get; private set; }
-        public XUri RequestUri { get; private set; }
-        public XUri AuthorizeUri { get; private set; }
-        public XUri AccessTokenUri { get; private set; }
-        public XUri CallbackUri { get; private set; }
+        public Uri RequestUri { get; private set; }
+        public Uri AuthorizeUri { get; private set; }
+        public Uri AccessTokenUri { get; private set; }
+        public Uri CallbackUri { get; private set; }
+        public string AccessToken { get; set; }
+        public string AccessTokenSecret { get; set; }
 
+        //--- Constructors ---
         public OAuth(XDoc config) {
             ConsumerKey = config["consumer.key"].AsText;
             ConsumerSecret = config["consumer.secret"].AsText;
@@ -48,17 +33,18 @@ namespace Usivity.Core.Libraries {
             AccessTokenUri = config["uri.token.access"].AsUri;
         }
 
+        //--- Methods ---
         public DreamMessage GetRequestToken() {
             return Plug.New(RequestUri)
                 .WithPreHandler(AuthorizationHeader)
                 .Post();
         }
 
-        public DreamMessage GetAccessToken(OAuthRequestToken request) {
+        public DreamMessage GetAccessToken(IOAuthRequest request) {
             return Plug.New(AccessTokenUri)
-                .WithHeader("oauth_token", request.OAuthToken)
-                .WithHeader("oauth_token_secret", request.OAuthTokenSecret)
-                .WithHeader("oauth_verifier", request.OAuthVerifier)
+                .WithHeader("oauth_token", request.Token)
+                .WithHeader("oauth_token_secret", request.TokenSecret)
+                .WithHeader("oauth_verifier", request.Verifier)
                 .WithPreHandler(AuthorizationHeader)
                 .Post();
         }
@@ -71,6 +57,12 @@ namespace Usivity.Core.Libraries {
                 {"oauth_signature_method", SignatureMethod},
                 {"oauth_timestamp", GenerateTimeStamp()}
             };
+            if(!string.IsNullOrEmpty(AccessToken)) {
+                headers["oauth_token"] = AccessToken;
+            }
+            if(!string.IsNullOrEmpty(AccessTokenSecret)) {
+                headers["oauth_token_secret"] = AccessTokenSecret;
+            }
 
             // append oauth headers that may have come from stored connection data
             foreach (var header in message.Headers.Where(header => header.Key.StartsWithInvariant("oauth_"))) {
@@ -104,8 +96,8 @@ namespace Usivity.Core.Libraries {
             return Convert.ToInt64(ts.TotalSeconds).ToString();            
         }
 
-        private string GenerateNonce() {
-            return _random.Next(123400, 9999999).ToString();            
+        private static string GenerateNonce() {
+            return new Random().Next(123400, 9999999).ToString();            
         }
 	}
 }

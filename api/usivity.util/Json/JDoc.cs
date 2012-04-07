@@ -1,7 +1,7 @@
 ﻿using MindTouch.Xml;
 using Newtonsoft.Json;
 
-namespace Usivity.Core.Libraries.Json {
+namespace Usivity.Util.Json {
 
     public class JDoc {
 

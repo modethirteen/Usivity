@@ -1,7 +1,7 @@
 ﻿using MindTouch.Dream;
 using MindTouch.Tasking;
 
-namespace Usivity.Core.Libraries.Json {
+namespace Usivity.Util.Json {
 
     public static class PlugEx {
 

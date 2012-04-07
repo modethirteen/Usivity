@@ -2,8 +2,8 @@
 
 namespace Usivity.Data.Entities {
 
-    public class SourceIdentity {
-        
+    public class Identity : IIdentity {
+
         //--- Properties ---
         public string Id { get; set; }
         public string Name { get; set; }
