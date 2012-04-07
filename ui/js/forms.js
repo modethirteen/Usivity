@@ -79,3 +79,32 @@ function clearstart(form)
 		}
 	});
 }
+
+// UPDATE CLASSES ON START FIELDS THAT HAVE BEEN UPDATED BY JS
+function updatestart(form)
+{
+	form.find("[start]").each( function() {
+		var start 	= $(this).attr("start");
+		var val		= $(this).val();
+		
+		if (val != start)
+		{
+			$(this).removeClass("start");	
+		}	
+	});	
+}
+
+// RESET THE START FORM
+function resetstart(form)
+{
+	$("[start]").each( function() {
+		var start 	= $(this).attr("start");
+		var val		= $(this).val();
+		
+		if (val == start)
+		{
+			$(this).addClass("start");
+			$(this).val(start);
+		}
+	});
+}

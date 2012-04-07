@@ -11,50 +11,32 @@
 
 $(document).ready(function() {
 	
+	// Filter
+	$(".col_filter").live("click", function() {
+		var ftarget = $(this);
+		var fdrop	= ftarget.find(".filter_dropdown");
+		var templateuri = $(this).find(".filter").attr("href");
+		
+		if ($(fdrop).length == 0)
+		{
+			$.get(templateuri, function(templatehtml) {
+				ftarget.append(templatehtml);
+				ftarget.find(".filter_dropdown").show();
+			});
+		}
+		$(".filter_dropdown").hide();
+		$(fdrop).show();	
+	
+	});
+	
 	// No-Click
-	$(".drop").live("click", function() {
+	$(".col_filter").live("click", function() {
 		return false;	
 	});
 	
-	// Show dropdown
-	$(".drop").live("hover", function() {
-		$(".down").hide();
-		var templateuri = $(this).attr("href");
-		var id = $(this).attr("id");
-		
-		dropparams = {
-			"dream.out.format" : "jsonp",
-			"dream.out.pre": cb()
-		};
-		var objecturi = apiuri(usivity[id].url,dropparams); //TODO:  clear up the first param.  Not sure if this looks good
-		var drop 		= $(this);
-		var down		= $(this).next(".down");
-		
-		// GET MARKUP
-		if (down.length == 0)
-		{
-			$.get(templateuri, function(templatehtml) {
-				template(templatehtml, objecturi, null, function(html) {  // TODO:  CHANGE THE INPUT PARAMETERS FOR PREPAREDATA()
-					var down = $(document.createElement('div'));
-					down.html(html);
-					down.addClass('down');
-					drop.after(down);		
-
-					positiondrop(drop,down);
-				});
-			});
-		}
-		else
-		{
-			positiondrop(drop,down);
-		}
-		
-	});
-	
-	
 	// Hide Dropdown
 	$("body").click( function() {
-		$(".down").hide();
+		$(".filter_dropdown").hide();
 	});
 
 });

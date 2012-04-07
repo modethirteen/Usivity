@@ -2,21 +2,12 @@
 	messages.js - show, hide messages in both the openstream and mystream.  Handle message interactions
 	
 	FUNCTIONS
-		- Minimize/Maximize Message
 		- Send a message
 		- Delete a message
 */
 
 
 $(document).ready(function() {
-	// MINIMIZE/MAXIMIZE MESSAGE
-	$(".message .minimize").live("click", function() {
-		$(this).parents(".message").find(".message_text").slideToggle('fast', function() {
-    
-		});
-		return false;
-	});	
-	
 	// SEND A MESSAGE
 	$(".message_send").live("submit", function() {
 		var uri		= $(this).attr("action");
@@ -37,7 +28,6 @@ $(document).ready(function() {
 			success: function(results)
 			{
 				loadusercontacts();
-				loaduserstream();
 				closeModal();
 			},
 			error: function(results) 

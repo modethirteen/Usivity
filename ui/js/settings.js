@@ -17,7 +17,7 @@ usivity.data = {};
 
 // API SETTINGS
 usivity.apiroot = {};
-usivity.apiroot.url = "http://usivity.com/api/1";
+usivity.apiroot.url = "/api/1";
 
 usivity.apiformat = {};
 usivity.apiformat.value = {
@@ -27,7 +27,7 @@ usivity.apiformat.value = {
 
 // MESSAGES (BOTH OPENS AND MY)
 usivity.messageinterval = {};
-usivity.messageinterval.value = 10000;
+usivity.messageinterval.value = 300000; //300,000 = 5 minutes
 usivity.messagelimit = {};
 usivity.messagelimit.value = 10; //TODO:  ADD BACK INTO CODE, NOT CURRENTLY BEING USED
 

@@ -7,23 +7,35 @@
 */
 function newopenstreammessage()
 {
-	var templateuri = "/template/message_open.htm"; // TODO:  PUT IN SETTINGS.jS
+	var templateuri = "/template/message.htm"; // TODO:  PUT IN SETTINGS.jS
 	openstreamparams = {
 		"stream" : "open",
 		"dream.out.format" : "jsonp",
 		"dream.out.pre": cb(),
-		"limit": "1"
+		"limit": "10"
 	};
 	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
  	
  	$.get(templateuri, function(templatehtml) {
 		template(templatehtml, objecturi, "null", function(html) {
-			var newele = $(document.createElement('div'));
-			newele.html(html);
-			newele.css("display","none");
-			$(".openstream .target").prepend(newele);
-			newele.slideDown();
-			$(".openstream .target>div:last").remove();
+			
+			// Load The Date into the Open Stream
+			$(".openstream .target tbody").prepend(html);
+			
+			// Process links
+			$(".message_new").each( function() {
+				var text = $(this).find(".message_text").html();
+				// var text = fixmessage($(this).find(".message_text").html());
+				$(this).find(".message_text").html(text);
+				$(this).removeClass("message_new");	
+			});
+			
+			// Add the timestamp row
+			var timestamp = ISODateString(new Date());
+			var timerow = '<tr class="time_row"><td class="timeago" colspan="9" title="' + timestamp + '"></td></tr>';
+			$(".openstream .target tbody").prepend(timerow);
+			jQuery(".timeago").timeago();
+			
 		});
 	});	
 }

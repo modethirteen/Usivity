@@ -1,24 +1,15 @@
-﻿using MindTouch.Dream;
+﻿using System;
+using MindTouch.Dream;
 using MindTouch.Xml;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using Usivity.Data.Connections;
 using Usivity.Data.Entities;
 
 namespace Usivity.Data {
 
-    public partial class UsivityDataSession {
-
-        //--- Class Fields ---
-        private static XDoc _config;
-        private static UsivityDataSession _instance;
-
-        //--- Fields ---
-        private MongoDatabase _db;
-        private MongoCollection _organizations;
-        private MongoCollection _subscriptions;
-        private MongoCollection _contacts;
-        private MongoCollection _users;
+    public class UsivityDataSession : IUsivityDataSession, IDisposable {
 
         //--- Class Properties ---
         public static UsivityDataSession CurrentSession {
@@ -28,9 +19,21 @@ namespace Usivity.Data {
             }
         }
 
+        //--- Class Fields ---
+        private static XDoc _config;
+        private static UsivityDataSession _instance;
+
         //--- Class Methods ---
         public static void Initialize(XDoc config) {
             _config = config;
+        }
+
+        public static string GenerateEntityId(IEntity entity) {
+            return ObjectId.GenerateNewId().ToString();
+        }
+
+        public static string GenerateConnectionId(IConnection connection) {
+            return ObjectId.GenerateNewId().ToString();
         }
 
         private static UsivityDataSession GetInstance() {
@@ -40,52 +43,49 @@ namespace Usivity.Data {
             if(_config == null) {
                 throw new DreamException("Current data session has not been initialized");
             }
-            var sb = new MongoConnectionStringBuilder {
-                Server = new MongoServerAddress(_config["host"].AsText),
-            };
-            var db = new MongoServer(sb.ToServerSettings())
-                .GetDatabase(_config["database"].AsText);
-            var session = new UsivityDataSession {
-                _db = db,
-                _organizations = db.GetCollection<Organization>("organizations"),
-                _subscriptions = db.GetCollection<Subscription>("subscriptions"),
-                _contacts = db.GetCollection<Contact>("contacts"),
-                _users = db.GetCollection<User>("users")
-            };
+            var db = MongoDatabase.Create(_config["connection"].AsText);
 
-            // Entity serialization maps
-            BsonClassMap.RegisterClassMap<User>(cm => {
-                cm.MapIdProperty("Id");
-                cm.MapProperty("Name");
-                cm.MapProperty("Password");
-                cm.MapField("_organizations");
-                cm.MapField("_connections");
+            // register entity maps
+            ContactDataAccess.RegisterClassMap();
+            UserDataAccess.RegisterClassMap();
+            SubscriptionDataAccess.RegisterClassMap();
+            OrganizationDataAccess.RegisterClassMap();
+            
+            // register connection maps
+            BsonClassMap.RegisterClassMap<TwitterConnection>(cm => {
+                cm.AutoMap();
+                cm.SetIdMember(cm.GetMemberMap(c => c.Id));
+                cm.MapField("_oauth");
+                cm.MapField("_oauthRequest");
             });
-            BsonClassMap.RegisterClassMap<Contact>(cm => {
-                cm.MapIdProperty("Id");
-                cm.MapProperty("ClaimedByUserId");
-                cm.MapProperty("FirstName");
-                cm.MapProperty("LastName");
-                cm.MapField("_identities");
-                cm.MapField("_conversations");
-            });
-            BsonClassMap.RegisterClassMap<OAuthConnection>();
-
-            return session;
+            return new UsivityDataSession(db);
         }
 
-        public static string GenerateEntityId(IEntity entity) {
-            return ObjectId.GenerateNewId().ToString();
+        //--- Properties ---
+        public ContactDataAccess Contacts { get; private set; }
+        public UserDataAccess Users { get; private set; }
+        public SubscriptionDataAccess Subscriptions { get; private set; }
+        public OrganizationDataAccess Organizations { get; private set; }
+
+        //--- Fields ---
+        private MongoDatabase _db;
+
+        //--- Constructors ---
+        private UsivityDataSession(MongoDatabase db) {
+            _db = db; 
+            Contacts = new ContactDataAccess(db);
+            Users = new UserDataAccess(db);
+            Subscriptions = new SubscriptionDataAccess(db);
+            Organizations = new OrganizationDataAccess(db);
         }
 
-        private static void SaveEntity(MongoCollection collection, IEntity entity) {
-            try {
-                collection.Save(entity, SafeMode.True);
-            }
-            catch(MongoException e) {
-                
-                //TODO: handle errors from writing in safe mode
-            }
+        //--- Methods ---
+        public MessageDataAccess GetMessageStream(Organization organization) {
+            return new MessageDataAccess(_db, organization);
+        }
+
+        public void Dispose() {
+            _db = null;
         }
     }
 }

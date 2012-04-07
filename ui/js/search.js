@@ -17,32 +17,36 @@ $(document).ready(function() {
 	/*SEARCH*/
 	$(".search input").keyup( function() {
 		var q = $(this).val();
-		$(".highlight").each(function(){
+		
+		// Get Rid of Existing Highlighted Search Terms
+		$(".search_highlight").each(function(){
 			$(this).replaceWith( $(this).text() ); 
 		});
-		$(".streams .message_text").each( function() {
-			highlight(q,$(this));
-		});	
-		$(".contacts .contact_name").each( function() {
-			highlight(q,$(this));
-		});
+		
+		if (q == "") 
+		{
+			$(".target tbody tr").show();
+		}
+		else if (q.length >= 3)
+		{		
+			// Loop through the messages and look for matching search terms
+			$(".streams .message_text").each( function() {
+				highlight(q,$(this));
+			});
+			
+			$(".contacts .contact_name").each( function() {
+				highlight(q,$(this));
+			});
+		}
+	
 	});
 });
 
 function highlight(q,ele,parent) 
 {
-	
-	if (q == "") 
-	{
-		$(".parent").show();
-	}
-	else
-	{
-		var content = ele.html().replace(new RegExp( '(' + q + ')', 'gi'), '<span class="highlight">$1</span>');
-		ele.html(content);
-		ele.show();
-		$(".streams .parent").hide();
-		$(".contacts .parent").hide();
-		$(".parent .highlight").parents(".parent").show();	
-	}
+	var content = ele.html().replace(new RegExp( '(' + q + ')', 'gi'), '<span class="search_highlight">$1</span>');
+	ele.html(content);
+	ele.show();
+	$(".target tbody tr").hide();
+	$(".search_highlight").parents("tbody tr").show();	
 }

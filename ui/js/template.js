@@ -84,7 +84,7 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 				returnhtml = returnhtml + replacevariable(templatehtml,obj);
 			}
 			
-			// IF THERE WAS A FOREACH, THEN REPLACE THE JUST THE FOREACH CONTENT
+			// IF THERE WAS A FOREACH, THEN REPLACE JUST THE FOREACH CONTENT
 			if (fullhtml)
 			{
 				returnhtml = fullhtml.replace(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"),returnhtml);
@@ -98,34 +98,57 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 
 function replacevariable(templatehtml,objectref) 
 {
-	// REPLACE ALL TEMPLATE VARIABLES
-	var matches = templatehtml.match(new RegExp('\{(.*?)\}', "g"));
-	
-	if (matches)
+	if (typeof objectref !="undefined")
 	{
-		$.each(matches, function(key, value){
-		
-			// Remove brackets {} from template variable
-			var val = value.substring(1,value.length-1);  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
-			if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
-			{
-				var arr = val.split("_");
-				var pointer = objectref[arr[0]];
-				arr.splice(0,1);
-				
-				for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
+		// REPLACE ALL TEMPLATE VARIABLES
+		var matches = templatehtml.match(new RegExp('\{(.*?)\}', "g"));
+		if (matches)
+		{
+			$.each(matches, function(key, value){
+			
+				// Remove brackets {} from template variable
+				var val = value.substring(1,value.length-1);  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
+				if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
 				{
-					pointer = pointer[arr[i]];
+					var arr = val.split("_");
+					
+					if(typeof objectref[arr[0]] != "undefined")
+					{
+						var pointer = objectref[arr[0]];
+						arr.splice(0,1);
+					
+						for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
+						{
+							pointer = pointer[arr[i]];
+						}
+						if(typeof pointer != "undefined")
+						{
+							templatehtml = templatehtml.replace(value, pointer);
+						}
+						else
+						{
+							templatehtml = templatehtml.replace(value, "");
+						}
+					}
+					else
+					{
+						templatehtml = templatehtml.replace(value, "");	
+					}
 				}
-				
-				templatehtml = templatehtml.replace(value, pointer);
-			}
-			else
-			{
-				templatehtml = templatehtml.replace(value, objectref[val]);
-			}	
-		});
+				else
+				{
+					if(typeof objectref[val] != "undefined")
+					{
+						templatehtml = templatehtml.replace(value, objectref[val]);
+					}
+					else
+					{
+						templatehtml = templatehtml.replace(value, "");
+					}
+				}	
+			});
+		}
+		return templatehtml;
 	}
-	 
-	return templatehtml;		
+	return '<span class="empty">Empty</span>';
 }

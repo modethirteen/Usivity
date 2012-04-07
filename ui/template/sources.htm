@@ -1,0 +1,8 @@
+<h1>Account Sources</h1>
+<p class="help">Help instructions....what are sources??</p>
+<div class="sources">
+{foreach
+	{in:sources_source}
+		<a href="template/connections_post.htm" id="{@href}" class="popup sources_{@id}">{@id}</a>
+foreach}
+</div> 

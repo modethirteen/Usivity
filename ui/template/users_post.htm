@@ -1,0 +1,21 @@
+<h1>Account Users</h1>
+<p class="help">Help instructions....what are users, how much do I get charged??</p>
+<div class="users">
+	<form action="{users_@href}">
+		<span class="ititle">add new user</span>
+		<input type="text" name="email" class="constraints"/>
+		
+		<div class="buttons">
+			<button type="submit" class="add">add user</button>
+		</div>
+	</form>
+	<ul>
+{foreach
+	{in:users_user}
+		<li>
+			<span>{name}</span>
+			<a href="{@href}" class="delete">delete</a>
+		</li>
+foreach}
+	</ul>
+</div> 

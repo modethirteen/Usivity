@@ -58,7 +58,7 @@ function fixmessage(text)
 		// Convert URL to HREF
 		var text = text.replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig,'<a class="external" target="_new" href="$1">$1</a>'); 
 		// Link Twitter Names
-		var text = text.replace(/(^|\s)@(\w+)/g, '$1<a class="profile" href="http://www.twitter.com/$2">$2</a>');
+		var text = text.replace(/(^|\s)@(\w+)/g, '$1<a target="_new" class="profile" href="http://www.twitter.com/#!/$2">@$2</a>');
 		return text;
 	}
 	else
@@ -98,4 +98,26 @@ function queryparam(name, url)
 		return "";
 	else
 		return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+// Generate an ISO-8601 TimeStamp
+function ISODateString(d)
+{
+	function pad(n){return n<10 ? '0'+n : n}
+	return d.getUTCFullYear()+'-'
+		+ pad(d.getUTCMonth()+1)+'-'
+		+ pad(d.getUTCDate())+'T'
+		+ pad(d.getUTCHours())+':'
+		+ pad(d.getUTCMinutes())+':'
+		+ pad(d.getUTCSeconds())+'Z'
+}
+
+// FILL EMPTY TAGS
+function fill_empty()
+{
+	$(".empty").each( function() {
+		var p = $(this).parent();
+		var message = p.attr("empty");
+		$(this).html(message);
+	});	
 }

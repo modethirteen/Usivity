@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" dir="ltr"> 
 <head> 
-	<title>Usivity | Collaborative CRM</title> 
+	<title>Usivity | Social Support Portal</title> 
 
 	<!--JavaScript Libraries-->
-	<script language="JavaScript" src="/js/jquery-1.6.1.min.js"></script>
+	<script language="JavaScript" src="/js/jquery-1.7.1.min.js"></script>
 	
 	<!--Interaction Libraries-->
 	<script language="JavaScript" src="/js/usivity.js"></script>
@@ -27,11 +27,12 @@
 		</div>
 		<div class="menu">
 			<ul>
-				<li class="settings"><a href="template/user_put.htm" class="popup">profile</a></li>
+				<!--<li class="settings"><a href="template/user_put.htm" class="popup">profile</a></li>-->
 				<!--<li><a href="template/reports.htm" class="popup reports">reports</a></li>-->
-				<li class="connections"><a href="template/connections.htm" id="connectionsapi" class="drop">connections</a></li>
+				<!--<li class="connections"><a href="template/connections.htm" id="connectionsapi" class="drop">connections</a></li>-->
 				<!--<li class="recent"><a href="template/recent.htm" class="popup">recent</a></li>-->
 				<!--<li class="team"><a href="template/team.htm" class="popup">team</a></li>-->
+				<li class="team"><a href="template/control_panel.htm" class="popup">control panel</a></li>
 			</ul>
 		</div>
 		<h1 class="logo">Usivity | Social CRM</h1>
@@ -40,24 +41,33 @@
 		<div class="streams">
 			<div class="openstream fwrap first last loading">
 				<div class="title">
-					<a href="template/subscriptions.htm" id="connectionsapi" class="drop">subscriptions</a>
-					<a href="template/filter_post" class="popup">filters</a>
-					<h2>Open Message Stream</h2>
-				</div>
-				<div class="target">
-				
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col col2">
-		<div class="streams">
-			<div class="mystream fwrap first last loading">
-				<div class="title">
-					<h2>My Message Stream</h2>
-				</div>
-				<div class="target">
-				
+					<h2>Social Stream</h2>
+					<table class="target">
+						<thead>
+							<tr class="th">
+								<th class="contact_klout col_filter">
+									Klout
+									<a class="filter" href="template/dropdown_klout.htm"></a>
+								</th>
+								<th class="message_sentiment col_filter">
+									Sentiment
+									<a class="filter" href="template/dropdown_sentiment.htm"></a>
+								</th>
+								<th colspan="2">User</th>
+								<th>Message</th>
+								<th>Time</th>
+								<th class="message_source col_filter">
+									Source
+									<a class="filter" href="template/dropdown_source.htm"></a>
+								</th>
+								<th></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+						
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -65,11 +75,14 @@
 	<div class="col col3">
 		<div class="contacts fwrap first last loading">
 			<div class="title">
-				<a href="/template/contact_post.htm" class="popup tools">new contact</a>
+				<a href="/template/contact_new_post.htm" class="popup tools">new contact</a>
 				<h2>Contacts</h2>
-			</div>
-			<div class="target">
-				
+				<table class="target">
+
+					<tbody>
+					
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>

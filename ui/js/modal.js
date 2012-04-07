@@ -25,40 +25,7 @@ $(document).ready( function() {
 	
 	// "NORMAL" POPUP LINK
 	$(".popup, .dialog").live("click", function() {
-		var link		= $(this);
-		var src 		= link.attr("href");
-		var objecturi	= link.attr("id");
-		var type	= "";
-	
-		if (link.hasClass("dialog"))
-		{
-			var type = "modalsmall";
-		}
-		
-		// TODO:  GET RID OF THIS IF STATEMENT
-		if (objecturi)
-		{		
-			var objecturi = apiuri(objecturi,usivity.apiformat.value);
-			$.get(src, function(templatehtml) {		
-				template(templatehtml, objecturi, "null",function(html) {
-					$(".modal .target").html(html);
-					showmodal(type);	
-				});
-			});
-		}
-		else
-		{
-			// LOAD PAGES THAT DON'T NEED TO HAVE DATA FROM AN API
-			$.get(src, function(data) {		
-				var data = data.replace(new RegExp('\{in:(.*?)\}', "g"),"");
-				var data = data.replace(new RegExp('\{(.*?)\}', "g"),"");
-				var data = data.replace("{foreach","");	
-				var data = data.replace("foreach}","");	
-		
-				$(".modal .target").html(data);
-				showmodal(type);	
-			});
-		}
+		buildModal($(this),"");
 		return false;
 	});
 	
@@ -76,7 +43,58 @@ $(document).ready( function() {
 	});
 });
 
-function closeModal() {
+// PIECE TOGETHER ALL THE CONTENT BEFORE SHOWING THE MODAL
+function buildModal(ele, href)
+{	
+	if (ele)
+	{
+		var link		= ele;
+		var src 		= link.attr("href");
+		var objecturi	= link.attr("id");
+	}
+	else if (href && href !="")
+	{
+		var src = href;
+	}
+
+// 	var type	= "";  //TODO:  MOVE THIS TO A FUNCTION PARAMETER
+// 	if (link.hasClass("dialog"))
+// 	{
+// 		var type = "modalsmall";
+// 	}
+		
+	// TODO:  GET RID OF THIS IF STATEMENT
+	if (objecturi)
+	{		
+		var objecturi = apiuri(objecturi,usivity.apiformat.value);
+		$.get(src, function(templatehtml) {		
+			template(templatehtml, objecturi, "null",function(html) {
+				$(".modal .target").html(html);
+				fill_empty();
+				showmodal();	
+			});
+		});
+	}
+	else
+	{
+		// LOAD PAGES THAT DON'T NEED TO HAVE DATA FROM AN API
+		$.get(src, function(data) {		
+			var data = data.replace(new RegExp('\{in:(.*?)\}', "g"),"");
+			var data = data.replace(new RegExp('\{(.*?)\}', "g"),"");
+			var data = data.replace("{foreach","");	
+			var data = data.replace("foreach}","");	
+	
+			$(".modal .target").html(data);
+			showmodal();	
+		});
+	}
+	
+	return false;
+}
+
+// Hide the modal popup and black screen
+function closeModal() 
+{
 	$(".modal").fadeOut('fast', function() {
 		$(".modal_bg").fadeOut('fast');
 		$(".modal").removeClass("modalsmall"); // TODO: PUT THESE CLASSES IN SETTINGS AS AN ARRAY
@@ -84,10 +102,7 @@ function closeModal() {
 	});	
 }
 
-function showmodal(type) {
-	// Apply Type
-	$(".modal").addClass(type);
-	
+function showmodal() {
 	// Replace Title
 	var title = $(".modal h1").html();
 	$(".modal h2").html(title);

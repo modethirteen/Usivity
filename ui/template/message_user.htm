@@ -1,7 +1,7 @@
 {foreach
 {in:messages_message}
 <div id="{@id}" class="message highlight">
-	<span class="contact_picture minimize">
+	<span class="contact_picture">
 		<img src="{author_uri.avatar}">
 	</span>
 	<div class="message_contents">
@@ -20,9 +20,11 @@
 			</span>
 		</span>
 		<div class="message_actions">
+			<a href="/template/message_post.htm" id="{@href}" class="popup claim">send message</a>
 			<a href="/template/message_delete.htm" id="{@href}" class="message_view_thread">view thread</a>
 			<a href="/template/message_delete.htm" id="{@href}" class="dialog delete">delete</a>
 		</div>
+		<div class="clear"></div>
 	</div>
 </div>
 foreach}
