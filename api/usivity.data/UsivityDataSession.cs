@@ -37,14 +37,16 @@ namespace Usivity.Data {
             UserDataAccess.RegisterClassMap();
             SubscriptionDataAccess.RegisterClassMap();
             OrganizationDataAccess.RegisterClassMap();
-            
+
             // register connection maps
             BsonClassMap.RegisterClassMap<TwitterConnection>(cm => {
                 cm.AutoMap();
                 cm.SetIdMember(cm.GetMemberMap(c => c.Id));
                 cm.MapField("_oauth");
                 cm.MapField("_oauthRequest");
-            });    
+            });
+        }
+
         //--- Properties ---
         public ContactDataAccess Contacts { get; private set; }
         public UserDataAccess Users { get; private set; }

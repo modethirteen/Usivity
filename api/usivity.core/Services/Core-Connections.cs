@@ -25,7 +25,6 @@ namespace Usivity.Core.Services {
                 response.Return(DreamMessage.NotFound("Source connection does not exist"));
                 yield break;
             }
-            var doc = GetConnectionXml(connection);
             var doc = connections.GetConnectionXml(connection);
             response.Return(DreamMessage.Ok(doc));
             yield break;
