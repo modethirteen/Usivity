@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Xml;
@@ -18,6 +18,7 @@ namespace Usivity.Data.Entities {
         public string Name { get; private set; }
         public string Password { get; set; }
         public string CurrentOrganization { get; set; }
+        public bool IsAnonymous { get; private set; }
 
         //--- Fields ---
         private Dictionary<string, UserRole> _organizations;
@@ -26,6 +27,7 @@ namespace Usivity.Data.Entities {
         public User(string name) {
             Id = UsivityDataSession.GenerateEntityId(this);
             Name = name;
+            IsAnonymous = name == ANONYMOUS_USER;
             _organizations = new Dictionary<string, UserRole>();
         }
 
@@ -40,6 +42,9 @@ namespace Usivity.Data.Entities {
         }
 
         public UserRole GetOrganizationRole(Organization organization) {
+            if(organization == null) {
+                return UserRole.None;
+            }
             return _organizations.TryGetValue(organization.Id, UserRole.None);
         }
 

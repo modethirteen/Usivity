@@ -1,6 +1,4 @@
-﻿using System;
-using MindTouch.Dream;
-using MindTouch.Xml;
+using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -10,24 +8,20 @@ using Usivity.Data.Entities;
 namespace Usivity.Data {
 
     public class UsivityDataSession : IUsivityDataSession, IDisposable {
-
-        //--- Class Properties ---
-        public static UsivityDataSession CurrentSession {
-            get {
-                _instance = GetInstance();
-                return _instance;
-            }
-        }
-
+        
         //--- Class Fields ---
-        private static XDoc _config;
-        private static UsivityDataSession _instance;
+        private static bool _registeredClassMaps;
+
+        //--- Class Constructors ---
+        public static IUsivityDataSession NewUsivityDataSession(string connection) {
+            if(!_registeredClassMaps) {
+                RegisterClassMaps();
+                _registeredClassMaps = true;
+            }
+            return new UsivityDataSession(connection);
+        }
 
         //--- Class Methods ---
-        public static void Initialize(XDoc config) {
-            _config = config;
-        }
-
         public static string GenerateEntityId(IEntity entity) {
             return ObjectId.GenerateNewId().ToString();
         }
@@ -36,21 +30,14 @@ namespace Usivity.Data {
             return ObjectId.GenerateNewId().ToString();
         }
 
-        private static UsivityDataSession GetInstance() {
-            if(_instance != null) {
-                return _instance;
-            }
-            if(_config == null) {
-                throw new DreamException("Current data session has not been initialized");
-            }
-            var db = MongoDatabase.Create(_config["connection"].AsText);
+        protected static void RegisterClassMaps() {
 
             // register entity maps
             ContactDataAccess.RegisterClassMap();
             UserDataAccess.RegisterClassMap();
             SubscriptionDataAccess.RegisterClassMap();
             OrganizationDataAccess.RegisterClassMap();
-            
+
             // register connection maps
             BsonClassMap.RegisterClassMap<TwitterConnection>(cm => {
                 cm.AutoMap();
@@ -58,7 +45,6 @@ namespace Usivity.Data {
                 cm.MapField("_oauth");
                 cm.MapField("_oauthRequest");
             });
-            return new UsivityDataSession(db);
         }
 
         //--- Properties ---
@@ -71,12 +57,12 @@ namespace Usivity.Data {
         private MongoDatabase _db;
 
         //--- Constructors ---
-        private UsivityDataSession(MongoDatabase db) {
-            _db = db; 
-            Contacts = new ContactDataAccess(db);
-            Users = new UserDataAccess(db);
-            Subscriptions = new SubscriptionDataAccess(db);
-            Organizations = new OrganizationDataAccess(db);
+        protected UsivityDataSession(string connection) {
+            _db = MongoDatabase.Create(connection);
+            Contacts = new ContactDataAccess(_db);
+            Users = new UserDataAccess(_db);
+            Subscriptions = new SubscriptionDataAccess(_db);
+            Organizations = new OrganizationDataAccess(_db);
         }
 
         //--- Methods ---

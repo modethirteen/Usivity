@@ -9,34 +9,29 @@ using Usivity.Data.Entities;
 
 namespace Usivity.Core.Services {
     
-    class UsivityAuth {
+    public class UsivityAuth : IUsivityAuth {
   
         //--- Constants ---
         internal const string AUTHTOKEN_HEADERNAME = "X-Authtoken";
         internal const string AUTHTOKEN_COOKIENAME = "authtoken";
         internal const string AUTHTOKEN_PATTERN = @"^(?<id>([\d]).*)_(?<ts>([\d]){18})_(?<hash>.*)$";
-
+        
         //--- Class Fields ---
         private static readonly Regex _authTokenRegex =
             new Regex(AUTHTOKEN_PATTERN, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        //--- Class Methods ---
-        public static UsivityAuth Factory(string salt, XUri cookieUri, UsivityDataSession data) {
-            return new UsivityAuth(salt, cookieUri, data);
-        }
-
         //--- Fields ---
         private readonly string _salt;
-        private readonly UsivityDataSession _data;
+        private readonly IUsivityDataSession _data;
         private readonly MD5 _md5;
-        private readonly XUri _cookieUri;
+        private readonly int _expiration;
     
         //--- Constructors ---
-        private UsivityAuth(string salt, XUri cookieUri, UsivityDataSession data) {
+        public UsivityAuth(string salt, int expiration, IUsivityDataSession data) {
             _salt = salt;
             _data = data;
             _md5 = MD5.Create();
-            _cookieUri = cookieUri;
+            _expiration = expiration;
         }
 
         //--- Methods ---
@@ -59,19 +54,20 @@ namespace Usivity.Core.Services {
             return authToken;
         }
         
-        public User GetAuthenticatedUser(string authToken = null) {
+        public User GetUser(string authToken = null) {
+            var anonymous = _data.Users.GetAnonymous();
             if(string.IsNullOrEmpty(authToken)) {
-                return null;
+                return anonymous;
             }
             var m = _authTokenRegex.Match(authToken);
             if(!m.Success) {
-                return null;
+                return anonymous;
             }
             var user = _data.Users.Get(m.Groups["id"].Value);
             if(user != null) {
                 var validationToken = GenerateAuthTokenHelper(user, m.Groups["ts"].Value);
                 if(authToken != validationToken) {
-                    return null;
+                    return anonymous;
                 }
             }
             return user;
@@ -81,8 +77,9 @@ namespace Usivity.Core.Services {
             return user == null ? null : GenerateAuthTokenHelper(user, DateTime.UtcNow.ToUniversalTime().Ticks.ToString());
         }
 
-        public DreamCookie GetAuthCookie(string authToken, DateTime expiration) {
-            return DreamCookie.NewSetCookie(AUTHTOKEN_COOKIENAME, authToken, _cookieUri, expiration);
+        public DreamCookie GetAuthCookie(string authToken, XUri uri) {
+            var expires = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_expiration));
+            return DreamCookie.NewSetCookie(AUTHTOKEN_COOKIENAME, authToken, uri, expires);
         }
 
         private string GenerateAuthTokenHelper(User user, string ticks) {

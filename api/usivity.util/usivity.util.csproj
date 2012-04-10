@@ -44,10 +44,6 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aws\AwsSignature.cs" />
-    <Compile Include="Aws\Sqs\SqsClient.cs" />
-    <Compile Include="Aws\Sqs\SqsClientConfig.cs" />
-    <Compile Include="Aws\Sqs\SqsMessage.cs" />
     <Compile Include="Extension.cs" />
     <Compile Include="ImmutableDictionary.cs" />
     <Compile Include="Json\JDoc.cs" />
