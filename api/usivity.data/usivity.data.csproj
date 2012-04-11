@@ -48,23 +48,46 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connections\ATwitterConnection.cs" />
+    <Compile Include="Connections\ITwitterConnectionFactory.cs" />
+    <Compile Include="Connections\SourceType.cs" />
+    <Compile Include="Connections\TwitterConnectionFactory.cs" />
+    <Compile Include="Connections\IPublicConnection.cs" />
+    <Compile Include="Connections\IConnection.cs" />
+    <Compile Include="Connections\IOAuthAccess.cs" />
+    <Compile Include="Connections\IOAuthRequest.cs" />
+    <Compile Include="Connections\OAuth.cs" />
+    <Compile Include="Connections\OAuthAccess.cs" />
+    <Compile Include="Connections\OAuthRequest.cs" />
+    <Compile Include="Connections\TwitterPublicConnection.cs" />
+    <Compile Include="Connections\TwitterConnection.cs" />
+    <Compile Include="ContactDataAccess.cs" />
     <Compile Include="Entities\IEntity.cs" />
-    <Compile Include="Entities\SourceIdentity.cs" />
-    <Compile Include="Users.cs" />
-    <Compile Include="Contacts.cs" />
+    <Compile Include="Entities\IIdentity.cs" />
+    <Compile Include="Entities\Identity.cs" />
+    <Compile Include="IContactDataAccess.cs" />
+    <Compile Include="IMessageDataAccess.cs" />
+    <Compile Include="IOrganizationDataAccess.cs" />
+    <Compile Include="ISubscriptionDataAccess.cs" />
+    <Compile Include="IUserDataAccess.cs" />
+    <Compile Include="IUsivityDataSession.cs" />
+    <Compile Include="UserDataAccess.cs" />
     <Compile Include="Entities\Contact.cs" />
-    <Compile Include="Organizations.cs" />
-    <Compile Include="Entities\BasicAuthConnection.cs" />
-    <Compile Include="Entities\OAuthConnection.cs" />
-    <Compile Include="Entities\IConnection.cs" />
+    <Compile Include="OrganizationDataAccess.cs" />
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Entities\Organization.cs" />
     <Compile Include="Entities\Subscription.cs" />
     <Compile Include="Entities\User.cs" />
-    <Compile Include="Messages.cs" />
+    <Compile Include="MessageDataAccess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Subscriptions.cs" />
+    <Compile Include="SubscriptionDataAccess.cs" />
     <Compile Include="UsivityDataSession.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\usivity.util\usivity.util.csproj">
+      <Project>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</Project>
+      <Name>usivity.util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

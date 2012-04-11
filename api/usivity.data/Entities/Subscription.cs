@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Xml;
+using Usivity.Data.Connections;
 
 namespace Usivity.Data.Entities {
 
@@ -12,25 +13,29 @@ namespace Usivity.Data.Entities {
             English
         }
 
-        public static IDictionary<string, Subscription.SubscriptionLanguage> SubscriptionLanguages =
-            new Dictionary<string, Subscription.SubscriptionLanguage> {
-                { "en", Subscription.SubscriptionLanguage.English }
+        public static IDictionary<string, SubscriptionLanguage> SubscriptionLanguages =
+            new Dictionary<string, SubscriptionLanguage> {
+                { "en", SubscriptionLanguage.English }
         };
 
         //--- Properties ---
         public string Id { get; set; }
-        public string UserId { get; set; }
-        public string Source { get; private set; }
-        public IEnumerable<string> Constraints { get; set; }
-        public SubscriptionLanguage? Language { get; set; }
-        public Uri Uri { get; set; }
+        public string OrganizationId { get; private set; }
+        public IEnumerable<string> Constraints { get; private set; }
+        public SubscriptionLanguage Language { get; private set; }
         public bool Active { get; set; }
 
+        //--- Fields ---
+        private IDictionary<SourceType, Uri> _uris;
+
         //--- Constructors ---
-        public Subscription(string source) {
+        public Subscription(Organization organization, IEnumerable<string> constraints, SubscriptionLanguage language) {
             Id = UsivityDataSession.GenerateEntityId(this);
-            Source = source;
+            Language = language;
+            OrganizationId = organization.Id;
+            Constraints = constraints;
             Active = true;
+            _uris = new Dictionary<SourceType, Uri>();
         }
 
         //--- Methods ---
@@ -44,6 +49,16 @@ namespace Usivity.Data.Entities {
                 .Elem("active", Active ? "true" : "false")
                 .Elem("constraints", string.Join(",", Constraints.ToArray()))
                 .EndAll();   
+        }
+
+        public void SetSourceUri(SourceType source, Uri uri) {
+            _uris[source] = uri;
+        }
+
+        public Uri GetSourceUri(SourceType source) {
+            Uri uri;
+            _uris.TryGetValue(source, out uri);
+            return uri;
         }
     }
 }

@@ -1,10 +1,7 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Tasking;
-using MindTouch.Xml;
-using Usivity.Data.Entities;
+using Usivity.Core.Services.Logic;
 
 namespace Usivity.Core.Services {
     using Yield = IEnumerator<IYield>;
@@ -14,14 +11,7 @@ namespace Usivity.Core.Services {
         //--- Features ---
         [DreamFeature("GET:contacts", "Get all contacts")]
         protected Yield GetContacts(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var contacts = _data.GetContacts(UsivityContext.Current.User);
-            var doc = new XDoc("contacts")
-                .Attr("count", contacts.Count())
-                .Attr("href", _contactsUri);
-            foreach(var contact in contacts) {
-                doc.Add(GetContactXml(contact));
-            }
-            doc.EndAll();
+            var doc = Resolve<IContacts>(context).GetContactsXml();
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
@@ -29,55 +19,53 @@ namespace Usivity.Core.Services {
         [DreamFeature("GET:contacts/{contactid}", "Get contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
         protected Yield GetContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var contact = _data.GetContact(context.GetParam<string>("contactid"), UsivityContext.Current.User);
+            var contacts = Resolve<IContacts>(context);
+            var contact = contacts.GetContact(context.GetParam<string>("contactid"));
             if(contact == null) {
                 response.Return(DreamMessage.NotFound("The requested contact could not be located"));
                 yield break;
             }
-            var doc = GetContactXml(contact);
+            var doc = contacts.GetContactVerboseXml(contact)
+                .AddAll(Resolve<IMessages>(context).GetConversationsXml(contact));
             response.Return(DreamMessage.Ok(doc));
             yield break;
-           
         }
 
         [DreamFeature("POST:contacts", "Create a new contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
         protected Yield PostContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var contactDoc = GetRequestXml(request);
-            var contact = GetContact(contactDoc);
-            _data.SaveContact(contact);
-            response.Return(DreamMessage.Ok(GetContactXml(contact)));
+            var contacts = Resolve<IContacts>(context);
+            var contact = contacts.GetNewContact(GetRequestXml(request));
+            contacts.SaveContact(contact);
+            var doc = contacts.GetContactVerboseXml(contact);
+            response.Return(DreamMessage.Ok(doc));
             yield break;
         }
 
         [DreamFeature("PUT:contacts/{contactid}", "Update contact information")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
         protected Yield UpdateContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var contactDoc = GetRequestXml(request);
-            var contact = GetContact(contactDoc, context.GetParam<string>("contactid"));
-            _data.SaveContact(contact);
-            response.Return(DreamMessage.Ok(GetContactXml(contact)));
+            var contacts = Resolve<IContacts>(context);
+            var contact = contacts.GetContact(context.GetParam<string>("contactid"));
+            contacts.UpdateContactInformation(contact, GetRequestXml(request));
+            contacts.SaveContact(contact);
+            var doc = contacts.GetContactVerboseXml(contact);
+            response.Return(DreamMessage.Ok(doc));
             yield break;
         }
 
         [DreamFeature("DELETE:contacts/{contactid}", "Remove contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
         protected Yield RemoveContact(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            throw new NotImplementedException();
-        }
-
-        //--- Methods ---
-        private Contact GetContact(XDoc contactDoc, string id = null) {
-            var contact = !string.IsNullOrEmpty(id)
-                ? _data.GetContact(id, UsivityContext.Current.User)
-                : new Contact(UsivityContext.Current.User);
-            contact.FirstName = contactDoc["firstname"].Contents;
-            contact.LastName = contactDoc["lastname"].Contents;
-            return contact;
-        }
-
-        private XDoc GetContactXml(Contact contact, string relation = null) {
-            return contact.ToDocument(relation).Attr("href", _contactsUri.At(contact.Id));
+            var contacts = Resolve<IContacts>(context);
+            var contact = contacts.GetContact(context.GetParam<string>("contactid")); 
+            if(contact == null) {
+                response.Return(DreamMessage.NotFound("The requested contact could not be located"));
+                yield break;
+            }
+            contacts.RemoveContact(contact);
+            response.Return(DreamMessage.Ok());
+            yield break;
         }
     }
 }

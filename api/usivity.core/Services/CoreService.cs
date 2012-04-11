@@ -1,18 +1,17 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Autofac;
 using log4net;
 using MindTouch;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Xml;
-using Usivity.Core.Libraries;
-using Usivity.Core.Libraries.Json;
+using Usivity.Core.Services.Logic;
 using Usivity.Data;
+using Usivity.Data.Connections;
 using Usivity.Data.Entities;
+using Usivity.Util.Json;
 
 namespace Usivity.Core.Services {
-    using Sources;
     using Yield = IEnumerator<IYield>;
 
     [DreamService("Usivity Core API Service", "",
@@ -20,28 +19,18 @@ namespace Usivity.Core.Services {
     )]
     public partial class CoreService : DreamService {
         
-        //--- Constants ---
-        internal const uint MINUTES_TO_REFRESH = 15;
-
         //--- Class Fields ---
         private static readonly ILog _log = LogUtils.CreateLog();
 
-        //--- Class Properties ---
-        public static Dictionary<string, OAuthRequestToken> ActiveOAuthRequestTokens { get; set; }
+        //--- Class Methods ---
+        private static T Resolve<T>(DreamContext context) {
+            return context.Container.Resolve<T>();
+        }
 
         //--- Fields ---
-        private UsivityAuth _auth;
-        private User _anonymous;
-        private double _refresh;
-        private UsivityDataSession _data;
-        private IList<ISource> _sources;
-        private int _authExpiration;
+        private Plug _openStreamQueue;
+        private TwitterConnectionFactory _twitterConnectionFactory;
 
-        private XUri _usersUri;
-        private XUri _messagesUri;
-        private XUri _sourcesUri;
-        private XUri _contactsUri;
-        private XUri _organizationsUri;
 
         //--- Properties ---
         public string MasterApiKey { get; private set; }
@@ -49,14 +38,12 @@ namespace Usivity.Core.Services {
         //--- Methods ---
         public override DreamFeatureStage[] Prologues {
             get {
-                return new[] { 
-                    new DreamFeatureStage("set-context", PrologueContext, DreamAccess.Public)
-                };
+                return new[] { new DreamFeatureStage("set-context", PrologueContext, DreamAccess.Public) };
             }
         }
 
-        protected override Yield Start(XDoc config, Result result) {
-            yield return Coroutine.Invoke(base.Start, config, new Result());
+        protected override Yield Start(XDoc config, ILifetimeScope container, Result result) {
+            yield return Coroutine.Invoke(base.Start, config, container, new Result());
 
             _log.Debug("Setting Master API Key");
             MasterApiKey = config["apikey"].AsText ?? string.Empty;
@@ -64,78 +51,92 @@ namespace Usivity.Core.Services {
                 throw new DreamInternalErrorException("Core apikey has not been set in startup config");
             }
 
-            _log.Debug("Initializing current data session");
-            var dataSessionConfig = new XDoc("config")
-                .Elem("host", config["mongodb/host"].AsText)
-                .Elem("database", config["mongodb/database"].AsText);
-            UsivityDataSession.Initialize(dataSessionConfig);
-            _data = UsivityDataSession.CurrentSession;
+            _log.Debug("Initializing source network connections");
+            _twitterConnectionFactory = new TwitterConnectionFactory(config["sources/twitter"]);
+          
+            _log.Debug("Starting openstream queue service");
+            yield return CreateService(
+                "openstream",
+                "sid://usivity.com/2012/04/openstream",
+                new XDoc("config")
+                    .Elem("apikey", MasterApiKey)
+                    .AddAll(config["mongodb"])
+                    .AddAll(config["sources"]),
+                new Result<Plug>()
+                );
+            _openStreamQueue = Plug.New(Self.Uri).At("openstream");
+            result.Return();
+        }
 
+        protected override void InitializeLifetimeScope(IRegistrationInspector container, ContainerBuilder builder, XDoc config) {
+
+            _log.Debug("Registering current context container");
+            builder.Register(c => UsivityContext.Current).RequestScoped();
+            builder.Register(c => c.Resolve<UsivityContext>()).As<ICurrentContext>().RequestScoped();
+
+            _log.Debug("Initializing data session connection");
+            var data = UsivityDataSession.NewUsivityDataSession(config["mongodb/connection"].AsText);
+
+            _log.Debug("Registering data session dependency");
+            if(!container.IsRegistered<IUsivityDataSession>()) {
+                builder.RegisterInstance(data).As<IUsivityDataSession>().SingleInstance();
+            }
+
+            _log.Debug("Initializing authorization controls");
             var securitySalt = config["security/salt"].AsText ?? string.Empty;
             if(string.IsNullOrEmpty(securitySalt)) {
                 throw new DreamInternalErrorException("Security salt string has not been configured");
             }
-            var securityCookieUri = config["security/uri.cookie"].AsUri ?? Self.Uri.AsPublicUri();
-            _auth = UsivityAuth.Factory(securitySalt, securityCookieUri, _data);
-            _authExpiration = config["security/expiration"].AsInt ?? 561600;
+            var authExpiration = config["security/expiration"].AsInt ?? 561600;
+            var auth = new UsivityAuth(securitySalt, authExpiration, data);
 
-            // setup sources
-            _sources = new List<ISource> {
-                new TwitterSource(config["sources/twitter"])
-            };
-            foreach(var source in _sources) {
-                var subscriptions = _data.GetSubscriptions(source.Id);
-                foreach(var subscription in subscriptions) {
-                    source.Subscriptions.Add(subscription);
-                }               
+            _log.Debug("Registering authorization dependency");
+            if(!container.IsRegistered<IUsivityAuth>()) {
+                builder.RegisterInstance(auth).As<IUsivityAuth>().SingleInstance();
             }
 
-            // setup anonymous user
-            _anonymous = _data.GetAnonymousUser();
-            if(_anonymous == null) {
-                throw new DreamInternalErrorException("Anonymous user has not been configured");
+            _log.Debug("Registering type dependencies");
+            if(!container.IsRegistered<IUsers>()) {
+                builder.RegisterType<Users>().As<IUsers>().RequestScoped();
             }
-
-            //TODO: clean up api uris
-            var apiUri = Self.Uri.AsPublicUri();
-            _usersUri = apiUri.At("users");
-            _messagesUri = apiUri.At("messages");
-            _sourcesUri = apiUri.At("sources");
-            _contactsUri = apiUri.At("contacts");
-            _organizationsUri = apiUri.At("organizations");
-
-            ActiveOAuthRequestTokens = new Dictionary<string, OAuthRequestToken>();
-            _refresh = config["refresh"].AsDouble ?? MINUTES_TO_REFRESH;
-            TaskTimerFactory.Current.New(TimeSpan.Zero, QueueMessages, null, TaskEnv.None);
-            TaskTimerFactory.Current.New(TimeSpan.Zero, CleanUpOAuthRequestTokens, null, TaskEnv.None);
-            result.Return();
+            if(!container.IsRegistered<IMessages>()) {
+                builder.RegisterType<Messages>().As<IMessages>().RequestScoped();
+            }
+            if(!container.IsRegistered<IOrganizations>()) {
+                builder.RegisterType<Organizations>().As<IOrganizations>().RequestScoped();
+            }
+            if(!container.IsRegistered<IContacts>()) {
+                builder.RegisterType<Contacts>().As<IContacts>().RequestScoped();
+            }
+            if(!container.IsRegistered<ISubscriptions>()) {
+                builder.RegisterType<Subscriptions>().As<ISubscriptions>().RequestScoped();
+            }
+            if(!container.IsRegistered<IConnections>()) {
+                builder.RegisterType<Connections>().As<IConnections>().RequestScoped();
+            }
         }
 
         protected override DreamAccess DetermineAccess(DreamContext context, string key) {
-            var usivityContext = UsivityContext.CurrentOrNull;
-            if(usivityContext != null) {
-                var role = usivityContext.User.GetOrganizationRole(usivityContext.Organization.Id);
+            if(UsivityContext.CurrentOrNull != null ) {
+                var role = Resolve<IUsers>(context).GetCurrentRole();
                 switch(role) {
                     case User.UserRole.Owner:
                     case User.UserRole.Admin:
                         return DreamAccess.Internal;
                     case User.UserRole.Member:
                         return DreamAccess.Private;
-                }
+                }   
             }
             return base.DetermineAccess(context, key);
         }
 
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var authToken = _auth.GetAuthToken(request);
-            var user = _auth.GetAuthenticatedUser(authToken) ?? _anonymous;
-            var organization = user != null
-                ? _data.GetOrganization(user.CurrentOrganizataion)
-                : Organization.NewMockOrganization();
-
+            var auth = Resolve<IUsivityAuth>(context);
+            var authToken = auth.GetAuthToken(request);
+            var user = auth.GetUser(authToken);
             var usivityContext = new UsivityContext {
                 User = user,
-                Organization = organization
+                ApiUri = Self.Uri.AsPublicUri()
             };
             DreamContext.Current.SetState(usivityContext);
             response.Return(request);
@@ -160,48 +161,6 @@ namespace Usivity.Core.Services {
                 }
             }
             return doc;
-        }
-    
-        private void QueueMessages(TaskTimer tt) {
-            _data.RemoveExpiredOpenStreamMessages();
-
-            // get messages from sources
-            var messages = new List<Message>();
-            foreach(var source in _sources) {
-                messages.AddRange(source.GetMessages(Message.MessageStreams.Open));
-                foreach(var subscription in source.Subscriptions) {
-                    _data.UpdateSubscription(subscription);
-                }
-            }
-
-            // queue messages
-            var span = DateTime.UtcNow.Subtract(TimeSpan.FromDays(4));
-            var organizations = _data.GetOrganizations();
-            foreach (var message in messages.Where(message => message.Timestamp >= span)) {
-                foreach(var organization in organizations) {
-
-                    // messages from existing contacts go into user stream
-                    if(_data.GetContact(message) != null) {
-                        message.MoveToStream(Message.MessageStreams.User);
-                    }
-                    _data.QueueMessage(organization, message);
-                }
-            }
-            tt.Change(TimeSpan.FromMinutes(1), TaskEnv.None);
-        }
-
-        private void CleanUpOAuthRequestTokens(TaskTimer tt) {
-            var expiredTokenKeys = new List<string>();
-            foreach(var requestToken in ActiveOAuthRequestTokens) {
-                TimeSpan ts = DateTime.UtcNow - requestToken.Value.Created;
-                if(ts.Hours >= 1) {
-                    expiredTokenKeys.Add(requestToken.Key);
-                }
-            }
-            foreach(var key in expiredTokenKeys) {
-                ActiveOAuthRequestTokens.Remove(key);
-            }
-            tt.Change(TimeSpan.FromHours(1), TaskEnv.None);
         }
     }
 }

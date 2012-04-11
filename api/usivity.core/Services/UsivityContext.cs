@@ -4,12 +4,12 @@ using MindTouch.Dream;
 
 namespace Usivity.Core.Services {
 
-    public interface ICurrentUserContext {
+    public interface ICurrentContext {
         User User { get; set; }
-        Organization Organization { get; set; }
+        XUri ApiUri { get; set; }
     }
 
-    public class UsivityContext : IDisposable {
+    public class UsivityContext : ICurrentContext, IDisposable {
 
         //--- Class Properties ---
         public static UsivityContext Current {
@@ -29,14 +29,14 @@ namespace Usivity.Core.Services {
         public static UsivityContext GetContext(DreamContext dreamContext) {
             var context = dreamContext.GetState<UsivityContext>();
             if(context == null) {
-                throw new DreamException("UsivityContext.Current is not set, because the current DreamContext does not contain a reference");
+                throw new DreamException("DreamContext does not contain a reference to UsivityContext");
             }
             return context;
         }
 
         //--- Properties ---
         public User User { get; set; }
-        public Organization Organization { get; set; }
+        public XUri ApiUri { get; set; }
 
         //--- Methods ---
         public void Dispose() {}

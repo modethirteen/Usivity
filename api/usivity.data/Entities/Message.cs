@@ -2,32 +2,37 @@
 using System.Collections.Generic;
 using System.Globalization;
 using MindTouch.Xml;
+using Usivity.Data.Connections;
 
 namespace Usivity.Data.Entities {
 
     public class Message : IEntity {
 
-        //--- Class Properties ---
-        public enum MessageStreams { Open, User }
-
         //--- Properties ---
         public string Id { get; private set; }
-        public string Source { get; set; }
+        
+        public SourceType Source { get; set; }
         public string SourceMessageId { get; set; }
+        public string SourceInReplyToMessageId { get; set; }
+        public string SourceInReplyToIdentityId { get; set; }
+
         public string ParentMessageId { get; set; }
-        public List<string> MessageThreadIds { get; private set; }
-        public SourceIdentity Author { get; set; }
+        public IList<string> MessageThreadIds { get; private set; }
+        public Identity Author { get; set; }
+        public string UserId { get; set; }
         public string Body { get; set; }
         public DateTime Timestamp { get; set; }
-        public DateTime? Expires { get; private set; }
-        public DateTime? NextAccess { get; set; }
-        public MessageStreams Stream { get; set; }
-        
+        public DateTime Expires { get; private set; }
+        public bool OpenStream { get; set; }
+
         //--- Constructors ---
-        public Message(MessageStreams stream) {
+        public Message() {
             Id = UsivityDataSession.GenerateEntityId(this);
-            MoveToStream(stream);
             MessageThreadIds = new List<string>();
+            OpenStream = true;
+
+            //TODO: make expiration datetime configurable
+            Expires = DateTime.UtcNow.AddDays(4);
         }
 
         //--- Methods ---
@@ -36,25 +41,18 @@ namespace Usivity.Data.Entities {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            var datetime = Timestamp.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+            var datetime = Timestamp.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+            var author = new XDoc("author")
+                .Elem("name", Author.Name ?? Author.Id);
+            if(Author.Avatar != null) {
+                author.Elem("uri.avatar", Author.Avatar.ToString());
+            }
             return new XDoc(resource)
                 .Attr("id", Id)
-                .Elem("source", Source)
-                .Start("author")
-                    .Elem("name", Author.Name)
-                    .Elem("uri.avatar", Author.Avatar.ToString())
-                .End()
+                .Elem("source", Source.ToString().ToLowerInvariant())
+                .AddAll(author)
                 .Elem("body", Body)
-                .Elem("timestamp", datetime)
-            .EndAll();
-        }
-
-        public void MoveToStream(MessageStreams stream) {
-            if(stream == MessageStreams.Open) {
-                Expires = DateTime.UtcNow.AddDays(4);
-                NextAccess = DateTime.UtcNow;
-            }
-            Stream = stream;
+                .Elem("timestamp", datetime);
         }
 
         public void SetParent(Message message) {

@@ -1,10 +1,8 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Web;
-using MindTouch.Xml;
+using Usivity.Core.Services.Logic;
 using Usivity.Data.Entities;
 
 namespace Usivity.Core.Services {
@@ -16,56 +14,57 @@ namespace Usivity.Core.Services {
         [DreamFeature("GET:users/authentication", "Get user authentication")]
         [DreamFeatureParam("redirect", "uri?", "Redirect to uri upon authentication")]
         public Yield GetUserAuthentication(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var users = Resolve<IUsers>(context);
+            var auth = Resolve<IUsivityAuth>(context);
             User user;
             string authToken;
             if(request.Headers.Authorization != null) {
                 string username, password;
                 HttpUtil.GetAuthentication(context.Uri.ToUri(), request.Headers, out username, out password);
-                password = _auth.GetSaltedPassword(password);
-                user = _data.GetAuthenticatedUser(username, password);
-                authToken = _auth.GenerateAuthToken(user);
+                password = auth.GetSaltedPassword(password);
+                user = users.GetAuthenticatedUser(username, password);
+                authToken = auth.GenerateAuthToken(user);
             }
             else {
-                authToken = _auth.GetAuthToken(request);
-                user = _auth.GetAuthenticatedUser(authToken);
+                authToken = auth.GetAuthToken(request);
+                user = auth.GetUser(authToken);
             }
-            if(user == null) {
+            if(user == null || user.IsAnonymous) {
                 response.Return(new DreamMessage(DreamStatus.Unauthorized, new DreamHeaders()));
                 yield break;
             }
-
             var redirect = XUri.TryParse(context.GetParam("redirect", null));
-            var expires = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_authExpiration));
-            var setCookie = _auth.GetAuthCookie(authToken, expires).ToSetCookieHeader();
-            var auth = redirect != null ? DreamMessage.Redirect(redirect) : DreamMessage.Ok(MimeType.TEXT_UTF8, setCookie);
-            auth.Headers["Set-Cookie"] = setCookie;
-            response.Return(auth);
+            var setCookie = auth.GetAuthCookie(authToken, Self.Uri.AsPublicUri()).ToSetCookieHeader();
+            var authResponse = redirect != null ? DreamMessage.Redirect(redirect) : DreamMessage.Ok(MimeType.TEXT_UTF8, setCookie);
+            authResponse.Headers["Set-Cookie"] = setCookie;
+            response.Return(authResponse);
             yield break;
         }
 
         [DreamFeature("GET:users", "Get all users")]
-        protected Yield GetUsers(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var users = _data.GetUsers(UsivityContext.Current.Organization);
-            var doc = new XDoc("users")
-                .Attr("count", users.Count())
-                .Attr("href", _usersUri);
-            foreach(var user in users) {
-                doc.Add(GetUserXml(user));
-            }
-            doc.EndAll();
+        internal Yield GetUsers(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var doc = Resolve<IUsers>(context).GetUsersXml();
+            response.Return(DreamMessage.Ok(doc));
+            yield break;
+        }
+
+        [DreamFeature("GET:users/current", "Get current user")]
+        protected Yield GetCurrentUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var doc = Resolve<IUsers>(context).GetCurrentUserXml();
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
 
         [DreamFeature("GET:users/{userid}", "Get user")]
         [DreamFeatureParam("userid", "string", "User id")]
-        protected Yield GetUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            var user = _data.GetUser(context.GetParam<string>("userid"), UsivityContext.Current.Organization);
+        internal Yield GetUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+            var users = Resolve<IUsers>(context);
+            var user = users.GetUser(context.GetParam<string>("userid"));
             if(user == null) {
                 response.Return(DreamMessage.NotFound("The requested user could not be located"));
                 yield break;
             }
-            var doc = GetUserXml(user);
+            var doc = users.GetUserXml(user);
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
@@ -88,16 +87,13 @@ namespace Usivity.Core.Services {
                 response.Return(DreamMessage.BadRequest("Request is missing a value for \"password\""));
                 yield break;
             }
-            if(_data.UserExists(name)) {
+            var users = Resolve<IUsers>(context);
+            if(users.UsernameExists(name)) {
                 response.Return(DreamMessage.Conflict("The requested user name has already been taken"));
             }
-            var user = new User(name);
-            user.SetOrganizationRole(UsivityContext.Current.Organization.Id, User.UserRole.Member);
-            user.CurrentOrganizataion = UsivityContext.Current.Organization.Id;
-            user.Password = _auth.GetSaltedPassword(password);
-            _data.SaveUser(user);
-
-            var doc = GetUserXml(user);
+            var user = users.GetNewUser(name, password);
+            users.SaveUser(user);
+            var doc = users.GetUserXml(user);
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
@@ -105,20 +101,15 @@ namespace Usivity.Core.Services {
         [DreamFeature("PUT:users/{userid}/password", "Change user password")]
         [DreamFeatureParam("userid", "string", "User id")]
         protected Yield UpdateUserPassword(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
-            if(context.GetParam<string>("userid") != UsivityContext.Current.User.Id) {
+            var user = Resolve<IUsers>(context).GetCurrentUser();
+            if(context.GetParam<string>("userid") != user.Id) {
                 response.Return(DreamMessage.Forbidden("You can only change your own user password"));
                 yield break;
             }
-            var password = request.ToText();
-            UsivityContext.Current.User.Password = _auth.GetSaltedPassword(password);
-            _data.SaveUser(UsivityContext.Current.User);
+            var users = Resolve<Users>(context);
+            users.SavePassword(user, request.ToText());
             response.Return(DreamMessage.Ok(MimeType.TEXT_UTF8, "Your password has been successfully updated"));
             yield break;
-        }
-
-        //--- Methods ---
-        private XDoc GetUserXml(User user, string relation = null) {
-            return user.ToDocument(relation).Attr("href", _usersUri.At(user.Id));
         }
     }
 }
