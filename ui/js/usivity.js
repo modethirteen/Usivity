@@ -7,7 +7,7 @@ $.getScript("/js/modal.js");
 $.getScript("/js/forms.js");
 $.getScript("/js/animations.js");
 $.getScript("/js/search.js");
-$.getScript("/js/response.js");
+$.getScript("/js/error.js");
 $.getScript("/js/timeago.js");
 
 // API Libraries

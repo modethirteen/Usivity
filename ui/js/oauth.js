@@ -14,7 +14,7 @@ $(document).ready(function() {
 	
 	var authparams = ("&oauth_token=" + authtoken + "&oauth_verifier=" + authverifier); //TODO:  POST THESE CONTENTS IN THE BODY, NOT AS QUERY PARAMS.  SECURITY CONCERNS.  TALK TO ANDY
 	
-	var apiurl = (usivity.apiroot.url + usivity.sourcetwitter.url + apiverb + authparams);
+	var apiurl = (api.root + usivity.sourcetwitter.url + apiverb + authparams);
 	
 	connection = {};
 	connection.type 	= "oauth";

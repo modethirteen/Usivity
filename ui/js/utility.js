@@ -18,7 +18,7 @@ function apiuri(uri,params)
 		// If params isn't set just append the standard params
 		if (!params)
 		{
-			var params = usivity.apiformat.value;	
+			var params = api.params;	
 		}
 		
 		// Cut off any appended params
@@ -38,9 +38,9 @@ function apiuri(uri,params)
 	
 		
 		// CHECK FOR DOMAIN NAME OR NOT
-		if (uri.indexOf(usivity.apiroot.url) == -1) // TODO:  CLEAN UP THIS LOGIC
+		if (uri.indexOf(api.root) == -1) // TODO:  CLEAN UP THIS LOGIC
 		{
-			var fulluri = (usivity.apiroot.url + uri + queryparams);// TODO:  Change URL to URI
+			var fulluri = (api.root + uri + queryparams);// TODO:  Change URL to URI
 		}
 		else
 		{
@@ -57,8 +57,10 @@ function fixmessage(text)
 	{
 		// Convert URL to HREF
 		var text = text.replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig,'<a class="external" target="_new" href="$1">$1</a>'); 
+		
 		// Link Twitter Names
 		var text = text.replace(/(^|\s)@(\w+)/g, '$1<a target="_new" class="profile" href="http://www.twitter.com/#!/$2">@$2</a>');
+		
 		return text;
 	}
 	else
@@ -110,14 +112,4 @@ function ISODateString(d)
 		+ pad(d.getUTCHours())+':'
 		+ pad(d.getUTCMinutes())+':'
 		+ pad(d.getUTCSeconds())+'Z'
-}
-
-// FILL EMPTY TAGS
-function fill_empty()
-{
-	$(".empty").each( function() {
-		var p = $(this).parent();
-		var message = p.attr("empty");
-		$(this).html(message);
-	});	
 }

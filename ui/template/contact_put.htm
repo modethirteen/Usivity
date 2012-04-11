@@ -1,9 +1,9 @@
 <h1>Contact Details</h1>
 
 <div class="panel">
-	<form class="contact_post" id="{@id}" >
+	<form class="contact_put" id="{contact_@id}" href="{contact_@href}">
 			<div class="buttons">
-				<button type="submit" class="button apply">save</button>
+				<button type="submit" class="button apply">save changes</button>
 				<a href="{contact_@href}" id="{contact_@id}" class="button contact_delete">delete</a>
 				<button type="submit" class="button cancel">cancel</button>
 			</div>
@@ -26,7 +26,7 @@
 			<input type="text" start="age" value="{contact_age}" class="contact_age contactdetail short"/>
 			<input type="text" start="gender" value="{contact_gender}" class="contact_gender contactdetail short"/>
 			<div class="break">
-				<input type="text" start="general location" value="{contact_locationgeneral}" class="contact_locationgeneral contactdetail long"/>
+				<input type="text" start="general location" value="{contact_location}" class="contact_locationgeneral contactdetail long"/>
 			</div>
 			
 			<h3>Contact Details</h3>
@@ -40,18 +40,18 @@
 			</div>
 			
 			<h3>Company Details</h3>
-			<input type="text" start="company name" class="company_name contactdetail"/>
-			<input type="text" start="company phone" class="company_phonenumber contactdetail"/>
+			<input type="text" start="company name" value="{contact_company_name}" class="company_name contactdetail"/>
+			<input type="text" start="company phone" value="{contact_company_phone}" class="company_phonenumber contactdetail"/>
 			<!--<input type="text" start="fax number" class="company_faxnumber contactdetail"/>-->
-			<input type="text" start="address" class="company_address contactdetail long"/>
+			<input type="text" start="address" value="{contact_company_address}" class="company_address contactdetail long"/>
 			<div class="break">
-				<input type="text" start="city" class="company_city contactdetail"/>
-				<input type="text" start="state" class="company_state contactdetail"/>
-				<input type="text" start="zip" class="company_zip contactdetail short"/>
+				<input type="text" start="city" value="{contact_company_city}" class="company_city contactdetail"/>
+				<input type="text" start="state" value="{contact_company_state}" class="company_state contactdetail"/>
+				<input type="text" start="zip" value="{contact_company_zip}" class="company_zip contactdetail short"/>
 			</div>
-			<input type="text" start="industry" class="company_zip contactdetail long"/>
-			<input type="text" start="revenue" class="company_zip contactdetail"/>
-			<input type="text" start="competitors" class="company_zip contactdetail long"/>
+			<input type="text" start="industry" value="{contact_company_industry}" class="company_industry contactdetail long"/>
+			<input type="text" start="revenue" value="{contact_company_revenue}" class="company_revenue contactdetail"/>
+			<input type="text" start="competitors" value="{contact_company_competitors}" class="company_competitors contactdetail long"/>
 			
 			
 			<h3>Social Networks</h3>
@@ -76,14 +76,14 @@
 	<h3>Message Thread</h3>
 	<div class="message_threads" empty="There are no messages in the queue.">
 {foreach
-{in:message}
+{in:contact_messages.conversations_message}
 		<div class="message_thread">
 			<span class="contact_picture contact_picture_large"> 
 				<img src="{author_uri.avatar}" />
 			</span>
 			<div class="message_details">
 				<span class="contact_name">
-					<a target="_new" class="profile" href="http://twitter.com/author_name">{author_name}</a>
+					<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
 				</span>
 				<div class="message_text">
 					{body}

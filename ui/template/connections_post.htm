@@ -1,9 +1,17 @@
 <h1>Account Connections</h1>
+
+<div class="control_panel_nav">
+	<a href="template/subscriptions_post.htm" id="/api/1/subscriptions" class="popup cp_subscriptions">Subscriptions</a>
+	<a href="template/connections_post.htm" id="/api/1/connections" class="selected popup cp_sources">Connections</a>
+	<a href="template/users_post.htm" id="/api/1/users" class="popup cp_users">Users</a>
+	<a href="template/account_billing.htm" class="popup cp_billing">Billing</a>
+</div>
+
 <p class="help">Help instructions....what are connections??</p>
 <div class="connections">
 {foreach
-	{in:source}
-		<span>{@id}</span>
-		<a href="">Delete</a>
+	{in:connections_connection}
+		<span>{source}</span>
+		<a href="{@href}">Delete</a>
 foreach}
 </div> 

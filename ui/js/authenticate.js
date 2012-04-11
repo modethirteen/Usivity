@@ -1,12 +1,10 @@
 $(document).ready(function() {
 	
 	openstreamparams = {
-		"stream" : "open",
-		"dream.out.format" : "json",
-		"dream.out.pre": cb()
+		"dream.out.format" : "json"
 	};
-	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
-	
+	var objecturi = apiuri(api.current,openstreamparams);
+		
 	// CHECK FOR AUTHENTICATION
 	$.ajax({
 		type: "GET",
@@ -17,17 +15,13 @@ $(document).ready(function() {
 		jsonpCallback: 'callback',
 		mimeType: 'application/json',
 		contentType: 'application/json;',
+		success: function(data) {
+			
+			// IF THE USER IS AUTHENTICATED, LOAD THE STREAM AND CONTACT PANEL
+			loaddata();	
+		},
         error:function (xhr, ajaxOptions, thrownError){	        
-	        //TODO:  CREATE FUNCTION SERVERERROR(error#) that processes all server errors, consolidate with applications erros function
-	        
-            if (xhr.status == "403")
-            {
-	            buildModal("","/template/login.htm");
-            }
-            if (xhr.status == "503")
-            {
-	         	buildModal("","/error/error_unavailable.htm   ");
-            }
+	        errorMessage(xhr.status);
         }
 	});
 });

@@ -3,30 +3,40 @@
 	
 	FUNCTIONS
 		- loadopenstream()
-		- loaduserstream()
 		- loadusercontacts()
 */
 
-$(document).ready(function() {
-	
-	// LOAD OPEN STREAM
-	// TODO: ONLY TRY TO LOAD THE STREAMS IF THE USER IS AUTHENTICATED
-	
- 	$(window).load(function() {	
-	 	// 0 second delay for loading my stream
-	 	loadopenstream();
-	 	setInterval("newopenstreammessage()",usivity.messageinterval.value);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
- 	});
+// TRIGGER ALL DATA LOADING EVENTS
+function loaddata()
+{
+	 // LOAD THE OPENSTREAM
+	 loadopenstream();
+	 setInterval("newopenstreammessage()",app.messagedelay);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
+ 	
+ 	 // LOAD CONTACTS
+	 setTimeout("loadusercontacts()",1000);
+	 
+	 // LOAD USER PANEL
+	 setTimeout("loaduserpanel()",2000);
+}
 
- 	// LOAD MY CONTACTS	
- 	// TODO: ONLY TRY TO LOAD THE STREAMS IF THE USER IS AUTHENTICATED
- 	
- 	$(window).load(function() {	
-	 	// 1 second delay for loading my contacts
-	 	setTimeout("loadusercontacts();",1000);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
- 	});
- 	
-});
+// LOAD USER CREDENTIALS LABEL
+function loaduserpanel()
+{
+	userparams = {
+		"dream.out.format" 	: "jsonp",
+		"dream.out.pre"	: cb()
+	};
+	var href = "/template/user_panel.htm";
+	var objecturi = apiuri(api.current,userparams);
+		
+	$.get(href, function(templatehtml) {	
+		template(templatehtml, objecturi, "null",function(html) {
+			$(".header .menu").html(html);
+			$(".header .menu").fadeIn();
+		});
+	});
+}
 
 // LOAD THE OPEN STREAM
 function loadopenstream()
@@ -35,21 +45,22 @@ function loadopenstream()
 	
 	// Calculate $timeago = 120 minutes ago
 	var now = new Date();
-	var timeago = new Date().setDate(now.getDate()-7);
-	var timeago = ISODateString(new Date(timeago));
+	timestamp = ISODateString(now);
+	timeago = new Date().setDate(now.getDate()-1);
+	timeago = ISODateString(new Date(timeago));
 	
 	openstreamparams = {
 		"stream" : "open",
 		"dream.out.format" : "jsonp",
 		"dream.out.pre": cb(),
 		"start" : timeago,
-		"limit" : 20
+		"limit" : app.messagelimit
 	};
-	var objecturi = apiuri(usivity.openstream.url,openstreamparams);
+	var objecturi = apiuri(api.messages,openstreamparams);
 	
  	$.get(templateuri, function(templatehtml) {
 		template(templatehtml, objecturi, "messages_message", function(html) {
-			
+
 			$(".openstream .target tbody").append(html);
 			$(".openstream").removeClass("loading");
 			$(".openstream .target").fadeIn();
@@ -58,17 +69,13 @@ function loadopenstream()
 			// Process links
 			$(".message_new").each( function() {
 				var text = $(this).find(".message_text").html();
-				// var text = fixmessage($(this).find(".message_text").html());
+				var text = fixmessage($(this).find(".message_text").html());
 				$(this).find(".message_text").html(text);
 				$(this).removeClass("message_new");	
 			});
 			
 			
 			// Add timestamp row
-			var now = new Date();
-			var timestamp = ISODateString(now);
-			var timeago = now.setMinutes ( now.getMinutes() - 120 );
-			var timeago = ISODateString(new Date(timeago));
 			var timerow = '<tr class="time_row"><td colspan="9" >Between (<span class="timeago" title="' + timestamp + '"></span>) and (<span class="timeago" title="' + timeago + '"></span>)</td></tr>';
 			$(".openstream .target tbody").prepend(timerow);
 			jQuery(".timeago").timeago();
@@ -77,7 +84,7 @@ function loadopenstream()
 	});	
 }
 
-// LOAD THE CONTACTS - DELAYED FOR 4 SECOND TO AVOID TIMING CONFLICTS WITH THE TEMPLATING ENGINE
+// LOAD THE CONTACTS - DELAYED FOR 1 SECOND TO AVOID TIMING CONFLICTS WITH THE TEMPLATING ENGINE
 function loadusercontacts()
 {
 	
@@ -87,7 +94,7 @@ function loadusercontacts()
 		"dream.out.format" : "jsonp",
 		"dream.out.pre": cb()
 	};
-	var objecturi = apiuri(usivity.contacts.url,contactparams);
+	var objecturi = apiuri(api.contacts,contactparams);
  	
  	$.get(templateuri, function(templatehtml) {
 		template(templatehtml, objecturi, "contacts_contact", function(html) {

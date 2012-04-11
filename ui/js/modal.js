@@ -50,27 +50,21 @@ function buildModal(ele, href)
 	{
 		var link		= ele;
 		var src 		= link.attr("href");
-		var objecturi	= link.attr("id");
+		var objecturi	= link.attr("id");		
 	}
 	else if (href && href !="")
 	{
 		var src = href;
 	}
-
-// 	var type	= "";  //TODO:  MOVE THIS TO A FUNCTION PARAMETER
-// 	if (link.hasClass("dialog"))
-// 	{
-// 		var type = "modalsmall";
-// 	}
 		
 	// TODO:  GET RID OF THIS IF STATEMENT
 	if (objecturi)
 	{		
-		var objecturi = apiuri(objecturi,usivity.apiformat.value);
+		var objecturi = apiuri(objecturi,api.params);
+		
 		$.get(src, function(templatehtml) {		
 			template(templatehtml, objecturi, "null",function(html) {
 				$(".modal .target").html(html);
-				fill_empty();
 				showmodal();	
 			});
 		});

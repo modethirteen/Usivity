@@ -28,9 +28,8 @@ $(document).ready( function() {
 			success: function(results, status, xhr)
 			{
 				document.cookie = results;
-				window.location.href = "/index.htm"; //TODO:  GET RID OF THIS!! DON'T REQUIRE A SCREEN REFRESH.  ONCE AUTHENTICATED, LOAD ALL OF THE REST OF THE JAVASCRIPT PROCESSES
-				// TODO:  STOP ALL OTHER API CALLS FROM LOADING IF THE USER IS NOT AUTHENTICATED
-				
+				loaddata();
+				closeModal();
 			},
 			error: function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);

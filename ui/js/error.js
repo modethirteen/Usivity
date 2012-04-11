@@ -7,6 +7,22 @@
 		-
 */
 
+
+function errorMessage (errno)
+{
+	var errmap = {
+		503 : "/error/error_unavailable.htm",
+		400 : "/error/error_404.htm",
+		403 : "/template/login.htm"
+	}
+	
+	if (errmap[errno])
+	{
+		buildModal("",errmap[errno]);	
+	}
+	return false;
+}
+
 $(document).ready( function() {
 	
 	// ADD ERROR/SUCCESS MESSAGE TO FORMS

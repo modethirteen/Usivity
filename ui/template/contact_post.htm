@@ -1,7 +1,12 @@
 <h1>Create New Contact</h1>
 
 <div class="panel">
-	<form class="contact_post" id="{@id}" >
+	<h3>Some Content Here</h3>
+	<p class="help">Some help content here</p>
+</div>
+
+<div class="panel_main">
+	<form class="contact_post">
 			<div class="buttons">
 				<button type="submit" class="button apply">create new contact</button>
 				<button type="submit" class="button cancel">cancel</button>
@@ -25,7 +30,7 @@
 			<input type="text" start="age" value="{contact_age}" class="contact_age contactdetail short"/>
 			<input type="text" start="gender" value="{contact_gender}" class="contact_gender contactdetail short"/>
 			<div class="break">
-				<input type="text" start="general location" value="{contact_locationgeneral}" class="contact_locationgeneral contactdetail long"/>
+				<input type="text" start="general location" value="{contact_location}" class="contact_locationgeneral contactdetail long"/>
 			</div>
 			
 			<h3>Contact Details</h3>
@@ -59,8 +64,4 @@
 			<input type="text" start="twitter" value="{contact_identity.twitter}"  class="contact_socialnetwork contact_twitter contactdetail long"/>
 			<input type="text" start="google" value="{contact_identity.google}"  class="contact_socialnetwork contact_google contactdetail long"/>
 	</form>
-</div>
-<div class="panel_main">
-	<h3>Some Content Here</h3>
-	<p class="help">Some help content here</p>
 </div>

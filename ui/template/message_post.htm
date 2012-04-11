@@ -1,9 +1,9 @@
 <h1>Reply</h1>
 {in:message}
 <div class="panel">
-	<form class="contact_post" id="{@id}" >
+	<form class="contact_post">
 			<div class="buttons">
-				<button type="submit" class="button apply">save</button>
+				<button type="submit" class="button apply">create new contact</button>
 				<button type="submit" class="button cancel">cancel</button>
 			</div>
 			
@@ -12,6 +12,7 @@
 	
 			<span class="contact_details">
 				<span class="contact_picture contact_picture_large">
+					<img src="{author_uri.avatar}" />
 				</span>
 				<input type="text" start="first name" class="contact_firstname"/>
 				<input type="text" start="last name" class="contact_lastname"/>
@@ -79,7 +80,7 @@
 			</span>
 			<div class="message_details">
 				<span class="contact_name">
-					<a target="_new" class="profile" href="http://twitter.com/author_name">{author_name}</a>
+					<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
 				</span>
 				<div class="message_text">
 					{body}

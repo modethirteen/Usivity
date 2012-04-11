@@ -69,7 +69,6 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 				obj = objectref;	
 			}
 			
-			
 			// REPLACE THE TEMPLATE HTML WITH OBJECT VARIABLES
 			var returnhtml = "";
 			
@@ -87,9 +86,15 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 			// IF THERE WAS A FOREACH, THEN REPLACE JUST THE FOREACH CONTENT
 			if (fullhtml)
 			{
+				// TODO:  CLOSE OFF THE MARKUP FOR THE FOREACH  {foreach}  {/foreach}
 				returnhtml = fullhtml.replace(new RegExp('\{foreach([^\n]*\n+)+foreach\}', "g"),returnhtml);
 				returnhtml = replacevariable(returnhtml,objectref); // TODO:  THIS NEEDS TO ONLY APPLY TO THE "REMAINING HTML" NOT THE FULL HTML
 			}
+			
+			// REPLACE ALL REMAINING (UNMAPPED/UNWRITTERN) VARIABLES WTIH ""
+			returnhtml = returnhtml.replace(new RegExp('\{(.*?)\}', "g"),"");
+			
+			//
 			
 			callback(returnhtml);
 		}
@@ -100,14 +105,61 @@ function replacevariable(templatehtml,objectref)
 {
 	if (typeof objectref !="undefined")
 	{
+		// LOCATE CONDITIONAL (IF) STATEMENTS  {if:xxx}    {/if}
+		statements = templatehtml.match(new RegExp('\{if:(.*?)\}', "g"));
+		if (statements)
+		{
+			$.each(statements, function(key,value)
+			{
+				// ISOLATE THE CONDITIONAL VARIABLE AND CHECK TO SEE IF IT EXISTS
+				var val = value.replace("{if:","");
+				var val = val.replace("}","");
+				
+				// TODO: GET CODE TO LOOP THROUGH NESTED VARIABLES REFERENCES				
+				
+				//  OBJECT 	= NONE
+				//  STATE   = NEGATIVE
+				if( (typeof objectref[val] == "undefined" && val.indexOf("!") == -1) )
+				{
+					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+\{if\}', "g"),"");
+				}
+				
+				//  OBJECT 	= EXISTS
+				//  STATE   = NEGATIVE
+				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") == -1) )
+				{
+					//templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+\{if\}', "g"),"");
+					templatehtml = templatehtml.replace('{if:' + val + '}',"");
+					templatehtml = templatehtml.replace('{if}',"");
+				} 
+				
+				//  OBJECT 	= EXISTS
+				//  STATE   = POSITIVE
+				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") >= 0) )
+				{
+					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+\{!if\}', "g"),"");
+				}  
+				
+			});	
+			
+			// REMOVE ALL OF THE {if:}  TAGS
+			var templatehtml = templatehtml.replace(new RegExp('\{if:(.*?)\}', "g"),"");
+			var templatehtml = templatehtml.replace("{if}","");
+		}
+
+		
 		// REPLACE ALL TEMPLATE VARIABLES
 		var matches = templatehtml.match(new RegExp('\{(.*?)\}', "g"));
 		if (matches)
 		{
-			$.each(matches, function(key, value){
+			$.each(matches, function(key, value)
+			{
 			
 				// Remove brackets {} from template variable
-				var val = value.substring(1,value.length-1);  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
+				var val = value.substring(1,value.length-1);  // TRY TO GET RID OF .LENGTH.  USE .EACH
+				
+				
+				// CHECK IF THE TEMPLATE VARIABLE IS NESTED (_)
 				if (val.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
 				{
 					var arr = val.split("_");
@@ -117,38 +169,30 @@ function replacevariable(templatehtml,objectref)
 						var pointer = objectref[arr[0]];
 						arr.splice(0,1);
 					
-						for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
+						// LOOP THROUGH NESTED OBJECTS TO FIND THE TEMPLATED VALUE
+						for (i=0;i<=arr.length-1;i++)  // TODO:  TRY TO GET RID OF .LENGTH.  USE .EACH
 						{
 							pointer = pointer[arr[i]];
 						}
+						
+						// REPLACE THE VARIABLE WITH THE OBJECT VALUE (pointer)
 						if(typeof pointer != "undefined")
 						{
 							templatehtml = templatehtml.replace(value, pointer);
 						}
-						else
-						{
-							templatehtml = templatehtml.replace(value, "");
-						}
-					}
-					else
-					{
-						templatehtml = templatehtml.replace(value, "");	
 					}
 				}
 				else
 				{
+					// REPLACE THE NON-NESTED VARIABLES
 					if(typeof objectref[val] != "undefined")
 					{
 						templatehtml = templatehtml.replace(value, objectref[val]);
 					}
-					else
-					{
-						templatehtml = templatehtml.replace(value, "");
-					}
-				}	
+				}
 			});
 		}
 		return templatehtml;
 	}
-	return '<span class="empty">Empty</span>';
+	return "";
 }

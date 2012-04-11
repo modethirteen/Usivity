@@ -4,9 +4,6 @@
 	<td class="contact_klout">
 		<span class="source_klout">34</span>
 	</td>
-	<td class="message_sentiment">
-		<span class="sentiment_badge sentiment_positive">positive</span>
-	</td>
 	<td class="contact_picture">
 		<span>
 			<img src="{author_uri.avatar}">
@@ -24,9 +21,16 @@
 	<td class="message_source">
 		<span title="{source}" class="source_badge source_{source}">{source}</span>
 	</td>
+{if:!contact}
 	<td class="message_reply">
 		<a href="/template/message_post.htm" id="{@href}" class="popup message_reply">reply</a>
 	</td>
+{!if}
+{if:contact}
+	<td class="contact_edit">
+		<a href="/template/contact_put.htm" id="{contact_@href}" class="popup message_reply">contact</a>
+	</td>
+{if}
 	<td class="message_delete">
 		<a href="/template/message_delete.htm" id="{@href}" class="dialog message_delete">delete</a>
 	</td>
