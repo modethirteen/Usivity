@@ -12,6 +12,7 @@ $(document).ready( function() {
 	// POST AUTHENTICATION
 	$(".login").live("submit", function() {
 		
+		var input = $(this).find(".user");
 		var user = $(this).find(".user").val();
 		var pass = $(this).find(".password").val();
 		
@@ -33,8 +34,7 @@ $(document).ready( function() {
 			},
 			error: function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);
-				//TODO:  CREATE FUNCTION SERVERERROR(error#) that processes all server errors, consolidate with applications erros function
-				// SAME TODO IS IN authenticate.js
+				error(input,xhr.statusText);
 			} 
 		});
 		

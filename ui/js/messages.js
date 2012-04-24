@@ -14,26 +14,28 @@ $(document).ready(function() {
 		var message 	= $(this).find(".message_data").val();
 		
 		messageparams = {
-			"dream.out.format" : "json"
+			"dream.out.format" 	: "json"
 		};
 		
-		var uri = apiuri(uri,messageparams);
+		var objecturi = apiuri(uri,messageparams);
 		
-		// TODO:  ADD RESPONSE FOR FAIL EVENT
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
-			data: message, 
-			url: uri,
+			data: message,
+			dataType: "json",
+			mimeType: 'application/json',
+			contentType: 'application/json',
+			url: objecturi,
 			success: function(results)
 			{
 				loadusercontacts();
-				closeModal();
 			},
-			error: function(results) 
-			{
-				console.log("failed");	
-			}
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+				console.log(xhr.status);
+				console.log(thrownError);
+			}  
 		});
 		
 		return false;	

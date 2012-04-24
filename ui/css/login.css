@@ -13,15 +13,3 @@ body {
 	margin:5px 0 10px 0;
 	overflow-x:hidden;
 }
-.usivity {
-	background:none;	
-	background-image:url(/img/logo_350.gif);
-	background-repeat:no-repeat;
-	background-position:center center;
-	height:110px;
-}
-.powered {
-	text-align:center;
-	font-size:.7em;
-	color:#999;	
-}

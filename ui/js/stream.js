@@ -9,11 +9,13 @@ function newopenstreammessage()
 {
 	var templateuri = "/template/message.htm"; // TODO:  PUT IN SETTINGS.jS
 	
-	// DETERMINE TIMES
+	// CALCULATE & SET TIMESTAMP (NOW)
 	var now = new Date();
-	timestamp = ISODateString(now);
-	timeago = new Date().setTime(now.getDate() - app.messagedelay);
-	timeago = ISODateString(new Date(timeago));
+	timestamp 	= ISODateString(now);
+	
+	// CALCULATE & SET TIMEAGO (-messageloadspan)
+	timeago = now.setSeconds(0,-app.messageinterval);
+	timeago 	= ISODateString(new Date(timeago));
 	
 	openstreamparams = {
 		"stream" : "open",
@@ -23,14 +25,13 @@ function newopenstreammessage()
 		"start" : timeago,
 		"limit" : 100
 	};
+	
 	var objecturi = apiuri(api.messages,openstreamparams);
  	
  	$.get(templateuri, function(templatehtml) {
-		template(templatehtml, objecturi, "null", function(html) {
-
-			// COUNT THE MESSAGES IN THE OPENSTREAM
+		template(templatehtml, objecturi, "null", function(html) 
+		{
 			
-						
 			// LOAD THE DATA INTO THE OPEN STREAM
 			$(".openstream .target tbody").prepend(html);
 			
@@ -39,17 +40,28 @@ function newopenstreammessage()
 				var text = $(this).find(".message_text").html();
 				var text = fixmessage($(this).find(".message_text").html());
 				$(this).find(".message_text").html(text);
-				$(this).removeClass("message_new");	
 			});
 			
 			// ADD THE TIMESTAMP
 			if ($(".message_new").length > 0)
 			{
 				// Add the timestamp row
-				var timerow = '<tr class="time_row"><td class="timeago" colspan="9" title="' + timeago + '"></td></tr>';
+				var timerow = '<tr class="time_row"><td class="timeago" colspan="9" title="' + timestamp + '"></td></tr>';
 				$(".openstream .target tbody").prepend(timerow);
 				jQuery(".timeago").timeago();
-			}			
+			}		
+			
+			// REMOVE THE .MESSAGE_NEW CLASS ON ALL NEW MESSAGES
+			$(".message_new").slideDown(50);
+			$(".message_new").removeClass("message_new");
 		});
 	});	
 }
+
+$(document).ready( function() {
+	
+	$(".tools_refresh").click( function() {
+		newopenstreammessage()
+		return false;
+	});
+});

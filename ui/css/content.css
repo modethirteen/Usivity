@@ -12,47 +12,69 @@ a:hover {
 	color:#dc8121;
 	text-decoration:underline;
 }
-/*Flow*/
-.first {
-	margin-top:0;	
+/*Paragraphs*/
+p {
+	line-height:1.5;
+	font-size:.8em;
+	text-shadow: #fff 1px 1px;
+	color:#333;
+	margin:0 0 10px 0;
 }
-.last {
-	margin-bottom:0;	
+p img {
+	float:left;
+	border:1px solid #ccc;
+	margin:0 10px 10px 0;
+	-webkit-box-shadow: 2px 2px 2px #999;
 }
-.break {
-	overflow:hidden;
-	clear:left;
+p .img-center {
+	margin:10px auto 20px auto;
+	display:block;
+	float:none;	
 }
-.clear {
-	clear:both;	
-}
-/*Headers*/
+/*HEADERS*/
 h2, h3, h4, h5, h6 {
 	color:#000;
 	font-family:myriad pro;
 	margin:0 0 5px 0;
 	padding:0 0 5px 0;
 	clear:left;
+	text-shadow: #fff 2px 2px;
 }
 h2 {
 	font-size:1.1em;
 	border-bottom:1px dotted #dcdcdc;
-	text-shadow: #fff 2px 2px;
 }
 h3 {
 	padding-top:15px;	
 }
-
-/*FORMS*/
-form {
-		
+/*DELETE*/
+.delete {
+	display:block;
+	width:12px;
+	height:12px;
+	font-size:0;
+	background-image:url(/img/icon_x.png);
 }
-.ititle {
+.delete:hover {
+	background-image:url(/img/icon_x_hover.png);
+}
+/*FORMS*/
+.ititle { /*TODO:  GET RID OF THIS, MOVE TO .FTITLE INSTEAD*/
 	display:block;
 	padding:10px 0 0 0;
 	font-size:.7em;
 	color:#333;	
 	clear:left;
+	text-shadow: #fff 1px 1px;
+}
+.ftitle {
+	display:block;
+	padding:3px 4px;
+	font-size:.7em;
+	color:#999;	
+	text-shadow: #fff 1px 1px;
+	width:162px;
+	float:left;
 }
 textarea,
 select,
@@ -64,6 +86,10 @@ input {/*TODO:  GET RID OF THIS, USE START INSTEAD*/
 	float:left;
 	margin:0 10px 5px 0;
 	-webkit-box-shadow: 1px 1px 1px #999;
+}
+input[type=checkbox] {
+	min-width:0;
+	float:none;	
 }
 select {
 	padding:2px;	
@@ -129,7 +155,7 @@ textarea {
 /*TABLES*/
 table {
 	width:100%;
-	margin-top:20px;
+	margin-top:10px;
 	border-collapse:separate;
 }
 tr.intoff {
@@ -138,8 +164,8 @@ tr.intoff {
 
 th {
 	font-size:1em;
-	border:0;
-	padding:5px;
+	border-bottom:1px solid #ccc;
+	padding:5px 5px 0 5px;
 	color:#000;
 	font-family: 'Myriad Pro','Helvetica';
 	text-shadow: #fff 1px 1px;
@@ -150,6 +176,14 @@ td {
 	border-bottom:1px dotted #ccc;
 	padding:5px;
 	font-size:.8em;
+}
+.center {
+	text-align:center;	
+}
+.center span,
+.center a {
+	display:block;
+	margin:0 auto;	
 }
 td.even {
 	background:#ffffda;	
@@ -166,6 +200,25 @@ tbody tr:hover {
 }
 tbody tr.time_row:hover {
 	background:none;	
+}
+/*FILTER TABLE*/
+th .filter {
+	text-align:center;
+	background-image:url(/img/icon_filter.png);
+	background-repeat:no-repeat;
+	background-position:center bottom;
+	display:block;
+	height:6px;
+	width:16px;
+	position:relative;
+	margin:6px auto 0 auto;
+	top:-6px;
+}
+th.col_filter:hover {
+	cursor:pointer;	
+}
+th:hover .filter {
+	background-image:url(/img/icon_filter_hover.png);	
 }
 /*BUTTONS*/
 .buttons {

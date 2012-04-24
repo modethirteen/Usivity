@@ -1,9 +1,13 @@
-$(document).ready(function() {
-	
+$(document).ready( function() 
+{
+	// RESIZE THE LAYOUT
+	resize();	
+
 	openstreamparams = {
 		"dream.out.format" : "json"
 	};
 	var objecturi = apiuri(api.current,openstreamparams);
+	
 		
 	// CHECK FOR AUTHENTICATION
 	$.ajax({

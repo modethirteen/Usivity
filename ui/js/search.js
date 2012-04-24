@@ -7,13 +7,6 @@
 */
 $(document).ready(function() {
 
-	$(window).resize(function() {
-		resize();
-	});
-	$(window).load(function() {
-		resize();
-	});
-	
 	/*SEARCH*/
 	$(".search input").keyup( function() {
 		var q = $(this).val();

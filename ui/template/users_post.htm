@@ -1,29 +1,51 @@
 <h1>Account Users</h1>
 
-<div class="control_panel_nav">
-	<a href="template/subscriptions_post.htm" id="/api/1/subscriptions" class="popup cp_subscriptions">Subscriptions</a>
-	<a href="template/connections_post.htm" id="/api/1/connections" class="popup cp_sources">Connections</a>
-	<a href="template/users_post.htm" id="/api/1/users" class="selected popup cp_users">Users</a>
-	<a href="template/account_billing.htm" class="popup cp_billing">Billing</a>
+<div class="panel">
+	<div class="control_panel_nav">
+		<a href="template/subscriptions_post.htm" id="/api/1/subscriptions" class="popup cp_subscriptions">Subscriptions</a>
+		<a href="template/connections_post.htm" id="/api/1/connections" class="popup cp_sources">Connections</a>
+		<a href="template/users_post.htm" id="/api/1/users" class="selected popup cp_users">Users</a>
+		<a href="template/account_billing.htm" class="popup cp_billing">Billing</a>
+	</div>
 </div>
 
-<p class="help">Help instructions....what are users, how much do I get charged??</p>
-<div class="users">
-	<form action="{users_@href}">
-		<span class="ititle">add new user</span>
-		<input type="text" name="email" class="constraints"/>
+<div class="panel_main">
+	<p class="help">Users are people that have access to your Usivity account.  Users can monitor activity, send message and create and modify contact data.</p>
+	<p class="help">Newly created users will be registered for a minimum period of one (1) month.  Your account will be charged for each newly created user. </p>
+	<div class="users">
+		<form action="{users_@href}">
+			<span class="ititle">add new user</span>
+			<input type="text" name="email" class="long constraints"/>
+			
+			<div class="buttons">
+				<button type="submit" class="add">add new user</button>
+			</div>
+		</form>
 		
-		<div class="buttons">
-			<button type="submit" class="add">add user</button>
-		</div>
-	</form>
-	<ul>
+		<table>
+			<thead>
+				<tr>
+					<th>Users</th>
+					<th>Role</th>
+					<th style="width:20%;" class="center">Delete</th>
+				</tr>
+			</thead>
+			<tbody>
 {foreach
-	{in:users_user}
-		<li>
-			<span>{name}</span>
-			<a href="{@href}" class="delete">delete</a>
-		</li>
+		{in:users_user}
+				<tr>
+					<td>
+						{name}
+					</td>
+					<td>
+						{role}
+					</td>
+					<td class="center">
+						<a href="{@href}" class="delete">delete</a>
+					</td>
+				</tr>
 foreach}
-	</ul>
-</div> 
+			</tbody>
+		</table>
+	</div> 
+</div>

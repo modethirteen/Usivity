@@ -1,29 +1,46 @@
 <h1>Account Subscriptions</h1>
 
-<div class="control_panel_nav">
-	<a href="template/subscriptions_post.htm" id="/api/1/subscriptions" class="selected popup cp_subscriptions">Subscriptions</a>
-	<a href="template/connections_post.htm" id="/api/1/connections" class="popup cp_sources">Connections</a>
-	<a href="template/users_post.htm" id="/api/1/users" class="popup cp_users">Users</a>
-	<a href="template/account_billing.htm" class="popup cp_billing">Billing</a>
+<div class="panel">
+	<div class="control_panel_nav">
+		<a href="template/subscriptions_post.htm" id="/api/1/subscriptions" class="selected popup cp_subscriptions">Subscriptions</a>
+		<a href="template/connections_post.htm" id="/api/1/connections" class="popup cp_sources">Connections</a>
+		<a href="template/users_post.htm" id="/api/1/users" class="popup cp_users">Users</a>
+		<a href="template/account_billing.htm" class="popup cp_billing">Billing</a>
+		<a href="template/announcements.htm" class="popup cp_announcements">Announcements</a>
+	</div>
 </div>
 
-<p class="help">Help instructions....what is a subscription??</p>
-<div class="subscriptions">
-	<form action="{subscriptions_@href}">	<!-- Replace id with HREF attribute from API -->
-		<span class="ititle">add new keyword</span>
-		<input type="text" name="constraints" class="constraints"/>
-		
-		<div class="buttons">
-			<button type="submit" class="add">add subscription</button>
-		</div>
-	</form>
-	<ul>
+<div class="panel_main">
+	<p class="help">Subscriptions are targeted keywords that Usivity uses to retrieve relevant content from the social web.  Usivity uses subscriptions to filter and organize content to deliver directly to your support agents.</p>
+	<div class="subscriptions">
+		<form action="{subscriptions_@href}">
+			<span class="ititle">add new keyword</span>
+			<input type="text" name="constraints" class="long constraints"/>
+			
+			<div class="buttons">
+				<button type="submit" class="add">add subscription</button>
+			</div>
+		</form>
+		<table>
+			<thead>
+				<tr>
+					<th>Subscription</th>
+					<th style="width:20%;" class="center">Delete</th>
+				</tr>
+			</thead>
+			<tbody>
 {foreach
-	{in:subscriptions_subscription}
-		<li>
-			<span>{constraints}</span>
-			<a href="{@href}" class="delete">delete</a>
-		</li>
+		{in:subscriptions_subscription}
+				<tr>
+					<td>
+						<span>{constraints}</span>
+					</td>
+					<td class="center">
+						<a href="{@href}" class="delete">delete</a>
+					</td>
+				</tr>
 foreach}
-	</ul>
-</div> 
+			</tbody>
+		</table>
+	</div>
+</div>

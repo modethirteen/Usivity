@@ -16,12 +16,8 @@
 	display:none;
 	box-shadow: 3px 3px 3px #666;
 	border:1px solid #333;
-	background: -moz-linear-gradient(top, #f4f4f4 0%, #ffffff 50%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(50%,#ffffff)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* IE10+ */
-	background: linear-gradient(top, #f4f4f4 0%,#ffffff 50%); /* W3C */
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#f4f4f4), color-stop(50%,#ffffff)); /* Chrome,Safari4+ */
+	background: -moz-linear-gradient(top, rgba(255,255,255,1) 34%, rgba(229,229,229,1) 100%); /* FF3.6+ */
 }
 .modal .target {
 	overflow-x:hidden;
@@ -30,12 +26,8 @@
 }
 /* DIALOG TITLE*/
 .modal .title {
-	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* IE10+ */
-	background: linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* W3C */
+	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
 	padding:3px;
 	margin-bottom:3px;
 	border:1px solid #ccc;
@@ -53,13 +45,14 @@
 .modal .panel {
 	width:250px;
 	float:left;
-	overflow:hidden;
+	overflow:visible;
+	border-right:1px dotted #ccc;
+	min-height:300px;
 }
 .modal .panel_main {
 	float:left;	
-	width:495px;
+	width:510px;
 	padding:0 0 0 20px;
-	border-left:1px dotted #ccc;
 	overflow:hidden;
 }
 /* DIALOG MODAL - USED FOR YES/NO FUNCTIONS*/
@@ -93,7 +86,4 @@
 	height:30px;
 	background-image:url(/img/modal_close.png);	
 	margin:-15px -15px 0 0;
-}
-.modal .close:hover {
-		
 }

@@ -101,10 +101,11 @@ $(document).ready( function() {
 			{
 				console.log(results);
 			},
-			error: function(results) 
-			{
-				console.log("failed");	
-			}
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+				console.log(xhr.status);
+				console.log(thrownError);
+			}  
 		});	
 		
 		return false;		

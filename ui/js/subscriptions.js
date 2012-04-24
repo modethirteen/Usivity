@@ -23,7 +23,7 @@ $(document).ready(function() {
 			url: uri,
 			success: function(results)
 			{
-				link.parents("li").remove(); 		
+				link.parents("tr").remove(); 		
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);
@@ -70,9 +70,9 @@ $(document).ready(function() {
 			{
 				input.val("");
 				input.focus("");
-				var newele = $(document.createElement('li'));
-				newele.html('<span>' + results.constraints + '</span><a href="' + results['@href'] + '" class="delete">delete</a>');
-				$(".subscriptions ul").append(newele);
+				var newele = $(document.createElement('tr'));
+				newele.html('<td>' + results.constraints + '</td><td class="center"><a href="' + results['@href'] + '" class="delete">delete</a></td>');
+				$(".subscriptions table tbody").append(newele);
 				
 			},
 			error:function (xhr, ajaxOptions, thrownError){

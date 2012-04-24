@@ -11,13 +11,13 @@ function loaddata()
 {
 	 // LOAD THE OPENSTREAM
 	 loadopenstream();
-	 setInterval("newopenstreammessage()",app.messagedelay);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
+	 setInterval("newopenstreammessage()",app.messageinterval);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	
  	 // LOAD CONTACTS
 	 setTimeout("loadusercontacts()",1000);
 	 
 	 // LOAD USER PANEL
-	 setTimeout("loaduserpanel()",2000);
+	 setTimeout("loaduserpanel()",1500);
 }
 
 // LOAD USER CREDENTIALS LABEL
@@ -43,11 +43,14 @@ function loadopenstream()
 {
 	var templateuri = "/template/message.htm"; // TODO:  PUT IN SETTINGS.jS
 	
-	// Calculate $timeago = 120 minutes ago
+
+	// CALCULATE & SET TIMESTAMP (NOW)
 	var now = new Date();
-	timestamp = ISODateString(now);
-	timeago = new Date().setDate(now.getDate()-1);
-	timeago = ISODateString(new Date(timeago));
+	timestamp 	= ISODateString(now);
+	
+	// CALCULATE & SET TIMEAGO (-messageloadspan)
+	timeago = now.setSeconds(0,-app.messageloadspan);
+	timeago 	= ISODateString(new Date(timeago));
 	
 	openstreamparams = {
 		"stream" : "open",
@@ -64,7 +67,6 @@ function loadopenstream()
 			$(".openstream .target tbody").append(html);
 			$(".openstream").removeClass("loading");
 			$(".openstream .target").fadeIn();
-			$(".openstream .target tbody tr").addClass("inton");
 			
 			// Process links
 			$(".message_new").each( function() {

@@ -1,0 +1,30 @@
+<h1>Account Connections</h1>
+
+<div class="panel">
+	<div class="control_panel_nav">
+		<a href="template/subscriptions_post.htm" id="/api/1/subscriptions" class="popup cp_subscriptions">Subscriptions</a>
+		<a href="template/connections_post.htm" id="/api/1/connections" class="selected popup cp_sources">Connections</a>
+		<a href="template/users_post.htm" id="/api/1/users" class="popup cp_users">Users</a>
+		<a href="template/account_billing.htm" class="popup cp_billing">Billing</a>
+		<a href="template/announcements.htm" class="popup cp_announcements">Announcements</a>
+	</div>
+</div>
+<div class="panel_main">
+	<h3>Create a New Email Connection</h3>
+	<p class="help">Instructions on creating a new email connection.</p>
+
+	<form action="/api/1/connections">
+		<div class="connection_details_email">
+			<input type="text" class="connection_email_address"/>
+			<input type="text" class="connection_host"/>
+			<input type="password" class="connection_password"/>
+			<span class="ftitle">email address</span>
+			<span class="ftitle">host</span>
+			<span class="ftitle">password</span>
+			
+			<div class="buttons">
+				<button type="submit" class="add">add email connection</button>
+			</div>
+		</div>
+	</form>
+</div>

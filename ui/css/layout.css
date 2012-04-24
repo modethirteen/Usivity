@@ -107,7 +107,7 @@ body {
 .col3 {
 	width:20%;	
 }
-/*Streams*/
+/*Streams  TODO:  RENAME TO MESSAGES*/
 .openstream .target {
 	display:none;
 }
@@ -126,25 +126,9 @@ body {
 .message_text {
 	margin:0 0 5px 0;
 }
-th .filter {
-	text-align:center;
-	background-image:url(/img/icon_filter.png);
-	background-repeat:no-repeat;
-	background-position:center bottom;
-	display:block;
-	height:6px;
-	width:16px;
-	position:relative;
-	margin:6px auto 0 auto;
-	top:-6px;
+.message_new {
+	display:none;
 }
-th.col_filter:hover {
-	cursor:pointer;	
-}
-th:hover .filter {
-	background-image:url(/img/icon_filter_hover.png);	
-}
-
 /*Message Thread*/
 .message_threads {
 	margin-bottom:180px;	
@@ -181,7 +165,6 @@ th:hover .filter {
 	position:absolute;
 	margin-top:370px;
 	width:495px;
-	background-image:url(/img/gradient_white_bg.png);
 	padding-top:10px;
 	height:160px;
 }
@@ -234,8 +217,6 @@ th:hover .filter {
 	position:absolute;
 	margin-top:485px;
 	width:240px;
-	background-image:url(/img/gradient_white_bg.png);
-	background-position:center top;
 	padding-top:30px;
 	height:25px;
 	z-index:5;
@@ -299,6 +280,11 @@ th:hover .filter {
 	line-height:.7em;
 	padding:10px 0 0 10px;
 }
+.tools a {
+	display:block;
+	margin:0 0 0 20px;
+	float:right;	
+}
 /*Messages - Sentiment Column*/
 .sentiment_badge {
 	display:block;
@@ -317,45 +303,29 @@ th:hover .filter {
 	background-image:url(/img/icon_sentiment_negative.png);	
 }
 /*Messages - Filter Dropdown*/
-.filter_dropdown {
+.filter td {
 	background:#fff;
-	position:absolute;
-	padding:5px;
-	display:none;
-	box-shadow: 3px 3px 3px #666;
-	border:1px solid #999;
-	border-top:2px solid #999;
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(50%,#ffffff)); /* Chrome,Safari4+ */
-	font-family:arial,verdana,helvetica;
-	z-index:5;
-	min-width:150px;
-	margin:-13px 0 0 0;
+	border-bottom:1px solid #ccc;
+	vertical-align:top;
+	display:none;
 }
-.filter_dropdown li {
-	font-size:.8em;
-	padding:5px 0;
+.filter td div {
+	padding:5px;
 }
-.filter_dropdown li span {
-	background-repeat:no-repeat;
-	padding:0 0 0 22px;
+.filter_col {
+	width:150px;
+	float:left;	
+}
+.close {
+	float:right;
+	font-size:0;
 	display:block;
+	width:30px;
+	height:30px;
+	background-image:url(/img/modal_close.png);	
+	margin:-15px -15px 0 0;
 }
-.filter_dropdown li a {
-	color:#999;	
-}
-.filter_dropdown li a:hover {
-	color:#1F8DD6;	
-}
-.filter_dropdown .source_klout {
-	float:left;
-	padding:0;
-	text-shadow: none;
-	line-height:auto;
-	line-height:11px;
-	font-size:11px;
-	margin:0 5px 0 0;
-}
-
 /* MODAL - Contact Details */
 
 .modal .contact_socialnetwork {
@@ -376,7 +346,6 @@ th:hover .filter {
 .modal .contact_google {
 	background-image:url(/img/icon_google.png);	
 }
-
 /* EMPTY */  /*TODO:  GET RID OF .EMPTY, RENAME WITH .NOTICE*/
 .notice, 
 .empty {
@@ -387,26 +356,27 @@ th:hover .filter {
 	background:url(/img/icon_alert.png) no-repeat left center;
 	line-height:1.3;
 }
-
 /* CONTROL PANEL */
 .control_panel_nav {
-	overflow:hidden;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(224,224,224,1))); /* Chrome,Safari4+ */
-	margin:10px 0 0 0;
+	margin-top:20px;	
 }
 .control_panel_nav a {
 	display:block;
 	padding:5px 20px;
-	float:left;
 	font-size:.8em;
-	border:1px solid #ccc;
-	margin:0 3px 0 0;
-	border-bottom:0;
+	margin:0 3px 3px 10px;
+	position:relative;
+	border:1px dotted #ccc;
 }
 .control_panel_nav a.selected {
-	background:#fbfbfb;
+	background:#fff;
+	border:1px solid #ccc;
 	color:#666;
 	font-weight:bold;
+	margin-left:0;
+	left:4px;
+	border-right:0;
+	border-left:2px solid #ccc;
 }
 .control_panel a {
 	background-position:top center;
@@ -447,9 +417,39 @@ th:hover .filter {
 }
 /* HELP */
 .help {
-	padding:10px 0 20px 0;
+	padding:0;
 	display:block;
-	color:#666;
+	color:#999;
 	font-size:.9em;
 	text-shadow: #fff 1px 1px;
+}
+
+/*CONNECTION*/
+.connection_twitter,
+.connection_facebook,
+.connection_linkedin,
+.connection_email {
+	display:block;
+	margin:10px 20px 10px 0;
+	height:32px;
+	width:32px;
+	font-size:0;
+	float:left;
+}
+.connection_twitter {
+	background-image:url(/img/icon_twitter_large.png);	
+}
+.connection_facebook {
+	background-image:url(/img/icon_facebook_large.png);	
+}
+.connection_linkedin {
+	background-image:url(/img/icon_linkedin_large.png);	
+}
+.connection_email {
+	background-image:url(/img/icon_email_large.png);	
+}
+.connection_details_email {
+	overflow:hidden;
+	padding:10px 0;
+	clear:left;	
 }

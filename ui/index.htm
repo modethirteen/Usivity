@@ -35,23 +35,57 @@
 		<div class="streams">
 			<div class="openstream fwrap first last loading">
 				<div class="title">
+					<div class="tools">
+						<a href="#" class="tools_filters">filters</a>
+						<a href="#" class="tools_refresh">refresh</a>
+					</div>
 					<h2>Social Stream</h2>
 					<table class="target">
 						<thead>
 							<tr class="th">
-								<th class="contact_klout col_filter">
+								<th class="contact_klout">
 									Klout
-									<a class="filter" href="template/dropdown_klout.htm"></a>
 								</th>
 								<th colspan="2">User</th>
 								<th>Message</th>
 								<th>Time</th>
-								<th class="message_source col_filter">
+								<th class="message_source">
 									Source
-									<a class="filter" href="template/dropdown_source.htm"></a>
 								</th>
 								<th></th>
 								<th></th>
+							</tr>
+							<tr class="filter">
+								<td colspan="8">
+									<div class="filter_col">
+										<h4>Klout</h4>
+										<ul>
+											<li><input checked type="checkbox"><span>Celebrity</span></li>
+											<li><input checked type="checkbox"><span>Leader</span></li>
+											<li><input checked type="checkbox"><span>Socialist</span></li>
+											<li><input checked type="checkbox"><span>Friendly</span></li>
+											<li><input checked type="checkbox"><span>Hermit</span></li>
+										</ul>
+									</div>
+									<div class="filter_col">
+										<h4>Sources</h4>
+										<ul>
+											<li><input checked type="checkbox"><span>Twitter</span></li>
+											<li><input checked type="checkbox"><span>Facebook</span></li>
+											<li><input checked type="checkbox"><span>LinkedIn</span></li>
+											<li><input checked type="checkbox"><span>Email</span></li>
+											<li><input checked type="checkbox"><span>Blog</span></li>
+										</ul>
+									</div>
+									<div class="filter_col">
+										<h4>Other Filters</h4>
+										<ul>
+											<li><input type="checkbox"><span>No Retweets</span></li>
+											<li><input type="checkbox"><span>No Locations</span></li>
+										</ul>
+									</div>
+									<a href="#" class="close">close</a>
+								</td>
 							</tr>
 						</thead>
 						<tbody>

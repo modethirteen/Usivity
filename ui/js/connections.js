@@ -13,10 +13,7 @@
 $(document).ready(function() {
 	
 	
-	/*GET*/
-	
-	
-	/*LOAD AUTHENTICATION*/
+	// LOAD CONNECTION AUTHENTICATION
 	$(".connections a.connection").live("click", function() {
 		var width = 500;
     	var height = 500;
