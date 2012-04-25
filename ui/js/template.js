@@ -56,7 +56,14 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 				// TODO: REPLACE WITH $.EACH
 				for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
 				{
-					pointer = pointer[arr[i]];
+					if (typeof pointer !="undefined")
+					{
+						pointer = pointer[arr[i]];
+					}
+					else
+					{
+						xpath = "";	
+					}
 				}
 				obj = pointer;
 			}
@@ -172,7 +179,10 @@ function replacevariable(templatehtml,objectref)
 						// LOOP THROUGH NESTED OBJECTS TO FIND THE TEMPLATED VALUE
 						for (i=0;i<=arr.length-1;i++)  // TODO:  TRY TO GET RID OF .LENGTH.  USE .EACH
 						{
-							pointer = pointer[arr[i]];
+							if (typeof pointer !="undefined")
+							{
+								pointer = pointer[arr[i]];
+							}
 						}
 						
 						// REPLACE THE VARIABLE WITH THE OBJECT VALUE (pointer)

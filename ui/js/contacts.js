@@ -7,6 +7,13 @@
 */
 $(document).ready( function() {
 	
+	// REPLY INLINE
+	$(".message_reply_inline").live("click", function() {
+		$(this).parents(".message_thread").find(".message_send_inline").slideToggle(50);
+	
+		return false;
+	});
+	
 	// DELETE A CONTACT
 	$(".contact_delete").live("click", function() {
 		var href 	= $(this).attr("href");

@@ -61,7 +61,6 @@ function buildModal(ele, href)
 	if (objecturi)
 	{		
 		var objecturi = apiuri(objecturi,api.params);
-		
 		$.get(src, function(templatehtml) {		
 			template(templatehtml, objecturi, "null",function(html) {
 				$(".modal .target").html(html);

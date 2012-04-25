@@ -11,7 +11,6 @@ app = {};
 app.messageinterval 	= 240000;   // 240,000ms = 4 minute
 app.messagelimit 		= 50; 		// 50 message limit for initial load
 app.messageloadspan		= 7200000			// 1 hour = 3,600,000 miliseconds
-app.domain				= "usivity.com"
 
 
 // API SETTINGS
@@ -39,15 +38,15 @@ function resize()
 	var bheight = $(window).height(); // Body Height
 	var cheight = $(".header").outerHeight() // Height of Controls
 	var colheight = (bheight - cheight - 5); // Column Height
-
+	
 	/*Wrapper Div*/
 	$(".col").css("height",colheight);
-
+	
 	/*Height*/
 	$(".mystream").css("height",(colheight - 15));
 	$(".openstream").css("height",(colheight - 15));
 	$(".contacts").css("height",(colheight - 15));
-
+	
 	$(".fwrap").fadeIn();
 }
 
@@ -57,13 +56,13 @@ function apiuri(uri,params)
 {
 	if (uri)
 	{
-		// CHECK TO SEE IF IT IS A USIVITY API REQUEST
-		if (uri.indexOf("http") != -1 && uri.indexOf(app.domain) == -1)
-		{
-			return uri;
-		}
-		
 		queryparams	= "";
+		
+		// If params isn't set just append the standard params
+		if (!params)
+		{
+			var params = api.params;	
+		}
 		
 		// Cut off any appended params
 		if (uri.indexOf("?") != -1)
@@ -76,12 +75,13 @@ function apiuri(uri,params)
 		$.each(params, function(index, value) { 
 			queryparams = queryparams + (index + "=" + value + "&");
 		});
-
+		
 		// Cut off last & symbol from queryparams
 		var queryparams = queryparams.substring(0,queryparams.length-1);
-
+	
+		
 		// CHECK FOR DOMAIN NAME OR NOT
-		if (uri.indexOf(api.root) == -1 && uri.indexOf("http") == -1) // TODO:  CLEAN UP THIS LOGIC
+		if (uri.indexOf(api.root) == -1) // TODO:  CLEAN UP THIS LOGIC
 		{
 			var fulluri = (api.root + uri + queryparams);// TODO:  Change URL to URI
 		}
@@ -89,7 +89,15 @@ function apiuri(uri,params)
 		{
 			var fulluri = (uri + queryparams);	
 		}
-		
 		return fulluri;
 	}
 }
+
+
+
+
+
+
+
+
+

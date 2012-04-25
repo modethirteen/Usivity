@@ -9,7 +9,7 @@
 
 $(document).ready(function() {
 	// SEND A MESSAGE
-	$(".message_send").live("submit", function() {
+	$(".message_send, .message_send_inline").live("submit", function() {
 		var uri			= $(this).attr("action");
 		var message 	= $(this).find(".message_data").val();
 		

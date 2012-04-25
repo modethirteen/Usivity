@@ -136,7 +136,17 @@ body {
 .message_thread {
 	display:block;
 	overflow:hidden;
-	margin:0 0 30px 0;	
+	margin:0 0 20px 0;	
+}
+.message_thread_children {
+	margin-left:20px;	
+}
+.message_thread_children .contact_picture_large {
+	width:30px;
+	height:30px;
+}
+.message_thread_children .contact_picture_large img {
+	width:30px;	
 }
 .message_thread .contact_name {
 	font-weight:bold;	
@@ -153,20 +163,29 @@ body {
 	float:left;
 	margin:0 20px 0 0;
 }
-.message_thread .message_details {
-	float:left;
-	width:430px;
-}
 .message_thread .message_text {
 	font-size:.8em;	
 }
 /*Message Send*/
 .message_send {
 	position:absolute;
-	margin-top:370px;
-	width:495px;
-	padding-top:10px;
+	margin-top:380px;
+	width:475px;
+	padding:0 10px;
 	height:160px;
+	background: -moz-linear-gradient(top, rgba(250,250,250,0.39) 0%, rgba(250,250,250,0.39) 2%, rgba(250,250,250,1) 9%, rgba(244,244,244,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(250,250,250,0.39)), color-stop(2%,rgba(250,250,250,0.39)), color-stop(9%,rgba(250,250,250,1)), color-stop(100%,rgba(244,244,244,1))); /* Chrome,Safari4+ */
+	z-index:5;
+}
+.message_send_inline {
+	clear:left;
+	padding:5px 0;
+	display:none;
+	z-index:3;
+}
+.message_send_inline textarea {
+	height:30px;
+	min-height:30px;
 }
 /*Contact*/
 .contact_picture {
@@ -220,6 +239,8 @@ body {
 	padding-top:30px;
 	height:25px;
 	z-index:5;
+	background: -moz-linear-gradient(top, rgba(255,255,255,0) 1%, rgba(244,244,244,0.81) 30%, rgba(244,244,244,1) 37%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,rgba(255,255,255,0)), color-stop(30%,rgba(244,244,244,0.81)), color-stop(37%,rgba(244,244,244,1))); /* Chrome,Safari4+ */
 }
 /*Response - Error, Success*/
 .response {

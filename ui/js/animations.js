@@ -5,7 +5,7 @@
 		- sectionresize - 
 		- resize - 
 */
-$(window).load(function() {	
+$(document).ready(function() {	
 	
 	// RESIZE THE LAYOUT WHEN THE BROWSER IS RESIZED
 	$(window).resize(function() {

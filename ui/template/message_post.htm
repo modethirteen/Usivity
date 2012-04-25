@@ -1,5 +1,4 @@
 <h1>Reply</h1>
-{in:message}
 <div class="panel">
 	<form class="contact_post">
 			<div class="buttons">
@@ -7,12 +6,11 @@
 				<button type="submit" class="button cancel">cancel</button>
 			</div>
 			
-			
 			<h3>Personal</h3>
 	
 			<span class="contact_details">
 				<span class="contact_picture contact_picture_large">
-					<img src="{author_uri.avatar}" />
+					<img src="{message_author_uri.avatar}" />
 				</span>
 				<input type="text" start="first name" class="contact_firstname"/>
 				<input type="text" start="last name" class="contact_lastname"/>
@@ -54,15 +52,15 @@
 			
 			
 			<h3>Social Networks</h3>
-			<input type="text" start="linkedin" value="{contact_identity.linkedin}" class="contact_socialnetwork contact_linkedin contactdetail long"/>
-			<input type="text" start="facebook" value="{contact_identity.facebook}"  class="contact_socialnetwork contact_facebook contactdetail long"/>
-			<input type="text" start="twitter" value="{contact_identity.twitter}"  class="contact_socialnetwork contact_twitter contactdetail long"/>
-			<input type="text" start="google" value="{contact_identity.google}"  class="contact_socialnetwork contact_google contactdetail long"/>
+			<input type="text" start="linkedin" value="" class="contact_socialnetwork contact_linkedin contactdetail long"/>
+			<input type="text" start="facebook" value=""  class="contact_socialnetwork contact_facebook contactdetail long"/>
+			<input type="text" start="twitter" value=""  class="contact_socialnetwork contact_twitter contactdetail long"/>
+			<input type="text" start="google" value=""  class="contact_socialnetwork contact_google contactdetail long"/>
 	</form>
 </div>
 <div class="panel_main">
 		
-	<form class="message_send" id="{@id}" action="{@href}">	
+	<form class="message_send" id="{message_@id}" action="{message_@href}">	
 	<h3>Post a Message</h3>
 		<textarea name="message" class="message_data" start="enter your message"></textarea>
 		<div class="buttons">
@@ -75,6 +73,40 @@
 	<h3>Message Thread</h3>
 	<div class="message_threads" empty="There are no messages in the queue.">
 		<div class="message_thread">
+			<span class="contact_picture contact_picture_large"> 
+				<img src="{message_author_uri.avatar}" />
+			</span>
+			<div class="message_details">
+				<span class="contact_name">
+					<a target="_new" class="profile" href="http://twitter.com/{message_author_name}">{message_author_name}</a>
+				</span>
+				<div class="message_text">
+					{message_body}
+				</div>
+				<span class="message_meta">
+					<span class="message_time">
+						{message_timestamp}
+					</span>
+					<span class="message_source">
+						{message_source}
+					</span>
+					<span>
+						<a href="{@href}" class="message_reply_inline">reply</a>
+					</span>
+				</span>
+			</div>
+			<form class="message_send_inline" id="{message_@id}" action="{message_@href}">	
+				<textarea name="message" class="message_data" start="enter your message"></textarea>
+				<div class="buttons">
+					<button type="submit" class="button apply">send</button>
+					<button type="submit" class="button cancel">cancel</button>
+				</div>
+			</form>
+		</div>
+		
+{foreach
+	{in:message_messages.children_message}
+		<div class="message_thread message_thread_children">
 			<span class="contact_picture contact_picture_large"> 
 				<img src="{author_uri.avatar}" />
 			</span>
@@ -92,10 +124,20 @@
 					<span class="message_source">
 						{source}
 					</span>
+					<span>
+						<a href="{@href}" class="message_reply_inline">reply</a>
+					</span>
 				</span>
 			</div>
+			<form class="message_send_inline" id="{@id}" action="{@href}">	
+				<textarea name="message" class="message_data" start="enter your message"></textarea>
+				<div class="buttons">
+					<button type="submit" class="button apply">send</button>
+					<button type="submit" class="button cancel">cancel</button>
+				</div>
+			</form>
 		</div>
-
+foreach}
 	</div>
 
 </div>
