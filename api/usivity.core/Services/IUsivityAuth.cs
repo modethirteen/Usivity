@@ -1,6 +1,6 @@
 ﻿using MindTouch.Dream;
 using MindTouch.Web;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services {
 

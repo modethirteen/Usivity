@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using Usivity.Core.Services.Logic;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services {
     using Yield = IEnumerator<IYield>;
@@ -9,16 +10,18 @@ namespace Usivity.Core.Services {
     public partial class CoreService {
 
         //--- Features ---
+        [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("GET:organizations", "Get organizations")]
-        protected Yield GetOrganizations(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        internal Yield GetOrganizations(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var doc = Resolve<IOrganizations>(context).GetOrganizationsXml();
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
 
+        [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("GET:organizations/{organizationid}", "Get organization")]
         [DreamFeatureParam("organizationid", "string", "Organization id")]
-        protected Yield GetOrganization(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        internal Yield GetOrganization(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var organizations = Resolve<IOrganizations>(context);
             var organization = organizations.GetOrganization(context.GetParam<string>("organizationid"));
             if(organization == null) {

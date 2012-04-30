@@ -6,7 +6,7 @@ using System.Text;
 using MindTouch.Dream;
 using MindTouch.Xml;
 
-namespace Usivity.Data.Connections {
+namespace Usivity.Connections {
 
 	public class OAuth {
 

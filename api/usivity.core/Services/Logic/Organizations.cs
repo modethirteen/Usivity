@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using MindTouch.Xml;
 using Usivity.Data;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services.Logic {
 
@@ -21,11 +21,11 @@ namespace Usivity.Core.Services.Logic {
 
         //--- Fields ---
         private readonly ICurrentContext _context;
-        private readonly IUsivityDataSession _data;
+        private readonly IUsivityDataCatalog _data;
         private Organization _currentOrganization;
 
         //--- Constructors ---
-        public Organizations(IUsivityDataSession data, ICurrentContext context) {
+        public Organizations(IUsivityDataCatalog data, ICurrentContext context) {
             _context = context;
             _data = data;
         }

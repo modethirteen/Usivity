@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Xml;
-using Usivity.Data.Connections;
+using Usivity.Entities.Types;
+using Usivity.Util;
 
-namespace Usivity.Data.Entities {
+namespace Usivity.Entities {
 
     public class Subscription : IEntity {
 
@@ -26,16 +27,16 @@ namespace Usivity.Data.Entities {
         public bool Active { get; set; }
 
         //--- Fields ---
-        private IDictionary<SourceType, Uri> _uris;
+        private IDictionary<Source, Uri> _uris;
 
         //--- Constructors ---
         public Subscription(Organization organization, IEnumerable<string> constraints, SubscriptionLanguage language) {
-            Id = UsivityDataSession.GenerateEntityId(this);
+            Id = GuidGenerator.CreateUnique();
             Language = language;
             OrganizationId = organization.Id;
             Constraints = constraints;
             Active = true;
-            _uris = new Dictionary<SourceType, Uri>();
+            _uris = new Dictionary<Source, Uri>();
         }
 
         //--- Methods ---
@@ -51,11 +52,11 @@ namespace Usivity.Data.Entities {
                 .EndAll();   
         }
 
-        public void SetSourceUri(SourceType source, Uri uri) {
+        public void SetSourceUri(Source source, Uri uri) {
             _uris[source] = uri;
         }
 
-        public Uri GetSourceUri(SourceType source) {
+        public Uri GetSourceUri(Source source) {
             Uri uri;
             _uris.TryGetValue(source, out uri);
             return uri;

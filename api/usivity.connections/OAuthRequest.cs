@@ -1,7 +1,17 @@
 ﻿using System;
 using MindTouch.Dream;
 
-namespace Usivity.Data.Connections {
+namespace Usivity.Connections {
+
+    public interface IOAuthRequest {
+
+        //--- Properties ---
+        Uri AuthorizeUri { get; }
+        string Token { get; }
+        string TokenSecret { get; }
+        string Verifier { get; set; }
+        DateTime Created { get; }
+    }
 
     public class OAuthRequest : IOAuthRequest {
      

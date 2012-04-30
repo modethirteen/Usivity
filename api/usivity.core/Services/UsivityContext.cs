@@ -1,11 +1,12 @@
 ﻿using System;
-using Usivity.Data.Entities;
 using MindTouch.Dream;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services {
 
     public interface ICurrentContext {
         User User { get; set; }
+        User.UserRole Role { get; set; }
         XUri ApiUri { get; set; }
     }
 
@@ -36,6 +37,7 @@ namespace Usivity.Core.Services {
 
         //--- Properties ---
         public User User { get; set; }
+        public User.UserRole Role { get; set; }
         public XUri ApiUri { get; set; }
 
         //--- Methods ---

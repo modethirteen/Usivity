@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using Usivity.Entities;
+using Usivity.Entities.Types;
 
 namespace Usivity.Data {
-    using Entities;
 
     public class MessageDataAccess : IMessageDataAccess {
 
@@ -20,27 +22,33 @@ namespace Usivity.Data {
         }
 
         //--- Methods ---
+        public IEnumerable<Message> GetStream(DateTime start, DateTime end, int count, int offset, Source source) {
+            var query = Query.And(
+                Query.GTE("Timestamp", start),
+                Query.LTE("Timestamp", end),
+                Query.EQ("OpenStream", true),
+                Query.EQ("Source", source)
+                );
+            return GetMessages(query, count, offset);
+        }
+
         public IEnumerable<Message> GetStream(DateTime start, DateTime end, int count, int offset) {
             var query = Query.And(
                 Query.GTE("Timestamp", start),
                 Query.LTE("Timestamp", end),
                 Query.EQ("OpenStream", true)
                 );
-            return _db
-                .FindAs<Message>(query)
-                .SetLimit(count)
-                .SetSkip(offset)
-                .SetSortOrder(SortBy.Descending("Timestamp"));
+            return GetMessages(query, count, offset);
         }
 
         public IEnumerable<Message> GetConversations(Contact contact) {
             var queries = new List<IMongoQuery>();
             var identities = contact.GetSourceIdentities();
-            foreach(var identity in identities) {
+            foreach(var identity in identities.Where(i => !string.IsNullOrEmpty(i.Value.Id))) {
                 var subQuery = Query.And(
                     Query.EQ("Source", identity.Key),
                     Query.EQ("Author._id", identity.Value.Id),
-                    Query.EQ("ParentMessageId", null)
+                    Query.EQ("ParentMessageId", "")
                     );
                 queries.Add(subQuery);
             }
@@ -55,7 +63,15 @@ namespace Usivity.Data {
 
         public Message Get(string id) {
             return _db.FindOneByIdAs<Message>(id);
-        } 
+        }
+
+        public Message Get(Source source, string sourceId) {
+            var query = Query.And(
+                Query.EQ("Source", source),
+                Query.EQ("SourceMessageId", sourceId)
+            );
+            return _db.FindOneAs<Message>(query);
+        }
 
         public void Save(Message message) {
             _db.Save(message, SafeMode.True);
@@ -81,6 +97,18 @@ namespace Usivity.Data {
 
         public void RemoveExpired() {
             _db.FindAndRemove(Query.LTE("Expires", DateTime.UtcNow), SortBy.Null);
+        }
+
+        public long GetCount() {
+            return _db.Count();
+        }
+
+        private IEnumerable<Message> GetMessages(IMongoQuery query, int count, int offset) {
+            return _db
+                .FindAs<Message>(query)
+                .SetLimit(count)
+                .SetSkip(offset)
+                .SetSortOrder(SortBy.Descending("Timestamp"));
         }
     }
 }

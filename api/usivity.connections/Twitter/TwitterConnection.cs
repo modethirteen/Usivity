@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Xml;
-using Usivity.Data.Entities;
+using Usivity.Entities;
+using Usivity.Entities.Types;
+using Usivity.Util;
 
-namespace Usivity.Data.Connections {
+namespace Usivity.Connections.Twitter {
 
-    public class TwitterConnection : ATwitterConnection, IConnection {
+    public class TwitterConnection : TwitterConnectionBase, IConnection {
 
         //--- Constants ---
 #if debug
@@ -21,17 +23,22 @@ namespace Usivity.Data.Connections {
 #endif
         //--- Properties ---
         public string Id { get; private set; }
-        public SourceType Source { get; private set; }
+        public string OrganizationId { get; private set; }
+        public Source Source { get; private set; }
         public Identity Identity { get; private set; }
+        public bool Active {
+            get { return Identity != null; }
+        }
 
         //--- Fields ---
         private OAuth _oauth;
         private OAuthRequest _oauthRequest;
 
         //--- Constructors ---
-        public TwitterConnection(XDoc config) {
-            Id = UsivityDataSession.GenerateConnectionId(this);
-            Source = SourceType.Twitter;
+        public TwitterConnection(XDoc config, Organization organization) {
+            Id = GuidGenerator.CreateUnique();
+            OrganizationId = organization.Id;
+            Source = Source.Twitter;
             var oauthConfig = new XDoc("config")
                 .Elem("consumer.key", config["oauth/consumer.key"].Contents)
                 .Elem("consumer.secret", config["oauth/consumer.secret"].Contents)
@@ -91,7 +98,7 @@ namespace Usivity.Data.Connections {
                 .Attr("id", Id)
                 .Elem("source", Source.ToString().ToLowerInvariant())
                 .Elem("type", "oauth");
-            if(Identity != null) {
+            if(Active) {
                 doc.Start("identity")
                     .Attr("id", Identity.Id)
                     .Elem("name", Identity.Name)
@@ -108,10 +115,13 @@ namespace Usivity.Data.Connections {
 
         public void Update(XDoc config) {
             if(_oauth == null) {
-                throw new Exception("Connection is not configured for authentication");
+                var response = DreamMessage.BadRequest("Connection is not configured for authentication");
+                throw new DreamAbortException(response);
             }
             if(config["oauth/token"].AsText != _oauthRequest.Token) {
-                throw new Exception("Connection update document OAuth request token does not match this connection's OAuth request token");    
+                var response = DreamMessage
+                    .BadRequest("Connection update document OAuth request token does not match this connection's OAuth request token");
+                throw new DreamAbortException(response);
             }
             _oauthRequest.Verifier = config["oauth/verifier"].AsText;
             var accessTokenText = _oauth.GetAccessToken(_oauthRequest).ToText();
@@ -121,16 +131,7 @@ namespace Usivity.Data.Connections {
             _oauth.AccessTokenSecret = pairs["oauth_token_secret"];
 
             // construct identity from twitter user lookup
-            var userId = pairs["user_id"];
-            var userDoc = Plug.New(API_URI).At("users", "lookup.xml")
-                .With("user_id", userId).Get().ToDocument();
-            XUri uri;
-            XUri.TryParse(userDoc["user/profile_image_url"].AsText, out uri);
-            Identity = new Identity {
-                Id = userId,
-                Name = userDoc["user/screen_name"].AsText,
-                Avatar = uri != null ? uri.ToUri() : null
-            };
+            Identity = GetIdentityByUserId(pairs["user_id"]);
 
             // dispose request token
             _oauthRequest = null;

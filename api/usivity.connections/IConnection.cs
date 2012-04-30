@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using MindTouch.Xml;
-using Usivity.Data.Entities;
+using Usivity.Entities;
+using Usivity.Entities.Types;
 
-namespace Usivity.Data.Connections {
+namespace Usivity.Connections {
 
     public interface IConnection {
 
         //--- Properties ---
         string Id { get; }
+        string OrganizationId { get; }
         Identity Identity { get; }
-        SourceType Source { get; }
+        Source Source { get; }
+        bool Active { get; }
 
         //--- Methods ---
         IEnumerable<Message> GetMessages();
