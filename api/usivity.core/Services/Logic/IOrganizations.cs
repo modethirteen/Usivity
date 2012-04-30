@@ -1,5 +1,5 @@
 ﻿using MindTouch.Xml;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services.Logic {
 

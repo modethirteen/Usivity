@@ -1,23 +1,36 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Autofac;
 using log4net;
 using MindTouch;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Xml;
+using Usivity.Connections.Email;
+using Usivity.Connections.Twitter;
 using Usivity.Core.Services.Logic;
 using Usivity.Data;
-using Usivity.Data.Connections;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 using Usivity.Util.Json;
 
 namespace Usivity.Core.Services {
     using Yield = IEnumerator<IYield>;
 
-    [DreamService("Usivity Core API Service", "",
-        SID = new[] { "sid://usivity.com/2011/01/core" }
-    )]
+    [DreamService("Usivity Core API Service", "", SID = new[] { "sid://usivity.com/2011/01/core" })]
     public partial class CoreService : DreamService {
+
+        [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+        class UsivityFeatureAccessAttribute : Attribute {
+
+            //--- Properties ---
+            public User.UserRole Role { get; private set; }
+
+            //--- Constructors ---
+            public UsivityFeatureAccessAttribute(User.UserRole role) {
+                Role = role; 
+            }
+        }
         
         //--- Class Fields ---
         private static readonly ILog _log = LogUtils.CreateLog();
@@ -27,10 +40,31 @@ namespace Usivity.Core.Services {
             return context.Container.Resolve<T>();
         }
 
+        private static XDoc GetRequestXml(DreamMessage request) {
+            XDoc doc;
+            try {
+                var json = new JDoc(request.ToText());
+                doc = json.ToDocument();   
+            }
+            catch {
+                try {
+                    doc = XDocFactory.From(request.ToText(), MimeType.TEXT_XML);
+                    if(doc.IsEmpty) {
+                        throw;
+                    }
+                }
+                catch {
+                    throw new DreamBadRequestException("Request format must be valid XML or JSON");
+                }
+            }
+            return doc;
+        }
+
         //--- Fields ---
         private Plug _openStreamQueue;
         private TwitterConnectionFactory _twitterConnectionFactory;
-
+        private EmailConnectionFactory _emailConnectionFactory;
+        private readonly IDictionary<string, User.UserRole> _features = new Dictionary<string, User.UserRole>();
 
         //--- Properties ---
         public string MasterApiKey { get; private set; }
@@ -45,15 +79,28 @@ namespace Usivity.Core.Services {
         protected override Yield Start(XDoc config, ILifetimeScope container, Result result) {
             yield return Coroutine.Invoke(base.Start, config, container, new Result());
 
+            _log.Debug("Populating internal features access collection");
+            var type = GetType(); 
+            foreach(var method in type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)) {
+                var access = (UsivityFeatureAccessAttribute)Attribute
+                    .GetCustomAttribute(method, typeof(UsivityFeatureAccessAttribute));
+                if(access == null) {
+                    continue;
+                }
+                var key = string.Format("{0}!{1}", type.FullName, method.Name);
+                _features[key] = access.Role;
+            }
+
             _log.Debug("Setting Master API Key");
             MasterApiKey = config["apikey"].AsText ?? string.Empty;
             if(string.IsNullOrEmpty(MasterApiKey)) {
                 throw new DreamInternalErrorException("Core apikey has not been set in startup config");
             }
 
-            _log.Debug("Initializing source network connections");
+            _log.Debug("Initializing source network connection factories");
             _twitterConnectionFactory = new TwitterConnectionFactory(config["sources/twitter"]);
-          
+            _emailConnectionFactory = new EmailConnectionFactory(config["sources/email"]);
+
             _log.Debug("Starting openstream queue service");
             yield return CreateService(
                 "openstream",
@@ -75,11 +122,11 @@ namespace Usivity.Core.Services {
             builder.Register(c => c.Resolve<UsivityContext>()).As<ICurrentContext>().RequestScoped();
 
             _log.Debug("Initializing data session connection");
-            var data = UsivityDataSession.NewUsivityDataSession(config["mongodb/connection"].AsText);
+            var data = UsivityDataCatalog.NewUsivityDataCatalog(config["mongodb/connection"].AsText);
 
             _log.Debug("Registering data session dependency");
-            if(!container.IsRegistered<IUsivityDataSession>()) {
-                builder.RegisterInstance(data).As<IUsivityDataSession>().SingleInstance();
+            if(!container.IsRegistered<IUsivityDataCatalog>()) {
+                builder.RegisterInstance(data).As<IUsivityDataCatalog>().SingleInstance();
             }
 
             _log.Debug("Initializing authorization controls");
@@ -112,22 +159,20 @@ namespace Usivity.Core.Services {
                 builder.RegisterType<Subscriptions>().As<ISubscriptions>().RequestScoped();
             }
             if(!container.IsRegistered<IConnections>()) {
-                builder.RegisterType<Connections>().As<IConnections>().RequestScoped();
+                builder.RegisterType<Logic.Connections>().As<IConnections>().RequestScoped();
             }
         }
 
         protected override DreamAccess DetermineAccess(DreamContext context, string key) {
-            if(UsivityContext.CurrentOrNull != null ) {
-                var role = Resolve<IUsers>(context).GetCurrentRole();
-                switch(role) {
-                    case User.UserRole.Owner:
-                    case User.UserRole.Admin:
-                        return DreamAccess.Internal;
-                    case User.UserRole.Member:
-                        return DreamAccess.Private;
-                }   
+            var featureAccessRole = User.UserRole.None;
+            if(UsivityContext.CurrentOrNull == null ||
+                !_features.TryGetValue(context.Feature.MainStage.Name, out featureAccessRole)) {
+
+                    // use dream keys to determine feature access if usivity access not set
+                    return base.DetermineAccess(context, key);    
             }
-            return base.DetermineAccess(context, key);
+            UsivityContext.Current.Role = Resolve<IUsers>(context).GetCurrentRole();
+            return UsivityContext.Current.Role >= featureAccessRole ? DreamAccess.Internal : DreamAccess.Public;
         }
 
         protected Yield PrologueContext(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
@@ -136,31 +181,12 @@ namespace Usivity.Core.Services {
             var user = auth.GetUser(authToken);
             var usivityContext = new UsivityContext {
                 User = user,
+                Role = User.UserRole.None,
                 ApiUri = Self.Uri.AsPublicUri()
             };
             DreamContext.Current.SetState(usivityContext);
             response.Return(request);
             yield break;
-        }
-
-        private static XDoc GetRequestXml(DreamMessage request) {
-            XDoc doc;
-            try {
-                var json = new JDoc(request.ToText());
-                doc = json.ToDocument();   
-            }
-            catch {
-                try {
-                    doc = XDocFactory.From(request.ToText(), MimeType.TEXT_XML);
-                    if(doc.IsEmpty) {
-                        throw;
-                    }
-                }
-                catch {
-                    throw new DreamBadRequestException("Request format must be valid XML or JSON");
-                }
-            }
-            return doc;
         }
     }
 }

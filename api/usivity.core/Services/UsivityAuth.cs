@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using MindTouch.Dream;
 using MindTouch.Web;
 using Usivity.Data;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services {
     
@@ -22,12 +22,12 @@ namespace Usivity.Core.Services {
 
         //--- Fields ---
         private readonly string _salt;
-        private readonly IUsivityDataSession _data;
+        private readonly IUsivityDataCatalog _data;
         private readonly MD5 _md5;
         private readonly int _expiration;
     
         //--- Constructors ---
-        public UsivityAuth(string salt, int expiration, IUsivityDataSession data) {
+        public UsivityAuth(string salt, int expiration, IUsivityDataCatalog data) {
             _salt = salt;
             _data = data;
             _md5 = MD5.Create();

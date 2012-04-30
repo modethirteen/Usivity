@@ -1,5 +1,8 @@
-﻿using MindTouch.Xml;
-using Usivity.Data.Connections;
+﻿using System.Collections.Generic;
+using MindTouch.Xml;
+using Usivity.Connections;
+using Usivity.Entities;
+using Usivity.Entities.Types;
 
 namespace Usivity.Core.Services.Logic {
 
@@ -7,6 +10,10 @@ namespace Usivity.Core.Services.Logic {
 
         //--- Methods ---
         IConnection GetConnection(string id);
+        IConnection GetDefaultConnection(Source source);
+        IConnection GetConnectionReceipient(Message message);
+        IEnumerable<IConnection> GetConnections();
+        IEnumerable<IConnection> GetConnections(Source source);
         XDoc GetConnectionXml(IConnection connection);
         XDoc GetConnectionsXml();
         void SaveConnection(IConnection connection);

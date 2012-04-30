@@ -1,9 +1,10 @@
-﻿namespace Usivity.Data.Connections {
+﻿namespace Usivity.Entities.Types {
 
-    public enum SourceType {
+    public enum Source {
         Twitter,
         LinkedIn,
         Facebook,
+        Google,
         Email
     }
 }

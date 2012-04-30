@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 
 namespace Usivity.Data {
-    
+
     public interface ISubscriptionDataAccess {
 
         //--- Methods ---

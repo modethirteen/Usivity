@@ -75,9 +75,17 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\usivity.connections\usivity.connections.csproj">
+      <Project>{A35195C0-5614-4382-B0A6-D6808759A84B}</Project>
+      <Name>usivity.connections</Name>
+    </ProjectReference>
     <ProjectReference Include="..\usivity.data\usivity.data.csproj">
       <Project>{62996F95-997C-481D-BBE6-F9BC9DF16D48}</Project>
       <Name>usivity.data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\usivity.entities\usivity.entities.csproj">
+      <Project>{09E39692-A52B-4330-94BC-E9DB82B37D18}</Project>
+      <Name>usivity.entities</Name>
     </ProjectReference>
     <ProjectReference Include="..\usivity.util\usivity.util.csproj">
       <Project>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</Project>

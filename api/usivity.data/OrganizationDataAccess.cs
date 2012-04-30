@@ -4,20 +4,21 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using Usivity.Entities;
 
 namespace Usivity.Data {
-    using Entities;
 
     public class OrganizationDataAccess : IOrganizationDataAccess {
 
         //--- Class Methods ---
-        public static void RegisterClassMap() {
-            BsonClassMap.RegisterClassMap<Organization>(cm => {
-                cm.AutoMap();
-                cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                cm.MapField("_connections");
-                cm.MapField("_defaultConnections");
-            });
+        public static void RegisterEntityClassMap() {
+            if(!BsonClassMap.IsClassMapRegistered(typeof(Organization))) {
+                BsonClassMap.RegisterClassMap<Organization>(cm => {
+                    cm.AutoMap();
+                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
+                    cm.MapField("_defaultConnections");
+                });
+            }
         }
 
         //--- Fields ---

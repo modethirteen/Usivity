@@ -1,8 +1,9 @@
 ﻿using MindTouch.Xml;
+using Usivity.Entities;
 
-namespace Usivity.Data.Connections {
+namespace Usivity.Connections.Twitter {
 
-    public class TwitterConnectionFactory : ITwitterConnectionFactory {
+    public class TwitterConnectionFactory : IConnectionFactory {
 
         //--- Fields ---
         private readonly XDoc _config;
@@ -13,8 +14,8 @@ namespace Usivity.Data.Connections {
         }
 
         //--- Methods ---
-        public TwitterConnection NewTwitterConnection() {
-            return new TwitterConnection(_config);
+        public IConnection NewConnection(Organization organization) {
+            return new TwitterConnection(_config, organization);
         }
     }
 }

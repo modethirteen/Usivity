@@ -2,24 +2,23 @@
 using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Xml;
-using Usivity.Data.Entities;
+using Usivity.Entities;
+using Usivity.Entities.Types;
 using Usivity.Util.Json;
 
-namespace Usivity.Data.Connections {
+namespace Usivity.Connections.Twitter {
 
-    public class TwitterPublicConnection : ATwitterConnection, IPublicConnection {
+    public class TwitterPublicConnection : TwitterConnectionBase, IPublicConnection {
 
         //--- Constants --
         protected const string SEARCH_URI = "http://search.twitter.com/search.json";
 
-        //--- Class Properties ---
-        public static readonly IDictionary<Subscription.SubscriptionLanguage, string> SubscriptionLanguagesMap = 
+        //--- Class Fields ---
+        private static TwitterPublicConnection _instance;
+        private static readonly IDictionary<Subscription.SubscriptionLanguage, string> _subscriptionLanguagesMap = 
             new Dictionary<Subscription.SubscriptionLanguage, string> {
                 { Subscription.SubscriptionLanguage.English, "en" }
         };
-
-        //--- Class Fields ---
-        private static TwitterPublicConnection _instance;
 
         //--- Class Methods ---
         public static TwitterPublicConnection GetInstance() {
@@ -35,14 +34,14 @@ namespace Usivity.Data.Connections {
             if(!subscription.Active) {
                 return messages;
             }
-            DreamMessage msg = Plug.New(subscription.GetSourceUri(SourceType.Twitter)).Get();
+            DreamMessage msg = Plug.New(subscription.GetSourceUri(Source.Twitter)).Get();
             if(!msg.IsSuccessful) {
                 return messages;
             }
             var response = new JDoc(msg.ToText()).ToDocument("response");
             var nextPage = response["next_page"].Contents;
             var query = !string.IsNullOrEmpty(nextPage) ? nextPage : response["refresh_url"].Contents;
-            subscription.SetSourceUri(SourceType.Twitter, new XUri(SEARCH_URI + query));
+            subscription.SetSourceUri(Source.Twitter, new XUri(SEARCH_URI + query));
             var results = response["results"];
             messages.AddRange(results.Select(GetMessage));
             return messages;
@@ -50,12 +49,16 @@ namespace Usivity.Data.Connections {
 
         public void SetNewSubscriptionUri(Subscription subscription) {
             string lang;
-            SubscriptionLanguagesMap.TryGetValue(subscription.Language, out lang);
+            _subscriptionLanguagesMap.TryGetValue(subscription.Language, out lang);
             var uri = new XUri(SEARCH_URI).With("q", string.Join(",", subscription.Constraints.ToArray()));
             if(!string.IsNullOrEmpty(lang)) {
                 uri.With("lang", lang);
             }
-            subscription.SetSourceUri(SourceType.Twitter, uri);
+            subscription.SetSourceUri(Source.Twitter, uri);
+        }
+       
+        public Identity GetIdentity(string name) {
+            return GetIdentityByScreenName(name);
         }
 
         protected override Message GetMessage(XDoc result) {

@@ -1,6 +1,7 @@
 ﻿using System;
 using MindTouch.Xml;
-using Usivity.Data.Entities;
+using Usivity.Entities;
+using Usivity.Entities.Types;
 
 namespace Usivity.Core.Services.Logic {
 
@@ -11,6 +12,7 @@ namespace Usivity.Core.Services.Logic {
         XDoc GetConversationsXml(Contact contact);
         XDoc GetMessageXml(Message message, string relation = null);
         XDoc GetMessageStreamXml(DateTime startTime, DateTime endTime, int count, int offset);
+        XDoc GetMessageStreamXml(DateTime startTime, DateTime endTime, int count, int offset, Source source);
         XDoc GetMessageVerboseXml(Message message);
         XDoc GetMessageParentsXml(Message message);
         XDoc GetMessageChildrenXml(Message message);
