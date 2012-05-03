@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Usivity.Data.Entities {
+namespace Usivity.Entities.Types {
 
-    public class Identity : IIdentity {
+    public class Identity {
 
         //--- Properties ---
         public string Id { get; set; }

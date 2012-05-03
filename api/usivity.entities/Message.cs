@@ -2,34 +2,37 @@
 using System.Collections.Generic;
 using System.Globalization;
 using MindTouch.Xml;
-using Usivity.Data.Connections;
+using Usivity.Entities.Types;
+using Usivity.Util;
 
-namespace Usivity.Data.Entities {
+namespace Usivity.Entities {
 
     public class Message : IEntity {
 
         //--- Properties ---
         public string Id { get; private set; }
         
-        public SourceType Source { get; set; }
+        public Source Source { get; set; }
         public string SourceMessageId { get; set; }
         public string SourceInReplyToMessageId { get; set; }
         public string SourceInReplyToIdentityId { get; set; }
+        public DateTime SourceTimestamp { get; set; }
 
         public string ParentMessageId { get; set; }
         public IList<string> MessageThreadIds { get; private set; }
         public Identity Author { get; set; }
         public string UserId { get; set; }
         public string Body { get; set; }
-        public DateTime Timestamp { get; set; }
+        public string Subject { get; set; }
+        public DateTime Timestamp { get; private set; }
         public DateTime Expires { get; private set; }
         public bool OpenStream { get; set; }
 
         //--- Constructors ---
         public Message() {
-            Id = UsivityDataSession.GenerateEntityId(this);
+            Id = GuidGenerator.CreateUnique();
             MessageThreadIds = new List<string>();
-            OpenStream = true;
+            Timestamp = DateTime.UtcNow;
 
             //TODO: make expiration datetime configurable
             Expires = DateTime.UtcNow.AddDays(4);
@@ -41,7 +44,7 @@ namespace Usivity.Data.Entities {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            var datetime = Timestamp.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+            var datetime = SourceTimestamp.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
             var author = new XDoc("author")
                 .Elem("name", Author.Name ?? Author.Id);
             if(Author.Avatar != null) {

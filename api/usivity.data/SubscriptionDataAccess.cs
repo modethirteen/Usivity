@@ -2,19 +2,21 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using Usivity.Entities;
 
 namespace Usivity.Data {
-    using Entities;
 
     public class SubscriptionDataAccess : ISubscriptionDataAccess {
         
         //--- Class Methods ---
-        public static void RegisterClassMap() {
-            BsonClassMap.RegisterClassMap<Subscription>(cm => {
-                cm.AutoMap();
-                cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                cm.MapField("_uris");
-            });
+        public static void RegisterEntityClassMap() {
+            if(!BsonClassMap.IsClassMapRegistered(typeof(Subscription))) {
+                BsonClassMap.RegisterClassMap<Subscription>(cm => {
+                    cm.AutoMap();
+                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
+                    cm.MapField("_uris");
+                });
+            }
         }   
 
         //--- Fields ---

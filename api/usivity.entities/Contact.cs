@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using MindTouch.Xml;
-using Usivity.Data.Connections;
+using Usivity.Entities.Types;
+using Usivity.Util;
 
-namespace Usivity.Data.Entities {
+namespace Usivity.Entities {
 
     public class Contact : IEntity {
 
         //--- Fields ---
-        private IDictionary<SourceType, Identity> _identities;
+        private IDictionary<Source, Identity> _identities;
         private IList<string> _organizations;
 
         //--- Properties ---
@@ -25,11 +26,41 @@ namespace Usivity.Data.Entities {
         public string City { get; set; }
         public string State { get; set; }
         public string Zip { get; set; }
-        public string Email { get; set; }
-        public string Twitter { get; set; }
-        public string Facebook { get; set; }
-        public string Google { get; set; }
-        public string LinkedIn { get; set; }
+        public Identity Email {
+            get {
+                Identity email;
+                _identities.TryGetValue(Source.Email, out email);
+                return email;
+            }
+        }
+        public Identity Twitter {
+            get {
+                Identity twitter;
+                _identities.TryGetValue(Source.Twitter, out twitter);
+                return twitter;
+            }
+        }
+        public Identity Google {
+            get {
+                Identity google;
+                _identities.TryGetValue(Source.Google, out google);
+                return google;
+            }
+        }
+        public Identity Facebook {
+            get {
+                Identity facebook;
+                _identities.TryGetValue(Source.Facebook, out facebook);
+                return facebook;
+            }
+        }
+        public Identity LinkedIn {
+            get {
+                Identity linkedIn;
+                _identities.TryGetValue(Source.LinkedIn, out linkedIn);
+                return linkedIn;
+            }
+        }
         public string CompanyName { get; set; }
         public string CompanyPhone { get; set;}
         public string CompanyFax { get; set;}
@@ -43,8 +74,8 @@ namespace Usivity.Data.Entities {
 
         //--- Constructors ---
         public Contact() {
-            Id = UsivityDataSession.GenerateEntityId(this);
-            _identities = new Dictionary<SourceType, Identity>();
+            Id = GuidGenerator.CreateUnique();
+            _identities = new Dictionary<Source, Identity>();
             _organizations = new List<string>();
         }
 
@@ -54,17 +85,17 @@ namespace Usivity.Data.Entities {
                 .Elem("age", Age ?? "")
                 .Elem("gender", Gender ?? "")
                 .Elem("location", Location ?? "")
-                .Elem("email", Email ?? "")
+                .Elem("email", Email != null ? Email.Name : "")
                 .Elem("phone", Phone ?? "")
                 .Elem("fax", Fax ?? "")
                 .Elem("address", Address ?? "")
                 .Elem("city", City ?? "")
                 .Elem("state", State ?? "")
                 .Elem("zip", Zip ?? "")
-                .Elem("identity.twitter", Twitter ?? "")
-                .Elem("identity.facebook", Facebook ?? "")
-                .Elem("identity.linkedin", LinkedIn ?? "")
-                .Elem("identity.google", Google ?? "")
+                .Elem("identity.twitter", Twitter != null ? Twitter.Name : "")
+                .Elem("identity.facebook", Facebook != null ? Facebook.Name : "")
+                .Elem("identity.linkedin", LinkedIn != null ? LinkedIn.Name : "")
+                .Elem("identity.google", Google != null ? Google.Name : "")
                 .Start("company")
                     .Elem("name", CompanyName ?? "")
                     .Elem("phone", CompanyPhone ?? "")
@@ -91,16 +122,15 @@ namespace Usivity.Data.Entities {
                 .Elem("uri.avatar", Avatar != null ? Avatar.ToString() : "");
         }
 
-
-        public void SetIdentity(SourceType source, Identity identity) {
+        public void SetIdentity(Source source, Identity identity) {
             _identities[source] = identity;
         }
 
-        public Identity GetSourceIdentity(SourceType source) {
+        public Identity GetSourceIdentity(Source source) {
             return _identities.TryGetValue(source, null);
         }
 
-        public IDictionary<SourceType, Identity> GetSourceIdentities() {
+        public IDictionary<Source, Identity> GetSourceIdentities() {
             return _identities;
         }
 

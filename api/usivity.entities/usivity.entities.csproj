@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</ProjectGuid>
+    <ProjectGuid>{09E39692-A52B-4330-94BC-E9DB82B37D18}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Usivity.Util</RootNamespace>
-    <AssemblyName>usivity.util</AssemblyName>
+    <RootNamespace>usivity.entities</RootNamespace>
+    <AssemblyName>usivity.entities</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,28 +31,28 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\redist\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="mindtouch.dream">
       <HintPath>..\redist\mindtouch.dream.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Bson">
-      <HintPath>..\redist\MongoDB.Bson.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json.Net20">
-      <HintPath>..\redist\Newtonsoft.Json.Net20.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.XML" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extension.cs" />
-    <Compile Include="GuidGenerator.cs" />
-    <Compile Include="ImmutableDictionary.cs" />
-    <Compile Include="Json\JDoc.cs" />
-    <Compile Include="Json\PlugEx.cs" />
+    <Compile Include="Contact.cs" />
+    <Compile Include="IEntity.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="Organization.cs" />
+    <Compile Include="Subscription.cs" />
+    <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\Identity.cs" />
+    <Compile Include="Types\Source.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\usivity.util\usivity.util.csproj">
+      <Project>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</Project>
+      <Name>usivity.util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

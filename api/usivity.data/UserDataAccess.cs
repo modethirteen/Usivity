@@ -2,19 +2,21 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using Usivity.Entities;
 
 namespace Usivity.Data {
-    using Entities;
 
     public class UserDataAccess : IUserDataAccess {
 
         //--- Class Methods ---
-        public static void RegisterClassMap() {
-            BsonClassMap.RegisterClassMap<User>(cm => {
-                cm.AutoMap();
-                cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                cm.MapField("_organizations");
-            });
+        public static void RegisterEntityClassMap() {
+            if(!BsonClassMap.IsClassMapRegistered(typeof(User))) {
+                BsonClassMap.RegisterClassMap<User>(cm => {
+                    cm.AutoMap();
+                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
+                    cm.MapField("_organizations");
+                });    
+            }
         }
 
         //--- Fields ---

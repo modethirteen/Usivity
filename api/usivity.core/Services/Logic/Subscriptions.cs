@@ -2,7 +2,7 @@
 using MindTouch.Dream;
 using MindTouch.Xml;
 using Usivity.Data;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services.Logic {
 
@@ -10,11 +10,11 @@ namespace Usivity.Core.Services.Logic {
 
         //--- Fields ---
         private readonly ICurrentContext _context;
-        private readonly IUsivityDataSession _data;
+        private readonly IUsivityDataCatalog _data;
         private readonly IOrganizations _organizations;
 
         //--- Constructors ---
-        public Subscriptions(IUsivityDataSession data, ICurrentContext context, IOrganizations organizations) {
+        public Subscriptions(IUsivityDataCatalog data, ICurrentContext context, IOrganizations organizations) {
             _context = context;
             _organizations = organizations;
             _data = data;

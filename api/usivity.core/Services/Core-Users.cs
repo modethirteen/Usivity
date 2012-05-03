@@ -3,7 +3,7 @@ using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Web;
 using Usivity.Core.Services.Logic;
-using Usivity.Data.Entities;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services {
     using Yield = IEnumerator<IYield>;
@@ -11,9 +11,10 @@ namespace Usivity.Core.Services {
     public partial class CoreService {
 
         //--- Features ---
+        [UsivityFeatureAccess(User.UserRole.None)]
         [DreamFeature("GET:users/authentication", "Get user authentication")]
         [DreamFeatureParam("redirect", "uri?", "Redirect to uri upon authentication")]
-        public Yield GetUserAuthentication(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        internal Yield GetUserAuthentication(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var users = Resolve<IUsers>(context);
             var auth = Resolve<IUsivityAuth>(context);
             User user;
@@ -40,7 +41,8 @@ namespace Usivity.Core.Services {
             response.Return(authResponse);
             yield break;
         }
-
+        
+        [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("GET:users", "Get all users")]
         internal Yield GetUsers(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var doc = Resolve<IUsers>(context).GetUsersXml();
@@ -48,13 +50,15 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("GET:users/current", "Get current user")]
-        protected Yield GetCurrentUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        internal Yield GetCurrentUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var doc = Resolve<IUsers>(context).GetCurrentUserXml();
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
-
+        
+        [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("GET:users/{userid}", "Get user")]
         [DreamFeatureParam("userid", "string", "User id")]
         internal Yield GetUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
@@ -69,6 +73,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        [UsivityFeatureAccess(User.UserRole.Admin)]
         [DreamFeature("POST:users", "Create a new user")]
         internal Yield PostUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var userDoc = GetRequestXml(request);
@@ -98,9 +103,10 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("PUT:users/{userid}/password", "Change user password")]
         [DreamFeatureParam("userid", "string", "User id")]
-        protected Yield UpdateUserPassword(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
+        internal Yield UpdateUserPassword(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var user = Resolve<IUsers>(context).GetCurrentUser();
             if(context.GetParam<string>("userid") != user.Id) {
                 response.Return(DreamMessage.Forbidden("You can only change your own user password"));

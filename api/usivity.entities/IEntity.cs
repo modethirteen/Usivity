@@ -1,6 +1,6 @@
 ﻿using MindTouch.Xml;
 
-namespace Usivity.Data.Entities {
+namespace Usivity.Entities {
 
     public interface IEntity {
 

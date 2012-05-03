@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Xml;
 using Usivity.Data;
-using Usivity.Data.Entities;
+using Usivity.Entities;
+using Usivity.Entities.Types;
 
 namespace Usivity.Core.Services.Logic {
 
@@ -11,14 +13,15 @@ namespace Usivity.Core.Services.Logic {
 
         //--- Fields ---
         private readonly ICurrentContext _context;
-        private readonly IUsivityDataSession _data;
+        private readonly IUsivityDataCatalog _data;
         private readonly IMessageDataAccess _messageStream;
         private readonly IContacts _contacts;
         private readonly IUsers _users;
         private readonly IOrganizations _organizations;
+        private readonly IConnections _connections;
 
         //--- Constructors ---
-        public Messages(IUsivityDataSession data, ICurrentContext context, IContacts contacts, IUsers users, IOrganizations organizations) {
+        public Messages(IUsivityDataCatalog data, ICurrentContext context, IContacts contacts, IUsers users, IOrganizations organizations, IConnections connections) {
             _context = context;
             _data = data;
             var organization = organizations.CurrentOrganization;
@@ -26,6 +29,7 @@ namespace Usivity.Core.Services.Logic {
             _contacts = contacts;
             _users = users;
             _organizations = organizations;
+            _connections = connections;
         }
 
         //--- Methods ---
@@ -45,7 +49,7 @@ namespace Usivity.Core.Services.Logic {
 
         public XDoc GetMessageXml(Message message, string relation = null) {
             var doc = message.ToDocument(relation)
-                .Attr("href", _context.ApiUri.At("contacts", message.Id));
+                .Attr("href", _context.ApiUri.At("messages", message.Id));
             var contact = _data.Contacts.Get(message);
             if(contact != null) {
                 doc.AddAll(_contacts.GetContactXml(contact, "author"));
@@ -59,15 +63,15 @@ namespace Usivity.Core.Services.Logic {
             return doc;
         }            
 
+        public XDoc GetMessageStreamXml(DateTime startTime, DateTime endTime, int count, int offset, Source source) {
+            var messages = _messageStream.GetStream(startTime, endTime, count, offset, source);
+            var doc = GetMessagesXml(messages);
+            return doc;
+        }
+
         public XDoc GetMessageStreamXml(DateTime startTime, DateTime endTime, int count, int offset) {
             var messages = _messageStream.GetStream(startTime, endTime, count, offset);
-            var doc = new XDoc("messages")
-                .Attr("count", messages.Count())
-                .Attr("href", _context.ApiUri.At("messages"));
-            foreach(var message in messages) {
-                doc.Add(GetMessageXml(message));
-            }
-            doc.EndAll();
+            var doc = GetMessagesXml(messages);
             return doc;
         }
 
@@ -112,7 +116,7 @@ namespace Usivity.Core.Services.Logic {
 
         public XDoc PostReply(Message message, string reply) {
             var organization = _organizations.CurrentOrganization;
-            var connection = organization.GetConnectionReceipient(message) ?? organization.GetDefaultConnection(message.Source);
+            var connection = _connections.GetConnectionReceipient(message) ?? _connections.GetDefaultConnection(message.Source);
             if(connection == null || connection.Identity == null) {
                 var response = DreamMessage.Forbidden(string.Format("A \"{0}\" source connection has not been configured", message.Source));
                 throw new DreamAbortException(response);
@@ -149,6 +153,17 @@ namespace Usivity.Core.Services.Logic {
 
         public void DeleteMessage(Message message) {
             _messageStream.Delete(message);
+        }
+
+        private XDoc GetMessagesXml(IEnumerable<Message> messages) {
+            var doc = new XDoc("messages")
+                .Attr("count", messages.Count())
+                .Attr("href", _context.ApiUri.At("messages"));
+            foreach(var message in messages) {
+                doc.Add(GetMessageXml(message));
+            }
+            doc.EndAll();
+            return doc;
         }
     }
 }

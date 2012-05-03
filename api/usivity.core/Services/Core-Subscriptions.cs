@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using Usivity.Core.Services.Logic;
+using Usivity.Entities;
 
 namespace Usivity.Core.Services {
     using Yield = IEnumerator<IYield>;
 
     public partial class CoreService {
 
+        [UsivityFeatureAccess(User.UserRole.Admin)]
         [DreamFeature("GET:subscriptions", "Get all subscriptions")]
         internal Yield GetSubscriptions(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var doc = Resolve<ISubscriptions>(context).GetSubscriptionsXml();
@@ -15,6 +17,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        [UsivityFeatureAccess(User.UserRole.Admin)]
         [DreamFeature("GET:subscriptions/{subscriptionid}", "Get a subscription")]
         [DreamFeatureParam("subscriptionid", "string", "Subscription id")]
         internal Yield GetSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
@@ -29,6 +32,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        [UsivityFeatureAccess(User.UserRole.Admin)]
         [DreamFeature("POST:subscriptions", "Add a new subscription")]
         internal Yield PostSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var subscriptions = Resolve<ISubscriptions>(context);
@@ -45,6 +49,7 @@ namespace Usivity.Core.Services {
             yield break;
         }
 
+        [UsivityFeatureAccess(User.UserRole.Admin)]
         [DreamFeature("DELETE:subscriptions/{subscriptionid}", "Delete a subscription")]
         [DreamFeatureParam("subscriptionid", "string", "Subscription id")]
         internal Yield DeleteSubscription(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
