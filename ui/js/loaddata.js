@@ -14,10 +14,15 @@ function loaddata()
 	 setInterval("newopenstreammessage()",app.messageinterval);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
  	
  	 // LOAD CONTACTS
-	 setTimeout("loadusercontacts()",1000);
+	 setTimeout("loadusercontacts()",500);
 	 
 	 // LOAD USER PANEL
-	 setTimeout("loaduserpanel()",1500);
+	 setTimeout("loaduserpanel()",1000);
+	 
+	 // LOAD SUBSCRIPTION FILTER
+	 setTimeout("loadsubscriptions()",1500);
+	 
+	 
 }
 
 // LOAD USER CREDENTIALS LABEL
@@ -34,6 +39,19 @@ function loaduserpanel()
 		template(templatehtml, objecturi, "null",function(html) {
 			$(".header .menu").html(html);
 			$(".header .menu").fadeIn();
+		});
+	});
+}
+
+// LOAD SUBSCRIPTIONS LIST - PLACE INTO FILTER
+function loadsubscriptions()
+{
+	var src = "/template/filter_subscriptions.htm";
+	var objecturi = apiuri("/api/1/subscriptions",api.params);
+	
+	$.get(src, function(templatehtml) {		
+		template(templatehtml, objecturi, "null",function(html) {
+			$(".subscriptions_target").html(html);
 		});
 	});
 }

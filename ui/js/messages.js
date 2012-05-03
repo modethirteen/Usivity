@@ -8,14 +8,19 @@
 
 
 $(document).ready(function() {
+	
+	
 	// SEND A MESSAGE
 	$(".message_send, .message_send_inline").live("submit", function() {
 		var uri			= $(this).attr("action");
 		var message 	= $(this).find(".message_data").val();
+		var dcb 		= cb();
 		
 		messageparams = {
-			"dream.out.format" 	: "json"
+			"dream.out.format" 	: "jsonp",
+			"dream.out.pre"	: dcb
 		};
+	
 		
 		var objecturi = apiuri(uri,messageparams);
 		
@@ -23,13 +28,33 @@ $(document).ready(function() {
 			type: "POST",
 			crossDomain:true,
 			data: message,
-			dataType: "json",
+			dataType: 'jsonp',
+			jsonpCallback: dcb,
 			mimeType: 'application/json',
-			contentType: 'application/json',
+			contentType: 'application/json;',
 			url: objecturi,
 			success: function(results)
 			{
+				// DISPLAY THE MESSAGE ON THE POPUP SCREEN	
+				var src = "/template/message_thread.htm";
+				var objecturi = results.message["@href"];
+				
+				messageparams = {
+					"dream.out.format" 	: "jsonp",
+					"dream.out.pre"	: cb()
+				};
+				var objecturi = apiuri(objecturi,messageparams);
+				
+				$.get(src, function(templatehtml) {		
+					template(templatehtml, objecturi, "null",function(html) {
+						$(".message_threads").append(html);
+					});
+				});
+				
+				
+				// REFRESH THE CONTACT LIST
 				loadusercontacts();
+				
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);

@@ -8,7 +8,7 @@
 
 // APPLICATIONS SETTINGS
 app = {};
-app.messageinterval 	= 240000;   // 240,000ms = 4 minute
+app.messageinterval 	= 480000;   // 240,000ms = 4 minute
 app.messagelimit 		= 50; 		// 50 message limit for initial load
 app.messageloadspan		= 7200000			// 1 hour = 3,600,000 miliseconds
 app.domain				= "usivity.com"

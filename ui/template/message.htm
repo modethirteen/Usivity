@@ -1,6 +1,6 @@
 {foreach
 {in:messages_message}
-<tr id="{@id}" class="message message_new">
+<tr id="{@id}" class="message message_new message_source_{source}">
 	<td class="contact_klout">
 		<span class="source_klout">34</span>
 	</td>
@@ -13,6 +13,7 @@
 		<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
 	</td>
 	<td class="message_text">
+		<span class="subscription-tag">#subscription</span>
 		{body}
 	</td>
 	<td class="message_time">

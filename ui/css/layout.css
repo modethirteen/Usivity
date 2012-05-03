@@ -46,7 +46,6 @@ body {
 	float:right;
 	color:#fff;
 	height:50px;	
-	line-height:50px;
 	display:none;
 }
 .menu ul {
@@ -55,13 +54,22 @@ body {
 .menu li {
 	float:right;
 	display:block;
-	margin:0 0 0 30px;
+	margin:0 0 0 40px;
+	font-size:.8em;
 }
 .menu a {
-	display:block;
-	font-size:.8em;
 	text-decoration:none;
 	color:#fff;
+	text-transform:lowercase;
+	display:block;
+	margin:10px 0 0 0;
+	text-align:right;
+}
+.menu .user_role {
+	color:#999;
+	font-size:.85em;	
+	display:block;
+	text-align:right;
 	text-transform:lowercase;
 }
 .menu .menu_avatar {
@@ -165,6 +173,16 @@ body {
 }
 .message_thread .message_text {
 	font-size:.8em;	
+}
+.subscription-tag {
+	float:left;
+	display:block;
+	font-size:.7em;
+	padding:1px 3px;
+	border-radius:3px;
+	color:#fff;
+	background:#51B310;
+	margin:4px 5px 0 0 ;	
 }
 /*Message Send*/
 .message_send {
@@ -296,7 +314,7 @@ body {
 /*Tools Menu - Search, Control Panel, etcc*/
 .tools {
 	float:right;
-	font-size:.7em;	
+	font-size:.8em;	
 	display:block;
 	line-height:.7em;
 	padding:10px 0 0 10px;
@@ -337,6 +355,10 @@ body {
 .filter_col {
 	width:150px;
 	float:left;	
+}
+.filter_col input {
+	margin:0 10px 0 0;
+	padding:0;	
 }
 .close {
 	float:right;

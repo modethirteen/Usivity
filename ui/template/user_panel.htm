@@ -3,6 +3,12 @@
 	<li class="menu_avatar contact_picture">
 		<span></span>
 	</li>
-	<li class="menu_user"><a href="/template/user_profile.htm" id="/api/1/users/current">{name}</a></li>
-	<li class="menu_cp"><a href="/template/subscriptions_post.htm" id="/api/1/subscriptions" class="popup cp_subscriptions">control panel</a></li>
+	<li class="menu_user">
+		<a href="/template/user_profile.htm" id="/api/1/users/current">{name}</a>
+		<span class="user_role">{role}</span>
+	</li>
+	<li class="menu_cp">
+		<a href="/template/subscriptions_post.htm" id="/api/1/subscriptions" class="popup cp_subscriptions">control panel</a>
+		<span class="user_role">application settings</span>
+	</li>
 </ul>

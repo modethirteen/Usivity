@@ -40,7 +40,6 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 		url: objecturi,
 		dataType: 'jsonp',
 		jsonpCallback: dcb,
-		jsonpCallback: dcb,
 		mimeType: 'application/json',
 		contentType: 'application/json;',
 		success: function(objectref) // TODO:  Change ObjectRef to a better name

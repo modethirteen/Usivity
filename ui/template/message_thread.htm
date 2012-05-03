@@ -1,0 +1,32 @@
+{in:message}
+<div class="message_thread">
+	<span class="contact_picture contact_picture_large"> 
+		<img src="{author_uri.avatar}" />
+	</span>
+	<div class="message_details">
+		<span class="contact_name">
+			<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
+		</span>
+		<div class="message_text">
+			{body}
+		</div>
+		<span class="message_meta">
+			<span class="message_time">
+				{timestamp}
+			</span>
+			<span class="message_source">
+				{source}
+			</span>
+			<span>
+				<a href="{@href}" class="message_reply_inline">reply</a>
+			</span>
+		</span>
+	</div>
+	<form class="message_send_inline" id="{@id}" action="{@href}">	
+		<textarea name="message" class="message_data" start="enter your message"></textarea>
+		<div class="buttons">
+			<button type="submit" class="button apply">send</button>
+			<button type="submit" class="button cancel">cancel</button>
+		</div>
+	</form>
+</div>
