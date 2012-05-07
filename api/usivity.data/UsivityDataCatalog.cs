@@ -37,7 +37,7 @@ namespace Usivity.Data {
         }
 
         //--- Methods ---
-        public IMessageDataAccess GetMessageStream(Organization organization) {
+        public IMessageDataAccess GetMessageStream(IOrganization organization) {
             return new MessageDataAccess(_db, organization);
         }
 

@@ -50,14 +50,14 @@ namespace Usivity.Entities {
                 .Elem("role", role);
         }
 
-        public UserRole GetOrganizationRole(Organization organization) {
+        public UserRole GetOrganizationRole(IOrganization organization) {
             if(organization == null) {
                 return UserRole.None;
             }
             return _organizations.TryGetValue(organization.Id, UserRole.None);
         }
 
-        public void SetOrganizationRole(Organization organization, UserRole role) {
+        public void SetOrganizationRole(IOrganization organization, UserRole role) {
             _organizations[organization.Id] = role;
         }
 

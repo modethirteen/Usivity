@@ -6,8 +6,8 @@ namespace Usivity.Data {
     public interface IUserDataAccess {
         
         //--- Methods ---
-        IEnumerable<User> Get(Organization organization = null);
-        User Get(string id, Organization organization = null);
+        IEnumerable<User> Get(IOrganization organization = null);
+        User Get(string id, IOrganization organization = null);
         User GetAnonymous();
         User GetAuthenticated(string name, string password);
         bool Exists(string name);

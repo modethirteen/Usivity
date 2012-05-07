@@ -12,6 +12,6 @@ namespace Usivity.Data {
         IConnectionDataAccess Connections { get; }
 
         //--- Methods ---
-        IMessageDataAccess GetMessageStream(Organization organization);
+        IMessageDataAccess GetMessageStream(IOrganization organization);
     }
 }

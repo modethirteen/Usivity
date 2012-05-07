@@ -134,7 +134,7 @@ namespace Usivity.Entities {
             return _identities;
         }
 
-        public void AddOrganization(Organization organization) {
+        public void AddOrganization(IOrganization organization) {
             if(_organizations.Contains(organization.Id)) {
                 return;  
             }
