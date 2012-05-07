@@ -5,6 +5,6 @@ namespace Usivity.Connections {
     public interface IConnectionFactory {
 
         //--- Methods ---
-        IConnection NewConnection(Organization organization);
+        IConnection NewConnection(IOrganization organization);
     }
 }

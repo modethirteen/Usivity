@@ -6,9 +6,9 @@ namespace Usivity.Data {
     public interface IOrganizationDataAccess {
 
         //--- Methods ---
-        IEnumerable<Organization> Get();
-        IEnumerable<Organization> Get(User user);
-        Organization Get(string id, User user = null);
-        void Save(Organization organization);
+        IEnumerable<IOrganization> Get();
+        IEnumerable<IOrganization> Get(User user);
+        IOrganization Get(string id, User user = null);
+        void Save(IOrganization organization);
     }
 }

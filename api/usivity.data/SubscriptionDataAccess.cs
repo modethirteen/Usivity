@@ -28,12 +28,12 @@ namespace Usivity.Data {
         }
 
         //--- Methods ---
-        public IEnumerable<Subscription> Get(Organization organization) {
+        public IEnumerable<Subscription> Get(IOrganization organization) {
             var query = Query.EQ("OrganizationId", organization.Id);
             return _db.FindAs<Subscription>(query); 
         }
 
-        public Subscription Get(string id, Organization organization) {
+        public Subscription Get(string id, IOrganization organization) {
             var query = Query.And(
                 Query.EQ("_id", id),
                 Query.EQ("OrganizationId", organization.Id)

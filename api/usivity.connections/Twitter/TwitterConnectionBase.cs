@@ -12,7 +12,7 @@ namespace Usivity.Connections.Twitter {
 #if debug
         protected const string API_URI = "http://api.twitter.com/1";
 #else
-        protected const string API_URI = "https://api.twitter.com/1";
+        protected const string API_URI = "http://api.twitter.com/1";
 #endif
 
         //--- Methods ---

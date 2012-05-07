@@ -17,9 +17,9 @@ namespace Usivity.Connections.Twitter {
         private const string OAUTH_ACCESS_TOKEN_URI = "http://api.twitter.com/oauth/access_token";
         private const string OAUTH_AUTHORIZE_URI = "http://api.twitter.com/oauth/authorize";
 #else
-        private const string OAUTH_REQUEST_TOKEN_URI = "https://api.twitter.com/oauth/request_token";
-        private const string OAUTH_ACCESS_TOKEN_URI = "https://api.twitter.com/oauth/access_token";
-        private const string OAUTH_AUTHORIZE_URI = "https://api.twitter.com/oauth/authorize";
+        private const string OAUTH_REQUEST_TOKEN_URI = "http://api.twitter.com/oauth/request_token";
+        private const string OAUTH_ACCESS_TOKEN_URI = "http://api.twitter.com/oauth/access_token";
+        private const string OAUTH_AUTHORIZE_URI = "http://api.twitter.com/oauth/authorize";
 #endif
         //--- Properties ---
         public string Id { get; private set; }
@@ -35,7 +35,7 @@ namespace Usivity.Connections.Twitter {
         private OAuthRequest _oauthRequest;
 
         //--- Constructors ---
-        public TwitterConnection(XDoc config, Organization organization) {
+        public TwitterConnection(XDoc config, IOrganization organization) {
             Id = GuidGenerator.CreateUnique();
             OrganizationId = organization.Id;
             Source = Source.Twitter;
@@ -44,12 +44,16 @@ namespace Usivity.Connections.Twitter {
                 .Elem("consumer.secret", config["oauth/consumer.secret"].Contents)
                 .Elem("uri.authorize", OAUTH_AUTHORIZE_URI)
                 .Elem("uri.token.request", OAUTH_REQUEST_TOKEN_URI)
-                .Elem("uri.token.access", OAUTH_ACCESS_TOKEN_URI)
-                .Elem("uri.callback", config["oauth/uri.callback"].Contents);
+                .Elem("uri.token.access", OAUTH_ACCESS_TOKEN_URI);
             _oauth = new OAuth(oauthConfig);
             
             // generate oauth request token
-            var requestToken = _oauth.GetRequestToken().ToText();
+            XUri callback;
+            XUri.TryParse(config["uri.ui"].Contents, out callback);
+            if(callback != null) {
+                callback = callback.With("connection", Id);
+            }
+            var requestToken = _oauth.GetRequestToken(callback).ToText();
             var pairs = XUri.ParseParamsAsPairs(requestToken)
                 .ToDictionary(p => p.Key, p => p.Value);
             var oauthToken = pairs["oauth_token"];

@@ -14,7 +14,7 @@ namespace Usivity.Connections.Email {
         }
 
         //--- Methods ---
-        public IConnection NewConnection(Organization organization) {
+        public IConnection NewConnection(IOrganization organization) {
             return new EmailConnection(_config, organization);
         }
     }

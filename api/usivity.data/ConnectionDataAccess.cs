@@ -41,15 +41,11 @@ namespace Usivity.Data {
         }
    
         //--- Methods ---
-        public IEnumerable<IConnection> Get(Organization organization) {
-            return _db.FindAs<IConnection>(Query.EQ("OrganizationId", organization.Id));
-        }
-
-        public IEnumerable<IConnection> Get(Organization organization, Source source) {
-            var query = Query.And(
-                Query.EQ("OrganizationId", organization.Id),
-                Query.EQ("Source", source)
-                );
+        public IEnumerable<IConnection> Get(IOrganization organization, Source? source = null) {
+            var query = Query.EQ("OrganizationId", organization.Id);
+            if(source != null) {
+                query = Query.And(query, Query.EQ("Source", source));
+            }
             return _db.FindAs<IConnection>(query);
         }
 

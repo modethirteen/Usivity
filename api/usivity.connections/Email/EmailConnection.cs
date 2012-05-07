@@ -47,7 +47,7 @@ namespace Usivity.Connections.Email {
         private DateTime _lastSearch;
 
         //--- Constructors ---
-        public EmailConnection(XDoc config, Organization organization) {
+        public EmailConnection(XDoc config, IOrganization organization) {
             Id = GuidGenerator.CreateUnique();
             OrganizationId = organization.Id;
             Source = Source.Email;
@@ -82,7 +82,8 @@ namespace Usivity.Connections.Email {
                     Body = mailMessage.Body,
                     Subject = mailMessage.Subject,
                     Author = identity,
-                    SourceTimestamp = mailMessage.Date
+                    SourceTimestamp = mailMessage.Date,
+                    OpenStream = true
                 };
                 messages.Add(message);
             }

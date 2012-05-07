@@ -30,24 +30,24 @@ namespace Usivity.Data {
         }
 
         //--- Methods ---
-        public IEnumerable<Organization> Get() {
+        public IEnumerable<IOrganization> Get() {
             return _db.FindAllAs<Organization>();
         }
 
-        public IEnumerable<Organization> Get(User user) {
+        public IEnumerable<IOrganization> Get(User user) {
             var ids = BsonArray.Create(user.GetOrganizationIds());
             var query = Query.In("_id", ids);
             return _db.FindAs<Organization>(query);
         }
 
-        public Organization Get(string id, User user = null) {
+        public IOrganization Get(string id, User user = null) {
             if(user != null && user.GetOrganizationIds().ToList().Find(o => o == id) == null) {
                 return null;
             }
             return _db.FindOneByIdAs<Organization>(id);
         }
 
-        public void Save(Organization organization) {
+        public void Save(IOrganization organization) {
             _db.Save(organization, SafeMode.True);
         }
     }

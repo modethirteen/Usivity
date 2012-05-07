@@ -30,7 +30,7 @@ namespace Usivity.Entities {
         private IDictionary<Source, Uri> _uris;
 
         //--- Constructors ---
-        public Subscription(Organization organization, IEnumerable<string> constraints, SubscriptionLanguage language) {
+        public Subscription(IOrganization organization, IEnumerable<string> constraints, SubscriptionLanguage language) {
             Id = GuidGenerator.CreateUnique();
             Language = language;
             OrganizationId = organization.Id;

@@ -20,7 +20,6 @@ namespace Usivity.Connections {
         public Uri RequestUri { get; private set; }
         public Uri AuthorizeUri { get; private set; }
         public Uri AccessTokenUri { get; private set; }
-        public Uri CallbackUri { get; private set; }
         public string AccessToken { get; set; }
         public string AccessTokenSecret { get; set; }
 
@@ -34,8 +33,9 @@ namespace Usivity.Connections {
         }
 
         //--- Methods ---
-        public DreamMessage GetRequestToken() {
+        public DreamMessage GetRequestToken(XUri callback) {
             return Plug.New(RequestUri)
+                .WithHeader("oauth_callback", callback.ToString())
                 .WithPreHandler(AuthorizationHeader)
                 .Post();
         }
@@ -75,7 +75,13 @@ namespace Usivity.Connections {
         }
 
         private string GenerateSignature(string verb, XUri uri, SortedDictionary<string, string> headers) {
-            var headerString = string.Join("&", headers.Select(header => header.Key + "=" + header.Value).ToArray());
+            var signingHeaders = headers.ToDictionary(h => h.Key, h => h.Value);
+
+            // oauth callback uri must be encoded a second time for base string
+            if(signingHeaders.ContainsKey("oauth_callback")) {
+                signingHeaders["oauth_callback"] = XUri.Encode(signingHeaders["oauth_callback"]);
+            }
+            var headerString = string.Join("&", signingHeaders.Select(header => header.Key + "=" + header.Value).ToArray());
             var baseString = string.Format(
                 "{0}&{1}&{2}",
                 XUri.Encode(verb.ToUpperInvariant()),

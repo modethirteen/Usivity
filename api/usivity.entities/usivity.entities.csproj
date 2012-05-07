@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>usivity.entities</RootNamespace>
     <AssemblyName>usivity.entities</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,7 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="mindtouch.dream">
+    <Reference Include="mindtouch.dream, Version=2.4.0.362, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\redist\mindtouch.dream.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -40,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Contact.cs" />
     <Compile Include="IEntity.cs" />
+    <Compile Include="IOrganization.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Organization.cs" />
     <Compile Include="Subscription.cs" />

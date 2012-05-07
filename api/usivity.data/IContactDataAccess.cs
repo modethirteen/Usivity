@@ -6,9 +6,9 @@ namespace Usivity.Data {
     public interface IContactDataAccess {
 
         //--- Methods ---
-        IEnumerable<Contact> Get(Organization organization);
+        IEnumerable<Contact> Get(IOrganization organization);
         Contact Get(Message message);
-        Contact Get(string id, Organization organization);
+        Contact Get(string id, IOrganization organization);
         void Save(Contact contact);
     }
 }

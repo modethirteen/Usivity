@@ -5,14 +5,14 @@ using Usivity.Util;
 
 namespace Usivity.Entities {
 
-    public class Organization : IEntity {
+    public class Organization : IOrganization {
 
         //--- Class Methods ---
-        public static Organization NewMockOrganization() {
+        public static IOrganization NewMockOrganization() {
             return new Organization(string.Empty, string.Empty); 
         }
 
-        public static Organization NewOrganization(string name) {
+        public static IOrganization NewOrganization(string name) {
             return new Organization(name);
         }
 
@@ -40,8 +40,12 @@ namespace Usivity.Entities {
 
         public string GetDefaultConnectionId(Source source) {
             string connectionId;
-            _defaultConnections.TryGetValue(source, out connectionId);
+            GetDefaultConnections().TryGetValue(source, out connectionId);
             return connectionId;
+        }
+
+        private IDictionary<Source, string> GetDefaultConnections() {
+            return _defaultConnections ?? (_defaultConnections = new Dictionary<Source, string>());
         }
     }
 }
