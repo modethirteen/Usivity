@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2BB1BC10-8880-45B0-A7CB-3F4FCB2D05CF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Usivity.Tests.Services</RootNamespace>
+    <AssemblyName>usivity.services.tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\redist\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\redist\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Logic\Connections\ConnectionsTests.cs" />
+    <Compile Include="Core\Logic\Connections\GetDefaultConnection.cs" />
+    <Compile Include="Core\Logic\Connections\GetConnection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CoreService\Connections\" />
+    <Folder Include="CoreService\Contacts\" />
+    <Folder Include="CoreService\Messages\" />
+    <Folder Include="CoreService\Organizations\" />
+    <Folder Include="CoreService\Subscriptions\" />
+    <Folder Include="CoreService\Users\" />
+    <Folder Include="Core\Logic\Contacts\" />
+    <Folder Include="Core\Logic\Messages\" />
+    <Folder Include="Core\Logic\Organizations\" />
+    <Folder Include="Core\Logic\Subscriptions\" />
+    <Folder Include="Core\Logic\Users\" />
+    <Folder Include="Core\UsivityAuth\" />
+    <Folder Include="Core\UsivityContext\" />
+    <Folder Include="OpenStreamService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\usivity.connections\usivity.connections.csproj">
+      <Project>{A35195C0-5614-4382-B0A6-D6808759A84B}</Project>
+      <Name>usivity.connections</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\usivity.data\usivity.data.csproj">
+      <Project>{62996F95-997C-481D-BBE6-F9BC9DF16D48}</Project>
+      <Name>usivity.data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\usivity.entities\usivity.entities.csproj">
+      <Project>{09E39692-A52B-4330-94BC-E9DB82B37D18}</Project>
+      <Name>usivity.entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\usivity.services\usivity.services.csproj">
+      <Project>{407F79A0-C9DD-4DF8-822C-4E6AB58171F9}</Project>
+      <Name>usivity.services</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

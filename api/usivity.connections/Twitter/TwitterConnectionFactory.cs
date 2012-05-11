@@ -14,7 +14,7 @@ namespace Usivity.Connections.Twitter {
         }
 
         //--- Methods ---
-        public IConnection NewConnection(Organization organization) {
+        public IConnection NewConnection(IOrganization organization) {
             return new TwitterConnection(_config, organization);
         }
     }

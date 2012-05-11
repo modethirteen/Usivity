@@ -29,20 +29,19 @@ namespace Usivity.Data {
         }
    
         //--- Methods ---
-        public IEnumerable<Contact> Get(Organization organization) {
+        public IEnumerable<Contact> Get(IOrganization organization) {
             return _db.FindAs<Contact>(Query.EQ("_organizations", organization.Id));
         }
 
         public Contact Get(Message message) {
-            var identity = "_identities." + message.Source;
+            var identity = "_identities." + (int)message.Source;
             var query = Query.And(
-                Query.Exists(identity, true),
                 Query.EQ(identity + "._id", message.Author.Id)
                 );
             return _db.FindOneAs<Contact>(query);
         }
 
-        public Contact Get(string id, Organization organization) {
+        public Contact Get(string id, IOrganization organization) {
             var query = Query.And(
                 Query.EQ("_id", id),
                 Query.EQ("_organizations", organization.Id)

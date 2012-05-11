@@ -28,7 +28,7 @@ namespace Usivity.Data {
         }
 
         //--- Methods ---
-        public IEnumerable<User> Get(Organization organization = null) {
+        public IEnumerable<User> Get(IOrganization organization = null) {
             if(organization == null) {
                 return _db.FindAllAs<User>();    
             }
@@ -36,7 +36,7 @@ namespace Usivity.Data {
             return _db.FindAs<User>(query);
         }
 
-        public User Get(string id, Organization organization = null) {
+        public User Get(string id, IOrganization organization = null) {
             QueryComplete query;
             if(organization != null) {
                 query = Query.And(

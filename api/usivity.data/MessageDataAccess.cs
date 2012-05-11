@@ -14,7 +14,7 @@ namespace Usivity.Data {
         private readonly MongoCollection _db;
 
         //--- Constructors ---
-        public MessageDataAccess(MongoDatabase db, Organization organization) {
+        public MessageDataAccess(MongoDatabase db, IOrganization organization) {
             _db = db.GetCollection<Message>(organization.Id + "_messages");
             var indexes = new IndexKeysBuilder().Ascending("Source", "SourceMessageId");
             _db.EnsureIndex(indexes, IndexOptions.SetUnique(true));
@@ -22,22 +22,15 @@ namespace Usivity.Data {
         }
 
         //--- Methods ---
-        public IEnumerable<Message> GetStream(DateTime start, DateTime end, int count, int offset, Source source) {
-            var query = Query.And(
-                Query.GTE("Timestamp", start),
-                Query.LTE("Timestamp", end),
-                Query.EQ("OpenStream", true),
-                Query.EQ("Source", source)
-                );
-            return GetMessages(query, count, offset);
-        }
-
-        public IEnumerable<Message> GetStream(DateTime start, DateTime end, int count, int offset) {
+        public IEnumerable<Message> GetStream(DateTime start, DateTime end, int count, int offset, Source? source) {
             var query = Query.And(
                 Query.GTE("Timestamp", start),
                 Query.LTE("Timestamp", end),
                 Query.EQ("OpenStream", true)
-                );
+            );
+            if(source != null) {
+                query = Query.And(query, Query.EQ("Source", source));
+            }
             return GetMessages(query, count, offset);
         }
 
@@ -48,7 +41,7 @@ namespace Usivity.Data {
                 var subQuery = Query.And(
                     Query.EQ("Source", identity.Key),
                     Query.EQ("Author._id", identity.Value.Id),
-                    Query.EQ("ParentMessageId", "")
+                    Query.EQ("ParentMessageId", null)
                     );
                 queries.Add(subQuery);
             }
