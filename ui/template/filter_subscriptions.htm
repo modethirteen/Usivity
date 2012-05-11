@@ -1,9 +1,8 @@
-<ul>
+<ul class="filter_subscription">
 {foreach
 	{in:subscriptions_subscription}
 	<li>
 		<input checked type="checkbox" value="{constraints}"><span>{constraints}</span>
 	</li>
 foreach}
-	<li><a class="request_subscription" href="">request a subscription</li>
 </ul>

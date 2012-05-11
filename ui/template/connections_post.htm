@@ -2,6 +2,7 @@
 
 <div class="panel">
 	<div class="control_panel_nav">
+		<a href="template/setup.htm" class="popup cp_getstarted">Get Started</a>
 		<a href="template/subscriptions_post.htm" id="/api/1/subscriptions" class="popup cp_subscriptions">Subscriptions</a>
 		<a href="template/connections_post.htm" id="/api/1/connections" class="selected popup cp_sources">Connections</a>
 		<a href="template/users_post.htm" id="/api/1/users" class="popup cp_users">Users</a>
@@ -16,10 +17,13 @@
 
 	<p class="help">Connections are used to attach your social networks to your Usivity account.  Connected accounts will be accessible by all <a href="template/users_post.htm" id="/api/1/users" class="popup cp_users">users</a>.</p>
 	<div class="connections">
-		<a href="" class="connection_twitter">Twitter</a>
-		<a href="" class="connection_facebook">Facebook</a>
-		<a href="" class="connection_linkedin">Linkedin</a>
-		<a href="template/connections_email_post.htm" class="selected popup connection_email">Email</a>
+	
+		<div class="connections_new">
+			<a href="#" class="connection_twitter" target="_blank" id="twitter">Twitter</a>
+			<a href="#" class="connection_facebook" id="facebook">Facebook</a>
+			<a href="#" class="connection_linkedin" id="linkedin">Linkedin</a>
+			<a href="template/connections_email_post.htm" class="selected popup connection_email" name="linkedin">Email</a>
+		</div>
 		
 		<h3>Manage Existing Connections</h3>
 		<table>

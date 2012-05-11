@@ -6,8 +6,26 @@
 		-
 */
 
+function fixcontent()
+{
+	$(".message_new").each( function() {
+				
+		// PROCESS LINKS
+		var text = $(this).find(".message_text").html();
+		var text = fixlinks($(this).find(".message_text").html());
+		$(this).find(".message_text").html(text);
+		
+		// PROCESS DATE/TIME
+		var date = $(this).find(".message_time").attr("value");
+		var date = fixdate(date);
+		$(this).find(".message_time").html(date);
+
+	});	
+}
+
+
 // REGEX REPLACE CONTENT SUCH AS LINKS, TWITTER NAMES, ETC
-function fixmessage(text) 
+function fixlinks(text) 
 {
 	if (text)
 	{
@@ -17,8 +35,9 @@ function fixmessage(text)
 		// LINK TWITTER NAMES
 		var text = text.replace(/(^|\s)@(\w+)/g, '$1<a target="_new" class="profile" href="http://www.twitter.com/#!/$2">@$2</a>');
 		
-		// REPLACE $ WITH HTML
-		var text = text.replace("$","---");
+		// CONVERT DATES
+		var text = text.replace(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/,'hey');
+		
 		
 		return text;
 	}
@@ -28,18 +47,21 @@ function fixmessage(text)
 	}
 }
 
+function fixdate (date)
+{
+	var date = date.replace("Z","");
+	var date = new Date(date);
+	var date = dateFormat(date, "ddd, mmm d, h:MM tt");
+	
+	return date;
+}
+
 // VALIDATE EMAIL ADDRESS
 function checkemail(email) 
 { 
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 } 
-
-// GENERATE A DYNAMIC FUNCTION NAME TO USE AS A CALLBACK
-function cb()
-{
-	return("cb" + Math.floor(Math.random()*11111)); //USED FOR A DYNAMIC FUNCTION	
-}
 
 // EXTRACT A QUERYPARAM BY NAME
 function queryparam(name, url)

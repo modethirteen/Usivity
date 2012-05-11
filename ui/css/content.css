@@ -26,10 +26,16 @@ p img {
 	margin:0 10px 10px 0;
 	-webkit-box-shadow: 2px 2px 2px #999;
 }
-p .img-center {
+
+/*IMAGES*/
+.img-center {
 	margin:10px auto 20px auto;
 	display:block;
 	float:none;	
+}
+.img-left {
+	float:left;
+	margin:0 20px 0 0;	
 }
 /*HEADERS*/
 h2, h3, h4, h5, h6 {
@@ -73,8 +79,9 @@ h3 {
 	font-size:.7em;
 	color:#999;	
 	text-shadow: #fff 1px 1px;
-	width:162px;
+	width:182px;
 	float:left;
+	margin:0 0 10px 0;
 }
 textarea,
 select,
@@ -176,6 +183,7 @@ td {
 	border-bottom:1px dotted #ccc;
 	padding:5px;
 	font-size:.8em;
+	vertical-align:top;
 }
 .center {
 	text-align:center;	

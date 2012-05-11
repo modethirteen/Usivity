@@ -8,47 +8,41 @@
 */
 $(document).ready(function() {
 
-	var authtoken= queryparam("oauth_token");
-	var authverifier= queryparam("oauth_verifier");
-	var apiverb = "?dream.in.verb=PUT"; //TODO:  PUT THE VERBS INTO SETTINGS.JS (PUT, POST, DELETE)
+	var authtoken		= queryparam("oauth_token");
 	
-	var authparams = ("&oauth_token=" + authtoken + "&oauth_verifier=" + authverifier); //TODO:  POST THESE CONTENTS IN THE BODY, NOT AS QUERY PARAMS.  SECURITY CONCERNS.  TALK TO ANDY
-	
-	var apiurl = (api.root + usivity.sourcetwitter.url + apiverb + authparams);
-	
-	connection = {};
-	connection.type 	= "oauth";
-	connection.token	= authtoken;
-	connection.verifier	= authverifier;
-	
-
-	$.ajax({
-		type: "POST",
-		crossDomain:true, 
-		data: connection,
-		url: apiurl,
-		success: function(results)
-		{
-			console.log('complete');
-			window.close();
-		},
-		error: function(results)
-		{
-			console.log('failed');	
-		}
-	});
+	if (authtoken)
+	{
+		var authverifier	= queryparam("oauth_verifier");
+		var connection 		= queryparam("connection");
+		
+		data = {
+			    connection: {
+				    oauth : {
+			        	token		: authtoken,
+			        	verifier 	: authverifier
+		        	}
+			    }
+			}
+		
+		var apiuri = ("/api/1/connections/" + connection + "?dream.in.verb=PUT&dream.out.format=json");
+		
+		
+		$.ajax({
+			type: "POST",
+			crossDomain:true,
+			data: JSON.stringify(data),
+			url: apiuri,
+			dataType: "json",
+			mimeType: 'application/json',
+			contentType: 'application/json',
+			success: function(results)
+			{
+				console.log("connection saved");
+			},
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+			}   
+		});
+	}
 	
 });
-
-
-function queryparam(name)
-{
-	name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-	var regexS = "[\\?&]" + name + "=([^&#]*)";
-	var regex = new RegExp(regexS);
-	var results = regex.exec(window.location.href);
-	if(results == null)
-		return "";
-	else
-		return decodeURIComponent(results[1].replace(/\+/g, " "));
-}

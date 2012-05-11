@@ -43,23 +43,24 @@
 					<table class="target">
 						<thead>
 							<tr class="th">
-								<th class="contact_klout">
+								<!--
+								<th style="width:50px;" class="contact_klout">
 									Klout
 								</th>
-								<th colspan="2">User</th>
-								<th>Message</th>
-								<th>Time</th>
-								<th class="message_source">
+								-->
+								<th style="width:80px;"colspan="2">User</th>
+								<th >Message</th>
+								<th style="width:140px;">Date/Time</th>
+								<th style="width:100px;" colspan="3" class="message_source">
 									Source
 								</th>
-								<th></th>
-								<th></th>
 							</tr>
 							<tr class="filter">
 								<td colspan="8">
+									<!--
 									<div class="filter_col">
 										<h4>Klout</h4>
-										<ul>
+										<ul class="filter_klout">
 											<li><input checked type="checkbox"><span>Celebrity</span></li>
 											<li><input checked type="checkbox"><span>Leader</span></li>
 											<li><input checked type="checkbox"><span>Socialist</span></li>
@@ -67,27 +68,28 @@
 											<li><input checked type="checkbox"><span>Hermit</span></li>
 										</ul>
 									</div>
+									-->
 									<div class="filter_col">
 										<h4>Sources</h4>
-										<ul>
-											<li><input checked type="checkbox"><span>Twitter</span></li>
-											<li><input checked type="checkbox"><span>Facebook</span></li>
-											<li><input checked type="checkbox"><span>LinkedIn</span></li>
-											<li><input checked type="checkbox"><span>Email</span></li>
-											<li><input checked type="checkbox"><span>Blog</span></li>
+										<ul class="filter_source">
+											<li><input checked type="checkbox" value="twitter"><span>Twitter</span></li>
+											<li><input checked type="checkbox" value="facebook"><span>Facebook</span></li>
+											<li><input checked type="checkbox" value="linkedin"><span>LinkedIn</span></li>
+											<li><input checked type="checkbox" value="email"><span>Email</span></li>
 										</ul>
 									</div>
 									<div class="filter_col">
 										<h4>Subscriptions</h4>
-										<div class="subscriptions_target">
+										<span class="subscriptions_target">
 										
-										</div>
+										</span>
 									</div>
 									<div class="filter_col">
 										<h4>Other Filters</h4>
-										<ul>
+										<ul class="filter_other">
 											<li><input type="checkbox"><span>No Retweets</span></li>
 											<li><input type="checkbox"><span>No Locations</span></li>
+											<li><input type="checkbox"><span>No Exact Duplicates</span></li>
 										</ul>
 									</div>
 									<a href="#" class="close">close</a>

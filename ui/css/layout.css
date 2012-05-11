@@ -247,7 +247,7 @@ body {
 }
 .contact_put,
 .contact_post {
-	padding-bottom:200px;	
+	/*padding-bottom:200px;	*/
 }
 .contact_put .buttons,
 .contact_post .buttons {
@@ -462,7 +462,7 @@ body {
 .help {
 	padding:0;
 	display:block;
-	color:#999;
+	color:#666;
 	font-size:.9em;
 	text-shadow: #fff 1px 1px;
 }
@@ -495,4 +495,11 @@ body {
 	overflow:hidden;
 	padding:10px 0;
 	clear:left;	
+}
+
+/*SETUP*/
+table.setup tr:hover,
+table.setup td {
+	width:33%;	
+	background:none;
 }

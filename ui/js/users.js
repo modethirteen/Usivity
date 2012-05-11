@@ -1,15 +1,14 @@
 /*
-	subscriptions.js - manage all stream subscriptions.  Example - words that are searched on twitter
+	users.js - manage users through the control panel
 	
 	FUNCTIONS
-		- Delete Subscriptions
-		- Post Subscriptions
+		-
+		-
 */
-
-$(document).ready(function() {
+$(document).ready( function() {
 	
-	// DELETE SUBSCRIPTION
-	$(".subscriptions .delete").live("click", function() {
+	// DELETE Users
+	$(".users .delete").live("click", function() {
 		var link	= $(this);
 		var href	= link.attr("href");
 		
@@ -34,29 +33,25 @@ $(document).ready(function() {
 	});	
 	
 	
-	/*POST SUBSCRIPTIONS*/
-	$(".subscriptions form").live("submit", function() {
+	// CREATE A NEW USER
+	$(".users form").live("submit", function() {
 		var form 		= $(this);
 		var uri 		= form.attr("action");
-		var input		= form.find(".constraints");
-		var constraints = input.val();
+		var username = $(this).find(".user_name");
+		var password = $(this).find(".user_password");
 		
 		data = {
-		    subscription:{
-		        constraints:{
-		            constraint:[
-		                constraints
-		            ]
-		        },
-		        language:'en'
+		    user:{
+		        name: username.val(),
+		        password : password.val()
 		    }
 		}
 		
-		subscriptionparams = {
+		userparams = {
 			"dream.out.format" : "json"
 		};
 		
-		var uri = apiuri(uri,subscriptionparams);
+		var uri = apiuri(uri,userparams);
 		
 		$.ajax({
 			type: "POST",
@@ -69,10 +64,11 @@ $(document).ready(function() {
 			success: function(results)
 			{
 				var newele = $(document.createElement('tr'));
-				newele.html('<td>' + results.constraints + '</td><td class="center"><a href="' + results['@href'] + '" class="delete">delete</a></td>');
-				$(".subscriptions table tbody").append(newele);
-				input.val("");
-				input.focus();
+				newele.html('<td>' + results.name + '</td><td>' + results.role + '</td><td class="center"><a href="' + results['@href'] + '" class="delete">delete</a></td>');
+				$(".users table tbody").append(newele);
+				username.val("");
+				password.val("");
+				username.focus();			
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);
@@ -81,4 +77,5 @@ $(document).ready(function() {
 		
 		return false;	
 	});
+		
 });

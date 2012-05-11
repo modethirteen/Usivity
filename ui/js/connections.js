@@ -12,20 +12,62 @@
 */
 $(document).ready(function() {
 	
-	
-	// LOAD CONNECTION AUTHENTICATION
-	$(".connections a.connection").live("click", function() {
-		var width = 500;
-    	var height = 500;
-    	var left = parseInt((screen.availWidth/2) - (width/2));
-    	var top = parseInt((screen.availHeight/2) - (height/2));
-		var url = $(this).attr('href');
+	// DELETE CONNECTION
+	$(".connections .delete").live("click", function() {
+		var link	= $(this);
+		var href	= link.attr("href");
 		
-		/*Get Auth Token From Usivity API*/
+		deleteparams = {
+			"dream.in.verb" : "DELETE"
+		};
+		var uri = apiuri(href,deleteparams);
+		$.ajax({
+			type: "POST",
+			crossDomain:true, 
+			url: uri,
+			success: function(results)
+			{
+				link.parents("tr").remove(); 		
+			},
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+			} 
+		});
 		
-		
-		window.open(url,'mywin','left=' + left + ',top=' + top + ',width=' + width + ',height=' + height + ',toolbar=1,resizable=0');
 		return false;	
-	});
+	});	
+
 	
+	
+	// CREATE NEW CONNECTION
+	$(".connections_new a").live("click", function() {
+		var link	= $(this);
+		var source = link.attr("id");
+	
+		connectionparams = {
+			"dream.out.format" : "json",
+			"source" : source
+		};
+				
+		var uri = apiuri(api.sources,connectionparams);
+		
+		$.ajax({
+			type: "POST",
+			crossDomain:true,
+			url: uri,
+			dataType: "json",
+			mimeType: 'application/json',
+			contentType: 'application/json',
+			success: function(results)
+			{
+				var url = results["uri.authorize"];
+				location.href = url	
+			},
+			error:function (xhr, ajaxOptions, thrownError){
+				console.log(xhr.statusText);
+				return false;
+			}   
+		});
+		return false;
+	});
 });

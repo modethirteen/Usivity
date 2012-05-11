@@ -22,7 +22,7 @@ function newopenstreammessage()
 		"dream.out.format" : "jsonp",
 		"dream.out.pre": cb(),
 		"limit": "10",
-		"start" : timeago,
+		"start" : app.messageinterval,
 		"limit" : 100
 	};
 	
@@ -35,12 +35,9 @@ function newopenstreammessage()
 			// LOAD THE DATA INTO THE OPEN STREAM
 			$(".openstream .target tbody").prepend(html);
 			
-			// PROCESS LINKS
-			$(".message_new").each( function() {
-				var text = $(this).find(".message_text").html();
-				var text = fixmessage($(this).find(".message_text").html());
-				$(this).find(".message_text").html(text);
-			});
+			// PROCESS CONTENT
+			fixcontent();
+			
 			
 			// ADD THE TIMESTAMP
 			if ($(".message_new").length > 0)

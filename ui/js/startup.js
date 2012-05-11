@@ -8,7 +8,7 @@
 
 // APPLICATIONS SETTINGS
 app = {};
-app.messageinterval 	= 480000;   // 240,000ms = 4 minute
+app.messageinterval 	= 240000;   // 240,000ms = 4 minute
 app.messagelimit 		= 50; 		// 50 message limit for initial load
 app.messageloadspan		= 7200000			// 1 hour = 3,600,000 miliseconds
 app.domain				= "usivity.com"
@@ -27,7 +27,7 @@ api.current		= "/users/current"
 // API PARAMS
 api.params = {
 	"dream.out.format" 	: "jsonp",
-	"dream.out.pre"	: "callback"  // TODO:  TAKE THIS OUT OF SETTINGS  // TODO:  CHANGE TO CB()  (currently breaks)
+	"dream.out.pre"	: cb()  // TODO:  TAKE THIS OUT OF SETTINGS  // TODO:  CHANGE TO CB()  (currently breaks)
 };
 
 // ####################################################################
@@ -92,4 +92,10 @@ function apiuri(uri,params)
 		
 		return fulluri;
 	}
+}
+
+// GENERATE A DYNAMIC FUNCTION NAME TO USE AS A CALLBACK
+function cb()
+{
+	return("cb" + Math.floor(Math.random()*11111)); //USED FOR A DYNAMIC FUNCTION	
 }

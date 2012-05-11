@@ -56,11 +56,12 @@ function buildModal(ele, href)
 	{
 		var src = href;
 	}
-		
+	
 	// TODO:  GET RID OF THIS IF STATEMENT
 	if (objecturi)
 	{		
 		var objecturi = apiuri(objecturi,api.params);
+
 		$.get(src, function(templatehtml) {		
 			template(templatehtml, objecturi, "null",function(html) {
 				$(".modal .target").html(html);
@@ -116,6 +117,41 @@ function showmodal() {
 	
 	// Resize Modal
 	resizemodal();
+	
+	// BIND SCROLL EVENT
+	$(".modal .target").bind('scroll', function() {
+	    scrollmodal($(this));
+	});
+}
+
+function scrollmodal(ele) {
+	var pheight = $(".modal .panel").height();  // Panel Height
+	var pmheight = $(".modal .panel_main").height(); // Panel Main Height
+	var mheight	= ele.height();					// Modal Height
+	var stop 	= ele.scrollTop();   			// Modal Scroll Top
+	var mtop	= ele.css("top");
+	
+	var panel 		= $(".modal .panel");
+	var panelwrap	= $(".modal .panel_wrap");
+	
+	if (pheight > mheight  &&  pmheight > pheight)
+	{	
+		if ((stop + mheight) > pheight)
+		{
+			panelwrap.css("position","absolute");
+			panelwrap.height(mheight);
+			panelwrap.css("top",mtop);
+			
+			panel.css("position","absolute");
+			panel.css("top",(mheight-pheight) + "px");
+		}
+		else
+		{
+			panelwrap.css("position","static");
+			panelwrap.height(pheight);
+			panel.css("position","static");	
+		}
+	}
 }
 
 function resizemodal() {

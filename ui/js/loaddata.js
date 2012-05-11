@@ -9,20 +9,37 @@
 // TRIGGER ALL DATA LOADING EVENTS
 function loaddata()
 {
-	 // LOAD THE OPENSTREAM
-	 loadopenstream();
-	 setInterval("newopenstreammessage()",app.messageinterval);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
- 	
- 	 // LOAD CONTACTS
-	 setTimeout("loadusercontacts()",500);
-	 
-	 // LOAD USER PANEL
-	 setTimeout("loaduserpanel()",1000);
-	 
-	 // LOAD SUBSCRIPTION FILTER
-	 setTimeout("loadsubscriptions()",1500);
-	 
-	 
+	// CHECK TO SEE IF THERE ARE CONNECTIONS, IF THERE ARE THEN LOAD THE CONTENT, IF NOT LOAD SETUP.HTM
+	connectionparams = {
+		"dream.out.format" 	: "json"
+	};
+	var objecturi = apiuri("/api/1/connections",connectionparams);
+	
+	// TODO, GET CONNECTION, USER AND SUBSCRIPTION COUNT IN ONE API CALL
+	$.get(objecturi, function(connections) {	
+		var count = connections["@count"];
+		//var count = 0;
+		
+		// MORE THAN ONE CONNECTION EXISTS
+		if (count >= 1)
+		{
+			// LOAD THE OPENSTREAM
+			loadopenstream();
+			setInterval("newopenstreammessage()",app.messageinterval);   //TODO:  PUT A TIMER KILL IN HERE IF THE API IS NOT AVAILABLE
+			
+			 // LOAD CONTACTS
+			setTimeout("loadusercontacts()",500);
+			
+			// LOAD USER PANEL
+			setTimeout("loaduserpanel()",1000);
+		}
+		
+		// NO CONNECTIONS
+		else
+		{
+			buildModal("","/template/setup.htm");	
+		}
+	}); 
 }
 
 // LOAD USER CREDENTIALS LABEL
@@ -43,19 +60,6 @@ function loaduserpanel()
 	});
 }
 
-// LOAD SUBSCRIPTIONS LIST - PLACE INTO FILTER
-function loadsubscriptions()
-{
-	var src = "/template/filter_subscriptions.htm";
-	var objecturi = apiuri("/api/1/subscriptions",api.params);
-	
-	$.get(src, function(templatehtml) {		
-		template(templatehtml, objecturi, "null",function(html) {
-			$(".subscriptions_target").html(html);
-		});
-	});
-}
-
 // LOAD THE OPEN STREAM
 function loadopenstream()
 {
@@ -71,10 +75,9 @@ function loadopenstream()
 	timeago 	= ISODateString(new Date(timeago));
 	
 	openstreamparams = {
-		"stream" : "open",
 		"dream.out.format" : "jsonp",
 		"dream.out.pre": cb(),
-		"start" : timeago,
+		"start" : app.messageloadspan,
 		"limit" : app.messagelimit
 	};
 	var objecturi = apiuri(api.messages,openstreamparams);
@@ -86,19 +89,17 @@ function loadopenstream()
 			$(".openstream").removeClass("loading");
 			$(".openstream .target").fadeIn();
 			
-			// Process links
-			$(".message_new").each( function() {
-				var text = $(this).find(".message_text").html();
-				var text = fixmessage($(this).find(".message_text").html());
-				$(this).find(".message_text").html(text);
-				$(this).removeClass("message_new");	
-			});
-			
+			// PROCESS CONTENT
+			fixcontent();
 			
 			// Add timestamp row
 			var timerow = '<tr class="time_row"><td colspan="9" >Between (<span class="timeago" title="' + timestamp + '"></span>) and (<span class="timeago" title="' + timeago + '"></span>)</td></tr>';
 			$(".openstream .target tbody").prepend(timerow);
 			jQuery(".timeago").timeago();
+			
+			// REMOVE THE .MESSAGE_NEW CLASS ON ALL NEW MESSAGES
+			$(".message_new").slideDown(50);
+			$(".message_new").removeClass("message_new");
 			
 		});
 	});	
