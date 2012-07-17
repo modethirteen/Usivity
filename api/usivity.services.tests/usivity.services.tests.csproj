@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Logic\Connections\ConnectionsTests.cs" />
+    <Compile Include="Core\Logic\Connections\GetConnectionReceipient.cs" />
     <Compile Include="Core\Logic\Connections\GetDefaultConnection.cs" />
     <Compile Include="Core\Logic\Connections\GetConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,10 +65,6 @@
     <Folder Include="OpenStreamService\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\usivity.connections\usivity.connections.csproj">
-      <Project>{A35195C0-5614-4382-B0A6-D6808759A84B}</Project>
-      <Name>usivity.connections</Name>
-    </ProjectReference>
     <ProjectReference Include="..\usivity.data\usivity.data.csproj">
       <Project>{62996F95-997C-481D-BBE6-F9BC9DF16D48}</Project>
       <Name>usivity.data</Name>
@@ -79,6 +76,10 @@
     <ProjectReference Include="..\usivity.services\usivity.services.csproj">
       <Project>{407F79A0-C9DD-4DF8-822C-4E6AB58171F9}</Project>
       <Name>usivity.services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\usivity.util\usivity.util.csproj">
+      <Project>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</Project>
+      <Name>usivity.util</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

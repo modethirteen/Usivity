@@ -8,18 +8,6 @@ namespace Usivity.Data {
 
     public class ContactDataAccess : IContactDataAccess {
 
-        //--- Class Methods ---
-        public static void RegisterEntityClassMap() {
-            if(!BsonClassMap.IsClassMapRegistered(typeof(Contact))) {
-                BsonClassMap.RegisterClassMap<Contact>(cm => {
-                    cm.AutoMap();
-                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                    cm.MapField("_identities");
-                    cm.MapField("_organizations");
-                });
-            }
-        }
-
         //--- Fields ---
         private readonly MongoCollection _db;
 
@@ -33,7 +21,7 @@ namespace Usivity.Data {
             return _db.FindAs<Contact>(Query.EQ("_organizations", organization.Id));
         }
 
-        public Contact Get(Message message) {
+        public Contact Get(IMessage message) {
             var identity = "_identities." + (int)message.Source;
             var query = Query.And(
                 Query.EQ(identity + "._id", message.Author.Id)

@@ -40,12 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connections\IConnection.cs" />
+    <Compile Include="Connections\IEmailConnection.cs" />
+    <Compile Include="Connections\ITwitterConnection.cs" />
     <Compile Include="Contact.cs" />
+    <Compile Include="Connections\EmailConnection.cs" />
     <Compile Include="IEntity.cs" />
+    <Compile Include="IMessage.cs" />
     <Compile Include="IOrganization.cs" />
+    <Compile Include="IUser.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Organization.cs" />
     <Compile Include="Subscription.cs" />
+    <Compile Include="Connections\TwitterConnection.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Identity.cs" />

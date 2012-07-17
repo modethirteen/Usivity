@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AE.Net.Mail, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="AE.Net.Mail, Version=1.6.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\redist\AE.Net.Mail.dll</HintPath>
     </Reference>
@@ -44,19 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Email\EmailConnection.cs" />
-    <Compile Include="Email\EmailConnectionFactory.cs" />
-    <Compile Include="IConnection.cs" />
-    <Compile Include="IConnectionFactory.cs" />
-    <Compile Include="IPublicConnection.cs" />
-    <Compile Include="OAuth.cs" />
-    <Compile Include="OAuthAccess.cs" />
-    <Compile Include="OAuthRequest.cs" />
+    <Compile Include="Email\EmailClient.cs" />
+    <Compile Include="Email\EmailClientFactory.cs" />
+    <Compile Include="Email\IEmailClientFactory.cs" />
+    <Compile Include="IClient.cs" />
+    <Compile Include="Twitter\ITwitterClientFactory.cs" />
+    <Compile Include="IPublicClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Twitter\TwitterConnection.cs" />
-    <Compile Include="Twitter\TwitterConnectionBase.cs" />
-    <Compile Include="Twitter\TwitterConnectionFactory.cs" />
-    <Compile Include="Twitter\TwitterPublicConnection.cs" />
+    <Compile Include="Twitter\TwitterClient.cs" />
+    <Compile Include="Twitter\TwitterClientBase.cs" />
+    <Compile Include="Twitter\TwitterClientFactory.cs" />
+    <Compile Include="Twitter\TwitterPublicClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\usivity.entities\usivity.entities.csproj">

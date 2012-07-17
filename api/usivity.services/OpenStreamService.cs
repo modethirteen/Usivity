@@ -6,10 +6,14 @@ using MindTouch;
 using MindTouch.Dream;
 using MindTouch.Tasking;
 using MindTouch.Xml;
-using Usivity.Connections.Twitter;
 using Usivity.Data;
 using Usivity.Entities;
+using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
+using Usivity.Services.Clients;
+using Usivity.Services.Clients.Email;
+using Usivity.Services.Clients.Twitter;
+using Usivity.Util;
 
 namespace Usivity.Services {
     using Yield = IEnumerator<IYield>;
@@ -21,9 +25,13 @@ namespace Usivity.Services {
         private static readonly ILog _log = LogUtils.CreateLog();
 
         //--- Fields ---
+        private readonly IGuidGenerator _guidGenerator = new GuidGenerator();
+        private readonly IDateTime _dateTime = new DateTimeImpl();
         private IUsivityDataCatalog _data;
-        private TwitterPublicConnection _publicTwitterConnection;
+        private TwitterClientFactory _twitterClientFactory;
+        private EmailClientFactory _emailClientFactory;
         private long _messageCount;
+        private TimeSpan _messageExpiration;
 
         //--- Features ---
         [DreamFeature("GET:status", "Get openstream queue service status")]
@@ -37,14 +45,27 @@ namespace Usivity.Services {
         protected override Yield Start(XDoc config, Result result) {
             yield return Coroutine.Invoke(base.Start, config, new Result());
 
+            _log.Debug("Initializing data catalog connection");
             var dbConnection = config["mongodb/connection"].AsText;
             if(string.IsNullOrEmpty(dbConnection)) {
                 throw new DreamInternalErrorException("Database connection string required");
             }
             _data = UsivityDataCatalog.NewUsivityDataCatalog(dbConnection);
 
-            _log.Debug("Initializing source connections");
-            _publicTwitterConnection = TwitterPublicConnection.GetInstance();
+            _log.Debug("Stashing network connection settings");
+            var twitterDoc = config["sources/twitter"];
+            var twitterClientConfig = new TwitterClientConfig {
+                OAuthConsumerKey = twitterDoc["oauth/consumer.key"].Contents,
+                OAuthConsumerSecret = twitterDoc["oauth/consumer.secret"].Contents
+            };
+            _twitterClientFactory = new TwitterClientFactory(twitterClientConfig, _guidGenerator, _dateTime);
+            var emailClientConfig = new EmailClientConfig();
+            _emailClientFactory = new EmailClientFactory(emailClientConfig, _guidGenerator, _dateTime);
+
+            var ms = double.MinValue;
+            double.TryParse(config["openstream/expiration"].AsText, out ms);
+            _messageExpiration = TimeSpan.FromMilliseconds(ms);
+            _log.DebugFormat("Setting message expiration to {0}ms", _messageExpiration);
 
             _log.Debug("Starting open stream queue");
             TaskTimerFactory.Current.New(TimeSpan.Zero, QueueMessages, null, TaskEnv.None);
@@ -68,20 +89,27 @@ namespace Usivity.Services {
         }
 
         private Yield QueueOrganizationMessages(IOrganization organization, Result result) {
-            var messages = new List<Message>();
+            var messages = new List<IMessage>();
             var connections = _data.Connections.Get(organization);
             foreach(var subscription in _data.Subscriptions.Get(organization)) {
 
                 // if any organization twitter connections exist get public messages);
-                if(connections.Where(connection => connection.Source == Source.Twitter).Count() > 0) {
+                var connection = connections.Where(c => c.Source == Source.Twitter).FirstOrDefault();
+                var twitterConnection = connection as TwitterConnection;
+                if(twitterConnection != null) {
+                    var twitterClient = _twitterClientFactory.NewTwitterClient(twitterConnection);
                     if(subscription.GetSourceUri(Source.Twitter) == null) {
-                        _publicTwitterConnection.SetNewSubscriptionUri(subscription);
+                        twitterClient.SetNewSubscriptionQuery(subscription);
                     }
                     var constraints = string.Join(",", subscription.Constraints.ToArray());
-                    _log.DebugFormat("{0}: Fetching Twitter messages for subscription \"{1}\"", organization.Name, constraints);
-                    var fetchedMessages = _publicTwitterConnection.GetMessages(subscription);
-                    messages.AddRange(fetchedMessages);
-                    _log.DebugFormat("{0}: Recieved {1} messages", organization.Name, fetchedMessages.Count());
+                    _log.DebugFormat("Fetching Twitter messages for organization {0}, subscription: {1}", organization.Name, constraints);
+                    try {
+                        var fetchedMessages = twitterClient.GetNewPublicMessages(subscription, _messageExpiration);
+                        messages.AddRange(fetchedMessages);
+                        _log.DebugFormat("Recieved {0} messages for organization {1}", fetchedMessages.Count(), organization.Name);
+                    } catch(Exception e) {
+                        _log.WarnFormat("Could not receive messages for organization {0}, exception: {1}", organization.Name, e.Message);    
+                    }
                     _data.Subscriptions.Save(subscription);
                 }
             }
@@ -89,17 +117,24 @@ namespace Usivity.Services {
             // queue private and direct messages
             foreach (var connection in connections.Where(connection => connection.Active)) {
                 _log.DebugFormat(
-                    "{0}: Fetching {1} messages for {2}", organization.Name, connection.Source, connection.Identity.Id
+                    "Fetching {0} messages for organization {0}, identity: {2}", connection.Source, connection.Identity.Id, organization.Name
                 );
-                var fetchedMessages = connection.GetMessages();
-                messages.AddRange(fetchedMessages);
+                try {
+                    DateTime lastSearch;
+                    var client = NewClient(connection);
+                    var fetchedMessages = client.GetNewMessages(_messageExpiration, out lastSearch);
+                    connection.LastSearch = lastSearch;
+                    messages.AddRange(fetchedMessages);
+                    _log.DebugFormat("Received {0} messages for organization {1}", fetchedMessages.Count(), organization.Name);
+                } catch(Exception e) {
+                    _log.WarnFormat("Could not receive messages for organization {0}, exception: {1}", organization.Name, e.Message);    
+                }
                 _data.Connections.Save(connection);
-                _log.DebugFormat("{0}: Received {1} messages", organization.Name, fetchedMessages.Count());
             }
             
-            var span = DateTime.UtcNow.Subtract(TimeSpan.FromDays(4));
+            var span = DateTime.UtcNow.Subtract(_messageExpiration);
             var stream = _data.GetMessageStream(organization);
-            _log.DebugFormat("{0}: Queueing {1} messages", organization.Name, messages.Count);
+            _log.DebugFormat("Queueing {0} messages for organization {1}", messages.Count, organization.Name);
             foreach(var message in messages.Where(message => message.Timestamp >= span)) {
                 if(stream.Get(message.Source, message.SourceMessageId) != null) {
 
@@ -108,9 +143,21 @@ namespace Usivity.Services {
                 }
                 stream.Queue(message);
             }
-            _log.DebugFormat("{0}: Finished queueing messages", organization.Name);
+            _log.DebugFormat("Finished queueing messages for organization {0}", organization.Name);
             result.Return();
             yield break;
+        }
+
+        private IClient NewClient(IConnection connection) {
+            var twitterConnection = connection as TwitterConnection;
+            if(twitterConnection != null) {
+                return _twitterClientFactory.NewTwitterClient(twitterConnection);
+            }
+            var emailConnection = connection as EmailConnection;
+            if(emailConnection != null) {
+                return _emailClientFactory.NewEmailClient(emailConnection); 
+            }
+            throw new NotSupportedException("Source connection client is not supported");
         }
     }
 }

@@ -7,15 +7,6 @@ namespace Usivity.Entities {
 
     public class Organization : IOrganization {
 
-        //--- Class Methods ---
-        public static IOrganization NewMockOrganization() {
-            return new Organization(string.Empty, string.Empty); 
-        }
-
-        public static IOrganization NewOrganization(string name) {
-            return new Organization(name);
-        }
-
         //--- Properties ---
         public string Id { get; private set; }
         public string Name { get; private set; }
@@ -24,9 +15,9 @@ namespace Usivity.Entities {
         private IDictionary<Source, string> _defaultConnections;
 
         //--- Constructors ---
-        private Organization(string name, string id = null) {
+        private Organization(IGuidGenerator guidGenerator, string name) {
+            Id = guidGenerator.GenerateNewObjectId();
             Name = name;
-            Id = id ?? GuidGenerator.CreateUnique();
         }
 
         //--- Methods ---

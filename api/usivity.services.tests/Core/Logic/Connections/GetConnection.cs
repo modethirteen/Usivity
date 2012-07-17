@@ -1,7 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
-using Usivity.Connections;
-using Usivity.Entities;
+using Usivity.Entities.Connections;
 
 namespace Usivity.Tests.Services.Core.Logic.Connections {
 
@@ -19,23 +18,21 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             const string id = "123";
 
             // mock current organization
-            var currentOrganizationMock = new Mock<IOrganization>();
-            currentOrganizationMock.Setup(o => o.Id).Returns("foo");
+            var currentOrganization = Utils.GetOrganization();
             _organizationsMock.Setup(o => o.CurrentOrganization)
-                .Returns(currentOrganizationMock.Object);
+                .Returns(currentOrganization);
 
             // create mock connection for current organization with id
-            var mockConnection = new Mock<IConnection>();
-            mockConnection.Setup(c => c.Id).Returns(id);
-            mockConnection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
+            var connection = new Mock<IConnection>();
+            connection.Setup(c => c.Id).Returns(id);
+            connection.Setup(c => c.OrganizationId).Returns(currentOrganization.Id);
 
-            // attach foo to mock data catalog
-            _dataMock.Setup(data => data.Connections.Get(id)).Returns(mockConnection.Object);
+            // attach connection to mock data catalog
+            _dataMock.Setup(data => data.Connections.Get(id)).Returns(connection.Object);
 
             // get connection by id 123
             var connections = GetConnections();
-            var connection = connections.GetConnection(id);
-            Assert.IsNotNull(connection);
+            Assert.IsNotNull(connections.GetConnection(id));
         }
 
         [Test]
@@ -43,23 +40,21 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             const string id = "123";
 
             // mock current organization
-            var currentOrganizationMock = new Mock<IOrganization>();
-            currentOrganizationMock.Setup(o => o.Id).Returns("foo");
+            var currentOrganization = Utils.GetOrganization();
             _organizationsMock.Setup(o => o.CurrentOrganization)
-                .Returns(currentOrganizationMock.Object);
+                .Returns(currentOrganization);
 
             // create mock connection for current organization with id
-            var mockConnection = new Mock<IConnection>();
-            mockConnection.Setup(c => c.Id).Returns(id);
-            mockConnection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
+            var connection = new Mock<IConnection>();
+            connection.Setup(c => c.Id).Returns(id);
+            connection.Setup(c => c.OrganizationId).Returns(currentOrganization.Id);
 
-            // attach foo to mock data catalog
-            _dataMock.Setup(data => data.Connections.Get(id)).Returns(mockConnection.Object);
+            // attach connection to mock data catalog
+            _dataMock.Setup(data => data.Connections.Get(id)).Returns(connection.Object);
 
             // get connection by id 123
             var connections = GetConnections();
-            var connection = connections.GetConnection(id);
-            Assert.AreEqual(id, connection.Id);
+            Assert.AreEqual(id, connections.GetConnection(id).Id);
         }
 
         [Test]
@@ -67,23 +62,21 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             const string id = "123";
 
             // mock current organization
-            var currentOrganizationMock = new Mock<IOrganization>();
-            currentOrganizationMock.Setup(o => o.Id).Returns("foo");
+            var currentOrganization = Utils.GetOrganization();
             _organizationsMock.Setup(o => o.CurrentOrganization)
-                .Returns(currentOrganizationMock.Object);
+                .Returns(currentOrganization);
 
             // create mock connection for current organization with id
-            var mockConnection = new Mock<IConnection>();
-            mockConnection.Setup(c => c.Id).Returns(id);
-            mockConnection.Setup(c => c.OrganizationId).Returns("bar");
+            var connection = new Mock<IConnection>();
+            connection.Setup(c => c.Id).Returns(id);
+            connection.Setup(c => c.OrganizationId).Returns("bar");
 
-            // attach foo to mock data catalog
-            _dataMock.Setup(data => data.Connections.Get(id)).Returns(mockConnection.Object);
+            // attach connection to mock data catalog
+            _dataMock.Setup(data => data.Connections.Get(id)).Returns(connection.Object);
 
             // get connection by id 123
             var connections = GetConnections();
-            var connection = connections.GetConnection(id);
-            Assert.IsNull(connection);
+            Assert.IsNull(connections.GetConnection(id));
         }
     }
 }

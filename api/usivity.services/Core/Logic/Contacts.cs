@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Xml;
-using Usivity.Connections.Twitter;
 using Usivity.Data;
 using Usivity.Entities;
 using Usivity.Entities.Types;
+using Usivity.Services.Clients.Email;
+using Usivity.Services.Clients.Twitter;
+using Usivity.Util;
 
 namespace Usivity.Services.Core.Logic {
 
@@ -14,12 +16,19 @@ namespace Usivity.Services.Core.Logic {
         private readonly ICurrentContext _context;
         private readonly IUsivityDataCatalog _data;
         private readonly IOrganizations _organizations;
+        private readonly IGuidGenerator _guidGenerator;
 
         //--- Constructors ---
-        public Contacts(IUsivityDataCatalog data, ICurrentContext context, IOrganizations organizations) {
+        public Contacts(
+            IGuidGenerator guidGenerator,
+            IUsivityDataCatalog data,
+            ICurrentContext context,
+            IOrganizations organizations
+        ) {
             _context = context;
             _data = data;
             _organizations = organizations;
+            _guidGenerator = guidGenerator;
         }
 
         //--- Methods ---
@@ -28,7 +37,7 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public Contact GetNewContact(XDoc info) {
-            var contact = new Contact();
+            var contact = new Contact(_guidGenerator);
             UpdateContactInformation(contact, info);
             contact.AddOrganization(_organizations.CurrentOrganization);
             return contact;
@@ -68,17 +77,13 @@ namespace Usivity.Services.Core.Logic {
             // Email
             var email = info["email"].Contents;
             if(!string.IsNullOrEmpty(email)) {
-                var emailIdentity = new Identity {
-                    Id = email
-                };
-                contact.SetIdentity(Source.Email, emailIdentity);
+                contact.SetIdentity(Source.Email, EmailClient.GetIdentityByEmailAddress(email));
             }
 
             // Twitter
             var twitter = info["identity.twitter"].Contents;
             if(!string.IsNullOrEmpty(twitter)) {
-                var twitterIdentity = TwitterPublicConnection.GetInstance().GetIdentity(twitter);
-                contact.SetIdentity(Source.Twitter, twitterIdentity);
+                contact.SetIdentity(Source.Twitter, TwitterClient.GetIdentityByScreenName(twitter));
             }
 
             // Facebook
@@ -99,7 +104,7 @@ namespace Usivity.Services.Core.Logic {
                 contact.SetIdentity(Source.LinkedIn, linkedInIdentity);
             }
 
-            // Google Plus
+            // Google
             var google = info["identity.google"].Contents;
             if(!string.IsNullOrEmpty(google)) {
                 var googleIdentity = new Identity {

@@ -8,14 +8,14 @@ namespace Usivity.Data {
     public interface IMessageDataAccess {
 
         //--- Methods ---
-        IEnumerable<Message> GetStream(DateTime start, DateTime end, int count, int offset, Source? source);
-        IEnumerable<Message> GetConversations(Contact contact);
-        IEnumerable<Message> GetChildren(Message message);
-        Message Get(string id);
-        Message Get(Source source, string sourceId);
-        void Save(Message message);
-        void Queue(Message message);
-        void Delete(Message message);
+        IEnumerable<IMessage> GetStream(DateTime start, DateTime end, int count, int offset, Source? source);
+        IEnumerable<IMessage> GetConversations(Contact contact);
+        IEnumerable<IMessage> GetChildren(IMessage message);
+        IMessage Get(string id);
+        IMessage Get(Source source, string sourceId);
+        void Save(IMessage message);
+        void Queue(IMessage message);
+        void Delete(IMessage message);
         void RemoveExpired();
         long GetCount();
     }

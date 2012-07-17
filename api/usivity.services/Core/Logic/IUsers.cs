@@ -10,7 +10,6 @@ namespace Usivity.Services.Core.Logic {
         User GetCurrentUser();
         User GetNewUser(string name, string password);
         User GetAuthenticatedUser(string name, string password);
-        User GetAnonymousUser();
         XDoc GetUserXml(User user, string relation = null);
         XDoc GetUsersXml();
         XDoc GetCurrentUserXml();

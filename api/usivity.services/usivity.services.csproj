@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AE.Net.Mail, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\redist\AE.Net.Mail.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=2.6.1.841, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\redist\Autofac.dll</HintPath>
@@ -48,12 +52,21 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core-Subscriptions.cs" />
-    <Compile Include="Core-Organizations.cs" />
-    <Compile Include="Core-Users.cs" />
-    <Compile Include="Core-Contacts.cs" />
-    <Compile Include="Core-Messages.cs" />
-    <Compile Include="Core-Connections.cs" />
+    <Compile Include="Clients\Email\EmailClientFactory.cs" />
+    <Compile Include="Clients\Email\IEmailClientFactory.cs" />
+    <Compile Include="Clients\IPublicClient.cs" />
+    <Compile Include="Clients\Email\EmailAuthorization.cs" />
+    <Compile Include="Clients\Email\EmailClient.cs" />
+    <Compile Include="Clients\Email\EmailClientConfig.cs" />
+    <Compile Include="Clients\Email\IEmailClient.cs" />
+    <Compile Include="Clients\Twitter\TwitterClientFactory.cs" />
+    <Compile Include="Clients\Twitter\ITwitterClientFactory.cs" />
+    <Compile Include="Clients\Twitter\ITwitterClient.cs" />
+    <Compile Include="Clients\IClient.cs" />
+    <Compile Include="Clients\Twitter\TwitterClient.cs" />
+    <Compile Include="Clients\Twitter\TwitterClientConfig.cs" />
+    <Compile Include="Clients\Twitter\TwitterAuthorization.cs" />
+    <Compile Include="Clients\ConnectionResponseException.cs" />
     <Compile Include="CoreService.cs" />
     <Compile Include="Core\IUsivityAuth.cs" />
     <Compile Include="Core\Logic\Connections.cs" />
@@ -75,10 +88,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\usivity.connections\usivity.connections.csproj">
-      <Project>{A35195C0-5614-4382-B0A6-D6808759A84B}</Project>
-      <Name>usivity.connections</Name>
-    </ProjectReference>
     <ProjectReference Include="..\usivity.data\usivity.data.csproj">
       <Project>{62996F95-997C-481D-BBE6-F9BC9DF16D48}</Project>
       <Name>usivity.data</Name>
