@@ -47,7 +47,10 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DateTimeImpl.cs" />
     <Compile Include="GuidGenerator.cs" />
+    <Compile Include="IDateTime.cs" />
+    <Compile Include="IGuidGenerator.cs" />
     <Compile Include="ImmutableDictionary.cs" />
     <Compile Include="Json\JDoc.cs" />
     <Compile Include="Json\PlugEx.cs" />

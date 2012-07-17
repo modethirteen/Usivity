@@ -3,6 +3,7 @@ using MindTouch.Dream;
 using MindTouch.Xml;
 using Usivity.Data;
 using Usivity.Entities;
+using Usivity.Util;
 
 namespace Usivity.Services.Core.Logic {
 
@@ -12,12 +13,14 @@ namespace Usivity.Services.Core.Logic {
         private readonly ICurrentContext _context;
         private readonly IUsivityDataCatalog _data;
         private readonly IOrganizations _organizations;
+        private readonly IGuidGenerator _guidGenerator;
 
         //--- Constructors ---
-        public Subscriptions(IUsivityDataCatalog data, ICurrentContext context, IOrganizations organizations) {
+        public Subscriptions(IGuidGenerator guidGenerator, IUsivityDataCatalog data, ICurrentContext context, IOrganizations organizations) {
             _context = context;
             _organizations = organizations;
             _data = data;
+            _guidGenerator = guidGenerator;
         }
 
         //--- Methods ---
@@ -34,7 +37,7 @@ namespace Usivity.Services.Core.Logic {
                 throw new DreamAbortException(response);
             }
             var constraints = info["constraints/constraint"].Select(constraint => constraint.AsText).ToList();
-            return new Subscription(_organizations.CurrentOrganization, constraints, lang);
+            return new Subscription(_guidGenerator, _organizations.CurrentOrganization, constraints, lang);
         }
 
         public void SaveSubscription(Subscription subscription) {

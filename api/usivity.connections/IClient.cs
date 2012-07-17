@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MindTouch.Xml;
 using Usivity.Entities;
 using Usivity.Entities.Types;
+using Usivity.Util;
 
 namespace Usivity.Connections {
 
@@ -15,8 +17,8 @@ namespace Usivity.Connections {
         bool Active { get; }
 
         //--- Methods ---
-        IEnumerable<Message> GetMessages();
-        Message PostReplyMessage(Message message, User user, string reply);
+        IEnumerable<IMessage> GetMessages(IGuidGenerator guidGenerator, IDateTime dateTime, TimeSpan? expiration);
+        IMessage PostReplyMessage(IGuidGenerator guidGenerator, IDateTime dateTime, IMessage message, User user, string reply);
         XDoc ToDocument();
         void Update(XDoc config);
     }

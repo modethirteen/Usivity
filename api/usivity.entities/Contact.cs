@@ -73,8 +73,8 @@ namespace Usivity.Entities {
         public string CompanyCompetitors { get; set;}
 
         //--- Constructors ---
-        public Contact() {
-            Id = GuidGenerator.CreateUnique();
+        public Contact(IGuidGenerator guidGenerator) {
+            Id = guidGenerator.GenerateNewObjectId();
             _identities = new Dictionary<Source, Identity>();
             _organizations = new List<string>();
         }

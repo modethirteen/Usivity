@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using Usivity.Entities;
@@ -22,7 +23,7 @@ namespace Usivity.Data {
         }
 
         //--- Methods ---
-        public IEnumerable<Message> GetStream(DateTime start, DateTime end, int count, int offset, Source? source) {
+        public IEnumerable<IMessage> GetStream(DateTime start, DateTime end, int count, int offset, Source? source) {
             var query = Query.And(
                 Query.GTE("Timestamp", start),
                 Query.LTE("Timestamp", end),
@@ -34,14 +35,14 @@ namespace Usivity.Data {
             return GetMessages(query, count, offset);
         }
 
-        public IEnumerable<Message> GetConversations(Contact contact) {
+        public IEnumerable<IMessage> GetConversations(Contact contact) {
             var queries = new List<IMongoQuery>();
             var identities = contact.GetSourceIdentities();
             foreach(var identity in identities.Where(i => !string.IsNullOrEmpty(i.Value.Id))) {
                 var subQuery = Query.And(
                     Query.EQ("Source", identity.Key),
                     Query.EQ("Author._id", identity.Value.Id),
-                    Query.EQ("ParentMessageId", null)
+                    Query.EQ("ParentMessageId", BsonNull.Value)
                     );
                 queries.Add(subQuery);
             }
@@ -49,16 +50,16 @@ namespace Usivity.Data {
             return _db.FindAs<Message>(query);
         }
 
-        public IEnumerable<Message> GetChildren(Message message) {
+        public IEnumerable<IMessage> GetChildren(IMessage message) {
             var query = Query.EQ("ParentMessageId", message.Id);
             return _db.FindAs<Message>(query);
         }
 
-        public Message Get(string id) {
+        public IMessage Get(string id) {
             return _db.FindOneByIdAs<Message>(id);
         }
 
-        public Message Get(Source source, string sourceId) {
+        public IMessage Get(Source source, string sourceId) {
             var query = Query.And(
                 Query.EQ("Source", source),
                 Query.EQ("SourceMessageId", sourceId)
@@ -66,11 +67,11 @@ namespace Usivity.Data {
             return _db.FindOneAs<Message>(query);
         }
 
-        public void Save(Message message) {
+        public void Save(IMessage message) {
             _db.Save(message, SafeMode.True);
         }
         
-        public void Queue(Message message) {
+        public void Queue(IMessage message) {
             if(message.SourceInReplyToMessageId != null) {
                 var query = Query.And(
                     Query.EQ("Source", message.Source),
@@ -84,7 +85,7 @@ namespace Usivity.Data {
             _db.Insert(message);
         }
 
-        public void Delete(Message message) {
+        public void Delete(IMessage message) {
             _db.Remove(Query.EQ("_id", message.Id));
         }
 
@@ -96,7 +97,7 @@ namespace Usivity.Data {
             return _db.Count();
         }
 
-        private IEnumerable<Message> GetMessages(IMongoQuery query, int count, int offset) {
+        private IEnumerable<IMessage> GetMessages(IMongoQuery query, int count, int offset) {
             return _db
                 .FindAs<Message>(query)
                 .SetLimit(count)

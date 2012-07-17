@@ -1,36 +1,13 @@
 ﻿using System.Collections.Generic;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
-using Usivity.Connections;
-using Usivity.Connections.Email;
-using Usivity.Connections.Twitter;
 using Usivity.Entities;
+using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
 
 namespace Usivity.Data {
 
     public class ConnectionDataAccess : IConnectionDataAccess {
-
-        //--- Class Methods ---
-        public static void RegisterConnectionClassMaps() {
-            if(!BsonClassMap.IsClassMapRegistered(typeof(TwitterConnection))) {
-                BsonClassMap.RegisterClassMap<TwitterConnection>(cm => {
-                    cm.AutoMap();
-                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                    cm.MapField("_oauth");
-                    cm.MapField("_oauthRequest");
-                });
-            }
-            if(!BsonClassMap.IsClassMapRegistered(typeof(EmailConnection))) {
-                BsonClassMap.RegisterClassMap<EmailConnection>(cm => {
-                    cm.AutoMap();
-                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                    cm.MapField("_imapConfig");
-                    cm.MapField("_smtpConfig");
-                });
-            }
-        }
 
         //--- Fields ---
         private readonly MongoCollection _db;

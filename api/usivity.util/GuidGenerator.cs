@@ -2,10 +2,11 @@
 
 namespace Usivity.Util {
 
-    public class GuidGenerator {
+    public class GuidGenerator : IGuidGenerator {
 
-        public static string CreateUnique() {
-            return ObjectId.GenerateNewId().ToString();          
+        //--- Methods ---
+        public string GenerateNewObjectId() {
+            return ObjectId.GenerateNewId().ToString();
         }   
     }
 }

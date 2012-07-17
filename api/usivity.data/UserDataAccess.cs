@@ -8,17 +8,6 @@ namespace Usivity.Data {
 
     public class UserDataAccess : IUserDataAccess {
 
-        //--- Class Methods ---
-        public static void RegisterEntityClassMap() {
-            if(!BsonClassMap.IsClassMapRegistered(typeof(User))) {
-                BsonClassMap.RegisterClassMap<User>(cm => {
-                    cm.AutoMap();
-                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                    cm.MapField("_organizations");
-                });    
-            }
-        }
-
         //--- Fields ---
         private readonly MongoCollection _db;
 
@@ -47,11 +36,6 @@ namespace Usivity.Data {
             else {
                 query = Query.EQ("_id", id);
             }
-            return _db.FindOneAs<User>(query);
-        }
-
-        public User GetAnonymous() {
-            var query = Query.EQ("Name", User.ANONYMOUS_USER);
             return _db.FindOneAs<User>(query);
         }
 

@@ -25,7 +25,7 @@ namespace Usivity.Connections.Email {
         
     }
 
-    public class EmailConnection : IConnection {
+    public class EmailClient : IConnection {
 
         //--- Constants ---
         private const string IN_REPLY_TO_HEADER = "In-Reply-To";
@@ -47,14 +47,14 @@ namespace Usivity.Connections.Email {
         private DateTime _lastSearch;
 
         //--- Constructors ---
-        public EmailConnection(XDoc config, IOrganization organization) {
-            Id = GuidGenerator.CreateUnique();
+        public EmailClient(IGuidGenerator guidGenerator, IOrganization organization, XDoc config) {
+            Id = guidGenerator.GenerateNewObjectId();
             OrganizationId = organization.Id;
             Source = Source.Email;
         }
         
         //--- Methods ---
-        public IEnumerable<Message> GetMessages() {
+        public IEnumerable<IMessage> GetMessages(IGuidGenerator guidGenerator, IDateTime dateTime, TimeSpan? expiration = null) {
             var imap = GetImapClient();
             var search = new SearchCondition {
                 Field = SearchCondition.Fields.Since,
@@ -64,7 +64,7 @@ namespace Usivity.Connections.Email {
             _lastSearch = DateTime.UtcNow;
             var mailMessages = imap.SearchMessages(search);
 
-            var messages = new List<Message>();
+            var messages = new List<IMessage>();
             foreach(var mailMessageDeferred in mailMessages) {
                 var mailMessage = mailMessageDeferred.Value;
                 imap.AddFlags(Flags.Seen, mailMessage);
@@ -75,7 +75,7 @@ namespace Usivity.Connections.Email {
                     identity.Id = sender.Address;
                     identity.Name = sender.DisplayName;
                 }
-                var message = new Message {
+                var message = new Message(guidGenerator, dateTime, expiration) {
                     Source = Source.Email,
                     SourceMessageId = mailMessage.MessageID,
                     SourceInReplyToMessageId = mailMessage.Headers[IN_REPLY_TO_HEADER].Value,
@@ -91,7 +91,7 @@ namespace Usivity.Connections.Email {
             return messages;
         }
 
-        public Message PostReplyMessage(Message message, User user, string reply) {
+        public IMessage PostReplyMessage(IGuidGenerator guidGenerator, IDateTime dateTime, IMessage message, User user, string reply) {
             throw new NotImplementedException();
         }
 

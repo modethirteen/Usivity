@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using Usivity.Entities;
@@ -8,17 +7,6 @@ namespace Usivity.Data {
 
     public class SubscriptionDataAccess : ISubscriptionDataAccess {
         
-        //--- Class Methods ---
-        public static void RegisterEntityClassMap() {
-            if(!BsonClassMap.IsClassMapRegistered(typeof(Subscription))) {
-                BsonClassMap.RegisterClassMap<Subscription>(cm => {
-                    cm.AutoMap();
-                    cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                    cm.MapField("_uris");
-                });
-            }
-        }   
-
         //--- Fields ---
         private readonly MongoCollection _db;
 

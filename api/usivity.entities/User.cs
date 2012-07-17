@@ -6,7 +6,7 @@ using Usivity.Util;
 
 namespace Usivity.Entities {
 
-    public class User : IEntity {
+    public class User : IUser {
 
         //--- Constants ---
         public const string ANONYMOUS_USER = "Anonymous";
@@ -19,6 +19,15 @@ namespace Usivity.Entities {
             Owner = 30
         }
 
+        //--- Class Methods ---
+        public static User GetAnonymousUser() {
+            return new User {
+                Id = int.MinValue.ToString(),
+                Name = ANONYMOUS_USER,
+                IsAnonymous = true
+            };
+        }
+
         //--- Properties ---
         public string Id { get; private set; }
         public string Name { get; private set; }
@@ -27,15 +36,15 @@ namespace Usivity.Entities {
         public bool IsAnonymous { get; private set; }
 
         //--- Fields ---
-        private Dictionary<string, UserRole> _organizations;
+        private Dictionary<string, UserRole> _organizations = new Dictionary<string, UserRole>();
 
         //--- Constructors ---
-        public User(string name) {
-            Id = GuidGenerator.CreateUnique();
+        public User(IGuidGenerator guidGenerator, string name) {
+            Id = guidGenerator.GenerateNewObjectId();
             Name = name;
-            IsAnonymous = name == ANONYMOUS_USER;
-            _organizations = new Dictionary<string, UserRole>();
         }
+
+        private User() {}
 
         //--- Methods ---
         public XDoc ToDocument(string relation = null) {
