@@ -247,7 +247,6 @@ namespace Usivity.Services {
             var count = context.GetParam("limit", DEFAULT_MESSAGES_LIMIT);
             var offset = context.GetParam("offset", DEFAULT_MESSAGES_OFFSET);
             var start = context.GetParam("start", DEFAULT_MESSAGES_START);
-            var startTime = DateTime.UtcNow.Subtract(TimeSpan.FromMilliseconds(start));
             var sourceFilter = context.GetParam("source", null);
             Source? source = null;
             if(!string.IsNullOrEmpty(sourceFilter)) {
@@ -262,7 +261,11 @@ namespace Usivity.Services {
                         throw new DreamBadRequestException(string.Format("\"{0}\" is not a valid source filter parameter", sourceFilter));
                 }       
             }
-            var doc = messages.GetMessageStreamXml(startTime, DateTime.UtcNow, count, offset, source); 
+
+            // TODO: reconcile datetime reference here and in openstream service
+            var dateTime = new DateTimeImpl();
+            var startTime = dateTime.UtcNow.Subtract(TimeSpan.FromMilliseconds(start));
+            var doc = messages.GetMessageStreamXml(startTime, dateTime.UtcNow, count, offset, source); 
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
@@ -591,10 +594,11 @@ namespace Usivity.Services {
                 throw new DreamInternalErrorException("Security salt string has not been configured");
             }
             var authExpiration = config["security/expiration"].AsInt ?? 561600;
-            var auth = new UsivityAuth(securitySalt, authExpiration, data);
             if(!container.IsRegistered<IUsivityAuth>()) {
                 _log.Debug("Registering authorization dependency");
-                builder.RegisterInstance(auth).As<IUsivityAuth>().SingleInstance();
+                builder.Register(c => new UsivityAuth(securitySalt, authExpiration, c.Resolve<IDateTime>(), data))
+                .As<IUsivityAuth>()
+                .RequestScoped();
             }
 
             _log.Debug("Registering type dependencies");

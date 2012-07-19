@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Usivity.Entities;
 using Usivity.Entities.Types;
+using Usivity.Util;
 
 namespace Usivity.Data {
 
@@ -16,7 +17,7 @@ namespace Usivity.Data {
         void Save(IMessage message);
         void Queue(IMessage message);
         void Delete(IMessage message);
-        void RemoveExpired();
+        void RemoveExpired(IDateTime dateTime);
         long GetCount();
     }
 }
