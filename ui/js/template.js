@@ -23,17 +23,17 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 		var templatehtml = fhtml[0].replace("{foreach","");	
 		var templatehtml = templatehtml.replace("foreach}","");	
 	}
-	
 	// IF THERE IS AN IN STATEMENT, USE THAT AS THE XPATH
-	var fxpath = templatehtml.match(new RegExp('\{in:(.*?)\}', "g"));
-	if (fxpath)
+	if (!xpath || xpath == "null")
 	{
+		var fxpath = templatehtml.match(new RegExp('\{in:(.*?)\}', "g"));
 		// LOAD THE XPATH FROM THE TEMPLATE HTML	
 		var xpath = fxpath[0];
 		var xpath = xpath.replace("{in:","");
 		var xpath = xpath.substring(0,xpath.length-1);
-		var templatehtml = templatehtml.replace(new RegExp('\{in:(.*?)\}', "g"),"");
-	}
+	};
+	var templatehtml = templatehtml.replace(new RegExp('\{in:(.*?)\}', "g"),"");
+	
 	
 	$.ajax({
 		crossDomain:true, 
@@ -41,10 +41,9 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 		dataType: 'jsonp',
 		jsonpCallback: dcb,
 		mimeType: 'application/json',
-		contentType: 'application/json;',
+		contentType: 'application/json',
 		success: function(objectref) // TODO:  Change ObjectRef to a better name
 		{
-			
 			// Load the data from the object with XPATH
 			if (xpath.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
 			{
@@ -100,9 +99,12 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 			// REPLACE ALL REMAINING (UNMAPPED/UNWRITTERN) VARIABLES WTIH ""
 			returnhtml = returnhtml.replace(new RegExp('\{(.*?)\}', "g"),"");
 			
-			//
-			
 			callback(returnhtml);
+		},
+		error:function (xhr, ajaxOptions, thrownError){
+			console.log(xhr.statusText);
+			console.log(xhr.status);
+			console.log(thrownError);
 		}
 	});
 }

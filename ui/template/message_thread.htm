@@ -1,4 +1,5 @@
-{in:message}
+{foreach
+	{in:message}
 <div class="message_thread message_thread_children">
 	<span class="contact_picture contact_picture_large"> 
 		<img src="{author_uri.avatar}" />
@@ -17,16 +18,15 @@
 			<span class="message_source">
 				{source}
 			</span>
-			<span>
-				<a href="{@href}" class="message_reply_inline">reply</a>
-			</span>
 		</span>
 	</div>
-	<form class="message_send_inline" id="{@id}" action="{@href}">	
-		<textarea name="message" class="message_data" start="enter your message"></textarea>
+	<form class="message_send_inline" id="{@id}" action="{@href}">
+		<div class="twrap">
+			<textarea name="message" class="message_data" start="enter your message"></textarea>
+		</div>
 		<div class="buttons">
 			<button type="submit" class="button apply">send</button>
-			<button type="submit" class="button cancel">cancel</button>
 		</div>
 	</form>
 </div>
+foreach}

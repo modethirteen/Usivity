@@ -147,6 +147,7 @@ body {
 	margin:0 0 20px 0;	
 }
 .message_thread_children {
+	clear:left;
 	margin-left:20px;	
 }
 .message_thread_children .contact_picture_large {
@@ -277,6 +278,20 @@ body {
 .success {
 	background-color:#ccffcc;
 	border:2px solid #66cc66;
+}
+.responseicon {
+	float:right;
+	height:16px;
+	width:16px;
+	margin:5px;	
+	background-repeat:no-repeat;
+	background-position:center center;
+}
+.responseprocessing {
+	background-image:url(/img/icon_loading_small.gif);	
+}
+.responsesuccess {
+	background-image:url(/img/icon_checkmark.png);	
 }
 /*MESSAGES - Sources Column*/
 .source_badge {

@@ -5,7 +5,6 @@
 			<div class="buttons">
 				<button type="submit" class="button apply">save changes</button>
 				<a href="{contact_@href}" id="{contact_@id}" class="button contact_delete">delete</a>
-				<button type="submit" class="button cancel">cancel</button>
 			</div>
 			
 			<h3>Personal</h3>
@@ -85,6 +84,9 @@
 					<span>
 						<a href="{@href}" class="message_reply_inline">reply</a>
 					</span>
+					<span>
+						<a href="{@href}" class="message_view_replies_inline">view 4 replies</a>
+					</span>
 				</span>
 			</div>
 			<form class="message_send_inline" id="{@id}" action="{@href}">	
@@ -94,6 +96,8 @@
 					<button type="submit" class="button cancel">cancel</button>
 				</div>
 			</form>
+		</div>
+		<div class="message_thread message_thread_children">
 		</div>
 foreach}
 	</div>

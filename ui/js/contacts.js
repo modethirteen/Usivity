@@ -23,9 +23,6 @@ $(document).ready( function() {
 			"dream.in.verb" : "DELETE"
 		};
 		
-		console.log(href);
-		console.log(id);
-		
 		var deleteuri = apiuri(href,deleteparams);
 		
 		$.ajax({
@@ -78,15 +75,16 @@ $(document).ready( function() {
 	
 	// EDIT EXISTING CONTACTS  
 	$(".contact_put").live("submit", function() {
-		
-		
 		var form	= $(this);
 		var id 		= $(this).attr("id");
 		var uri		= (api.root + api.contacts);
 		var href 	= $(this).attr("href");
 		
+		// PREP THE FORM
+		process(form);
 		clearstart(form);
 		var data = get_contact_inputs(form);
+		startset();
 					
 		updateparams = {
 			"dream.in.verb" : "PUT",
@@ -106,7 +104,7 @@ $(document).ready( function() {
 			url: updateuri,
 			success: function(results)
 			{
-				console.log(results);
+				success(form);
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);

@@ -29,16 +29,15 @@ function loaddata()
 			
 			 // LOAD CONTACTS
 			setTimeout("loadusercontacts()",500);
-			
-			// LOAD USER PANEL
-			setTimeout("loaduserpanel()",1000);
 		}
-		
 		// NO CONNECTIONS
 		else
 		{
 			buildModal("","/template/setup.htm");	
 		}
+		
+		// LOAD USER PANEL
+		setTimeout("loaduserpanel()",1000);
 	}); 
 }
 

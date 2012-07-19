@@ -12,17 +12,18 @@ $(document).ready(function() {
 	
 	// SEND A MESSAGE
 	$(".message_send, .message_send_inline").live("submit", function() {
-		var form		= $(this);
-		var uri			= form.attr("action");
-		var message		= form.find(".message_data").val();
-		var dcb 		= cb();
+		
+		var form = $(this);
+		var uri	= form.attr("action");
+		var message	= form.find(".message_data").val();
+		var dcb = cb();
 		
 		messageparams = {
 			"dream.out.format" 	: "json"
 		};
 	
 		var uri = apiuri(uri,messageparams);
-		
+				
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
@@ -33,7 +34,6 @@ $(document).ready(function() {
 			contentType: 'application/json',
 			success: function(results)
 			{
-				
 				// DISPLAY THE MESSAGE ON THE POPUP SCREEN	
 				var src = "/template/message_thread.htm";
 				var objecturi = results["@href"];
@@ -70,12 +70,42 @@ $(document).ready(function() {
 		return false;	
 	});
 	
+	// SHOW MESSAGE REPLIES
+	$(".message_view_replies_inline").live("click", function() {
+		
+		var target = $(this).parents(".message_thread").next(".message_thread_children");
+		
+		// CHECK TO SEE IF REPLIES WERE ALREADY LOADED
+		
+		
+		// LOAD REPLIES FROM API
+		var objecturi = $(this).attr("href");
+		var src = "/template/message_thread.htm";
+		
+		
+		messageparams = {
+			"dream.out.format" : "jsonp",
+			"dream.out.pre": cb()
+		};
+	
+		var objecturi = apiuri(objecturi,messageparams);
+		
+		$.get(src, function(templatehtml) {		
+			template(templatehtml, objecturi, "message_messages.children_message",function(html) {
+				target.html(html);
+				console.log(html);
+			});
+		});
+		
+		return false;	
+	});
+	
 	
 	// DELETE MESSAGE
 	$(".message_delete").live("submit", function() {
 		
-		var href 	= $(this).attr("id");
-		var id		= $(this).find(".id").val();
+		var href = $(this).attr("id");
+		var id = $(this).find(".id").val();
 		
 		deleteparams = {
 			"dream.in.verb" : "DELETE"
