@@ -82,7 +82,7 @@ namespace Usivity.Services {
 
         private void QueueMessages(TaskTimer tt) {
             foreach(var organization in _data.Organizations.Get()) {
-                _data.GetMessageStream(organization).RemoveExpired();
+                _data.GetMessageStream(organization).RemoveExpired(_dateTime);
                 Coroutine.Invoke(QueueOrganizationMessages, organization, new Result());    
             }
             tt.Change(TimeSpan.FromMinutes(1), TaskEnv.None);
@@ -98,9 +98,6 @@ namespace Usivity.Services {
                 var twitterConnection = connection as TwitterConnection;
                 if(twitterConnection != null) {
                     var twitterClient = _twitterClientFactory.NewTwitterClient(twitterConnection);
-                    if(subscription.GetSourceUri(Source.Twitter) == null) {
-                        twitterClient.SetNewSubscriptionQuery(subscription);
-                    }
                     var constraints = string.Join(",", subscription.Constraints.ToArray());
                     _log.DebugFormat("Fetching Twitter messages for organization {0}, subscription: {1}", organization.Name, constraints);
                     try {
@@ -132,7 +129,7 @@ namespace Usivity.Services {
                 _data.Connections.Save(connection);
             }
             
-            var span = DateTime.UtcNow.Subtract(_messageExpiration);
+            var span = _dateTime.UtcNow.Subtract(_messageExpiration);
             var stream = _data.GetMessageStream(organization);
             _log.DebugFormat("Queueing {0} messages for organization {1}", messages.Count, organization.Name);
             foreach(var message in messages.Where(message => message.Timestamp >= span)) {

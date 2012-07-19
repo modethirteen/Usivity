@@ -75,6 +75,10 @@
       <Project>{09E39692-A52B-4330-94BC-E9DB82B37D18}</Project>
       <Name>usivity.entities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\usivity.util\usivity.util.csproj">
+      <Project>{3C76656C-DB1D-4A2E-B154-D3F1AA8F3AA8}</Project>
+      <Name>usivity.util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

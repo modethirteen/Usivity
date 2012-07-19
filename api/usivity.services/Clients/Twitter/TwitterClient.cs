@@ -18,6 +18,7 @@ namespace Usivity.Services.Clients.Twitter {
 
         //--- Constants ---
         private const string SEARCH_URI = "http://search.twitter.com/search.json";
+        private const uint MAX_RESULTS = 100;
 #if DEBUG
         private const string API_URI = "http://api.twitter.com/1";
         private const string OAUTH_REQUEST_TOKEN_URI = "http://api.twitter.com/oauth/request_token";
@@ -45,10 +46,12 @@ namespace Usivity.Services.Clients.Twitter {
             return ParseUserLookupResult(msg);
         }
 
-        private static XUri GetNewSubscriptionQuery(Subscription subscription) {
+        private static XUri GetNewSubscriptionUri(Subscription subscription) {
             string lang;
             _subscriptionLanguagesMap.TryGetValue(subscription.Language, out lang);
-            var uri = new XUri(SEARCH_URI).With("q", string.Join(",", subscription.Constraints.ToArray()));
+            var uri = new XUri(SEARCH_URI)
+                .With("rpp", MAX_RESULTS.ToString())
+                .With("q", string.Join(",", subscription.Constraints.ToArray()));
             if(!string.IsNullOrEmpty(lang)) {
                 uri = uri.With("lang", lang);
             }
@@ -159,55 +162,57 @@ namespace Usivity.Services.Clients.Twitter {
         }
         #endregion
 
-        #region ITwitterClient implementations
+        #region IPublicClient implementations
         public IEnumerable<IMessage> GetNewPublicMessages(Subscription subscription, TimeSpan? expiration) {
             var messages = new List<IMessage>();
             if(!subscription.Active) {
                 return messages;
             }
-            DreamMessage msg = Plug.New(subscription.GetSourceUri(Source.Twitter)).Get();
-            if(!msg.IsSuccessful) {
-                return messages;
-            }
-            var response = new JDoc(msg.ToText()).ToDocument("response");
-            var results = response["results"];
-            var ids = new List<ulong>();
-            foreach(var result in results) {
-                var id = ulong.MinValue;
-                ulong.TryParse(result["id_str"].AsText, out id);
-                if(id != ulong.MinValue) {
-                    ids.Add(id);
+            var uri = new XUri(subscription.GetSourceUri(Source.Twitter) ?? GetNewSubscriptionUri(subscription));
+            var cursor = uri.GetParam("since_id", ulong.MinValue);
+            while(true) {
+                DreamMessage msg;
+                try {
+                    msg = Plug.New(uri).Get(); 
+                } catch(Exception e) {
+                    _log.Warn("Error while fetching twitter messages, exception: " + e.Message);
+                    return messages;
+                }
+                var response = new JDoc(msg.ToText()).ToDocument("response");
+                var results = response["results"];
+                messages.AddRange(results.Select(result => NewFromSearchResult(result, expiration)));
+                var ids = new List<ulong>();
+                foreach(var result in results) {
+                    var id = ulong.MinValue;
+                    ulong.TryParse(result["id_str"].AsText, out id);
+                    if(id != ulong.MinValue) {
+                        ids.Add(id);
+                    }
+                }
+                if(ids.Count == MAX_RESULTS && cursor > ulong.MinValue) {
+                    
+                    // move start range to next page
+                    var start = ids.Last() - 1;
+                    uri = GetNewSubscriptionUri(subscription)
+                        .With("max_id", start.ToString())
+                        .With("since_id", cursor.ToString());
+                }
+                else {
+                    if(ids.Last() > cursor) {
+                        
+                        // move end range to highest id ever fetched
+                        cursor = ids.First();     
+                    }
+                    uri = GetNewSubscriptionUri(subscription).With("since_id", cursor.ToString());
+                    break;
                 }
             }
-           
-            // build new request for next set of results
-            var query = GetNewSubscriptionQuery(subscription);
-        
-            // fetch earlier results if they exist
-            if(ids.Count > 0 && response["next_page"] != null) {
-                ids.Sort();
-                var maxId = ids.First() - 1;
-                query = query.With("max_id", maxId.ToString()); 
-
-                // adjust cursor to highest id processed
-                var cursor = ulong.MinValue;
-                ulong.TryParse(subscription.ResultsCursor, out cursor);
-                if(ids.Last() > cursor) {
-                    subscription.ResultsCursor = ids.Last().ToString();    
-                }
-            }
-            else if(!string.IsNullOrEmpty(subscription.ResultsCursor)) {
-                query = query.With("since_id", subscription.ResultsCursor); 
-            }
-            subscription.SetSourceUri(Source.Twitter, query);
-            messages.AddRange(results.Select(result => NewFromSearchResult(result, expiration)));
+            subscription.SetSourceUri(Source.Twitter, uri);
             return messages;
         }
+        #endregion
 
-        public void SetNewSubscriptionQuery(Subscription subscription) {
-            subscription.SetSourceUri(Source.Twitter, GetNewSubscriptionQuery(subscription));
-        }
-    
+        #region ITwitterClient implementation
         public Identity GetIdentity(string screenName) {
             return GetIdentityByScreenName(screenName);
         }
