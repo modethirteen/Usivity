@@ -3,6 +3,7 @@ using MindTouch.Dream;
 using MindTouch.Xml;
 using Usivity.Entities;
 using Usivity.Entities.Types;
+using Usivity.Util;
 
 namespace Usivity.Connections.Twitter {
 
@@ -16,10 +17,10 @@ namespace Usivity.Connections.Twitter {
 #endif
 
         //--- Methods ---
-        virtual protected Message GetMessage(XDoc result) {
+        protected IMessage GetMessage(IGuidGenerator guidGenerator, IDateTime dateTime, XDoc result, TimeSpan? expiration = null) {
             XUri uri;
             XUri.TryParse(result["profile_image_url"].AsText, out uri);
-            return new Message {
+            return new Message(guidGenerator, dateTime, expiration) {
                 Source = Source.Twitter,
                 SourceMessageId = result["id_str"].AsText,
                 SourceInReplyToMessageId = result["in_reply_to_status_id_str"].AsText,
@@ -34,13 +35,13 @@ namespace Usivity.Connections.Twitter {
             };
         }
 
-        virtual protected Identity GetIdentityByUserId(string userId) {
+        protected Identity GetIdentityByUserId(string userId) {
             var msg = Plug.New(API_URI).At("users", "lookup.xml")
                 .With("user_id", userId).Get();
             return ParseUserLookupResult(msg);
         }
 
-        virtual protected Identity GetIdentityByScreenName(string screenName) {
+        protected Identity GetIdentityByScreenName(string screenName) {
              var msg = Plug.New(API_URI).At("users", "lookup.xml")
                 .With("screen_name", screenName).Get();
             return ParseUserLookupResult(msg);

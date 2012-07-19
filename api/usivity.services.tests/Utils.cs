@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text;
+using Moq;
+using Usivity.Entities;
 using Usivity.Entities.Types;
 
 namespace Usivity.Tests.Services {
@@ -12,6 +14,10 @@ namespace Usivity.Tests.Services {
             var sources = Enum.GetValues(typeof(Source)); 
             var count = sources.Length;
             return (Source) sources.GetValue(rnd.Next(0, count));
+        }
+
+        public static string GetUniqueId() {
+            return Guid.NewGuid().ToString().Replace("-", string.Empty);
         }
 
         public static string GetRandomText(int countOfSymbols) {
@@ -32,6 +38,16 @@ namespace Usivity.Tests.Services {
                 }
             }
             return builder.ToString();
+        }
+
+        //--- Mocks ---
+        public static IOrganization GetOrganization(string id = null) {
+            if(string.IsNullOrEmpty(id)) {
+                id = GetUniqueId();
+            }
+            var organizationMock = new Mock<IOrganization>();
+            organizationMock.Setup(o => o.Id).Returns(id);
+            return organizationMock.Object;
         }
     }
 }

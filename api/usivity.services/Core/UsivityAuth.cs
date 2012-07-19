@@ -55,7 +55,7 @@ namespace Usivity.Services.Core {
         }
         
         public User GetUser(string authToken = null) {
-            var anonymous = _data.Users.GetAnonymous();
+            var anonymous = User.GetAnonymousUser();
             if(string.IsNullOrEmpty(authToken)) {
                 return anonymous;
             }

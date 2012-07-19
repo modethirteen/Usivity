@@ -2,6 +2,7 @@
 using MindTouch.Xml;
 using Usivity.Data;
 using Usivity.Entities;
+using Usivity.Util;
 
 namespace Usivity.Services.Core.Logic {
 
@@ -12,13 +13,15 @@ namespace Usivity.Services.Core.Logic {
         private readonly IUsivityDataCatalog _data;
         private readonly IOrganizations _organizations;
         private readonly IUsivityAuth _auth;
+        private readonly IGuidGenerator _guidGenerator;
 
         //--- Constructors ---
-        public Users(IUsivityDataCatalog data, ICurrentContext context, IOrganizations organizations, IUsivityAuth auth) {
+        public Users(IGuidGenerator guidGenerator, IUsivityDataCatalog data, ICurrentContext context, IOrganizations organizations, IUsivityAuth auth) {
             _context = context;
             _organizations = organizations;
             _data = data;
             _auth = auth;
+            _guidGenerator = guidGenerator;
         }
 
         //--- Methods ---
@@ -28,10 +31,6 @@ namespace Usivity.Services.Core.Logic {
 
         public User GetCurrentUser() {
             return _context.User;
-        }
-
-        public User GetAnonymousUser() {
-            return _data.Users.GetAnonymous();
         }
 
         public User GetAuthenticatedUser(string name, string password) {
@@ -67,7 +66,7 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public User GetNewUser(string name, string password) {
-            var user = new User(name);
+            var user = new User(_guidGenerator, name);
             var organization = _organizations.CurrentOrganization;
             user.SetOrganizationRole(organization, User.UserRole.Member);
             user.CurrentOrganization = organization.Id;

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
-using Usivity.Connections;
 using Usivity.Entities;
+using Usivity.Entities.Connections;
 
 namespace Usivity.Tests.Services.Core.Logic.Connections {
 
@@ -28,17 +28,17 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
                 .Returns(currentOrganizationMock.Object);
 
             // create mock connection for current organization with id
-            var mockConnection = new Mock<IConnection>();
-            mockConnection.Setup(c => c.Id).Returns(id);
-            mockConnection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
+            var connection = new Mock<IConnection>();
+            connection.Setup(c => c.Id).Returns(id);
+            connection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
 
-            // attach foo to mock data catalog
-            _dataMock.Setup(data => data.Connections.Get(id)).Returns(mockConnection.Object);
+            // attach connection to mock data catalog
+            _dataMock.Setup(data => data.Connections.Get(id)).Returns(connection.Object);
 
             // get default connection by source
             var connections = GetConnections();
-            var connection = connections.GetDefaultConnection(source);
-            Assert.IsNotNull(connection);
+            var defaultConnection = connections.GetDefaultConnection(source);
+            Assert.IsNotNull(defaultConnection);
         }
 
         [Test]
@@ -54,17 +54,17 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
                 .Returns(currentOrganizationMock.Object);
 
             // create mock connection for current organization with id
-            var mockConnection = new Mock<IConnection>();
-            mockConnection.Setup(c => c.Id).Returns(id);
-            mockConnection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
+            var connection = new Mock<IConnection>();
+            connection.Setup(c => c.Id).Returns(id);
+            connection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
 
-            // attach foo to mock data catalog
-            _dataMock.Setup(data => data.Connections.Get(id)).Returns(mockConnection.Object);
+            // attach connection to mock data catalog
+            _dataMock.Setup(data => data.Connections.Get(id)).Returns(connection.Object);
 
             // get default connection by source
             var connections = GetConnections();
-            var connection = connections.GetDefaultConnection(source);
-            Assert.AreEqual(id, connection.Id);
+            var defaultConnection = connections.GetDefaultConnection(source);
+            Assert.AreEqual(id, defaultConnection.Id);
         }
 
         [Test]
@@ -79,21 +79,21 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
                 .Returns(currentOrganizationMock.Object);
 
             // create active source mock connection for current organization with id
-            var mockConnection = new Mock<IConnection>();
-            mockConnection.Setup(c => c.Id).Returns(id);
-            mockConnection.Setup(c => c.Source).Returns(source);
-            mockConnection.Setup(c => c.Active).Returns(true);
-            mockConnection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
+            var connection = new Mock<IConnection>();
+            connection.Setup(c => c.Id).Returns(id);
+            connection.Setup(c => c.Source).Returns(source);
+            connection.Setup(c => c.Active).Returns(true);
+            connection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
 
-            // attach foo to mock data catalog
-            _dataMock.Setup(data => data.Connections.Get(id)).Returns(mockConnection.Object);
+            // attach connection to mock data catalog
+            _dataMock.Setup(data => data.Connections.Get(id)).Returns(connection.Object);
             _dataMock.Setup(data => data.Connections.Get(currentOrganizationMock.Object, source))
-                .Returns(new List<IConnection> { mockConnection.Object });
+                .Returns(new List<IConnection> { connection.Object });
 
             // get default connection by source
             var connections = GetConnections();
-            var connection = connections.GetDefaultConnection(source);
-            Assert.AreEqual(id, connection.Id);
+            var defaultConnection = connections.GetDefaultConnection(source);
+            Assert.AreEqual(id, defaultConnection.Id);
         }
     }
 }

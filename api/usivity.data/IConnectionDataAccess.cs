@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Usivity.Connections;
 using Usivity.Entities;
+using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
 
 namespace Usivity.Data {

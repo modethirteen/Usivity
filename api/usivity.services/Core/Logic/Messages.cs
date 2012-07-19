@@ -1,11 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using MindTouch.Dream;
 using MindTouch.Xml;
 using Usivity.Data;
 using Usivity.Entities;
+using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
+using Usivity.Services.Clients;
+using Usivity.Services.Clients.Email;
+using Usivity.Services.Clients.Twitter;
+using Usivity.Util;
 
 namespace Usivity.Services.Core.Logic {
 
@@ -19,9 +23,22 @@ namespace Usivity.Services.Core.Logic {
         private readonly IUsers _users;
         private readonly IOrganizations _organizations;
         private readonly IConnections _connections;
+        private readonly IGuidGenerator _guidGenerator;
+        private readonly ITwitterClientFactory _twitterClientFactory;
+        private readonly IEmailClientFactory _emailClientFactory;
 
         //--- Constructors ---
-        public Messages(IUsivityDataCatalog data, ICurrentContext context, IContacts contacts, IUsers users, IOrganizations organizations, IConnections connections) {
+        public Messages(
+            IUsivityDataCatalog data,
+            ICurrentContext context,
+            IContacts contacts,
+            IUsers users,
+            IOrganizations organizations,
+            IConnections connections,
+            IGuidGenerator guidGenerator,
+            ITwitterClientFactory twitterClientFactory,
+            IEmailClientFactory emailClientFactory
+        ) {
             _context = context;
             _data = data;
             var organization = organizations.CurrentOrganization;
@@ -30,10 +47,13 @@ namespace Usivity.Services.Core.Logic {
             _users = users;
             _organizations = organizations;
             _connections = connections;
+            _guidGenerator = guidGenerator;
+            _twitterClientFactory = twitterClientFactory;
+            _emailClientFactory = emailClientFactory;
         }
 
         //--- Methods ---
-        public Message GetMessage(string id) {
+        public IMessage GetMessage(string id) {
             return _messageStream.Get(id);
         }
 
@@ -47,7 +67,7 @@ namespace Usivity.Services.Core.Logic {
             return doc;
         }
 
-        public XDoc GetMessageXml(Message message, string relation = null) {
+        public XDoc GetMessageXml(IMessage message, string relation = null) {
             var doc = message.ToDocument(relation)
                 .Attr("href", _context.ApiUri.At("messages", message.Id));
             var contact = _data.Contacts.Get(message);
@@ -65,11 +85,17 @@ namespace Usivity.Services.Core.Logic {
 
         public XDoc GetMessageStreamXml(DateTime startTime, DateTime endTime, int count, int offset, Source? source) {
             var messages = _messageStream.GetStream(startTime, endTime, count, offset, source);
-            var doc = GetMessagesXml(messages);
+            var doc = new XDoc("messages")
+                .Attr("count", messages.Count())
+                .Attr("href", _context.ApiUri.At("messages"));
+            foreach(var message in messages) {
+                doc.Add(GetMessageXml(message));
+            }
+            doc.EndAll();
             return doc;
         }
 
-        public XDoc GetMessageVerboseXml(Message message, bool renderChildrenAsTree = true) {
+        public XDoc GetMessageVerboseXml(IMessage message, bool renderChildrenAsTree = true) {
             var doc = GetMessageXml(message);
             var parentsDoc = GetMessageParentsXml(message);
             if(!parentsDoc.IsEmpty) {
@@ -82,7 +108,7 @@ namespace Usivity.Services.Core.Logic {
             return doc;
         }
 
-        public XDoc GetMessageParentsXml(Message message) {
+        public XDoc GetMessageParentsXml(IMessage message) {
             if(message.ParentMessageId == null) {
                 return XDoc.Empty;
             }
@@ -95,7 +121,7 @@ namespace Usivity.Services.Core.Logic {
             return doc;
         }
 
-        public XDoc PostReply(Message message, string reply) {
+        public XDoc PostReply(IMessage message, string reply) {
             var organization = _organizations.CurrentOrganization;
             var connection = _connections.GetConnectionReceipient(message) ?? _connections.GetDefaultConnection(message.Source);
             if(connection == null || connection.Identity == null) {
@@ -106,21 +132,19 @@ namespace Usivity.Services.Core.Logic {
                 var response = DreamMessage.BadRequest("You cannot post a reply to your own message");
                 throw new DreamAbortException(response);
             }
+            var client = NewClient(connection);
+            var replyMessage = client.PostNewReplyMessage(_context.User, message, reply);
 
-            Message replyMessage;
-            try {
-                replyMessage = connection.PostReplyMessage(message, _context.User, reply);
-            }
-            catch(Exception e) {
-                var response = DreamMessage.InternalError("There was a problem posting the reply: " + e.Message);
-                throw new DreamAbortException(response); 
+            // once a message has been replied to, it should not be purged from the stream
+            if(message.Expires != null) {
+                message.RemoveExpiration();
+                _messageStream.Save(message);
             }
             _messageStream.Save(replyMessage);
             var doc = GetMessageVerboseXml(replyMessage);
             var contact = _data.Contacts.Get(message);
             if(contact == null) {
-                contact = new Contact();
-                contact.SetIdentity(message.Source, message.Author);
+                contact = client.NewContact(message.Author);
                 doc["message.parent"].Add(_contacts.GetContactXml(contact));
             }
             contact.AddOrganization(organization);
@@ -128,26 +152,15 @@ namespace Usivity.Services.Core.Logic {
             return doc;
         }
 
-        public void SaveMessage(Message message) {
+        public void SaveMessage(IMessage message) {
             _messageStream.Save(message);
         }
 
-        public void DeleteMessage(Message message) {
+        public void DeleteMessage(IMessage message) {
             _messageStream.Delete(message);
         }
 
-        private XDoc GetMessagesXml(IEnumerable<Message> messages) {
-            var doc = new XDoc("messages")
-                .Attr("count", messages.Count())
-                .Attr("href", _context.ApiUri.At("messages"));
-            foreach(var message in messages) {
-                doc.Add(GetMessageXml(message));
-            }
-            doc.EndAll();
-            return doc;
-        }
-
-        private XDoc GetMessageChildrenXml(Message message, int depth, bool tree = true) {
+        private XDoc GetMessageChildrenXml(IMessage message, int depth, bool tree = true) {
             var children = _messageStream.GetChildren(message);
             if(children.Count() <= 0) {
                 return XDoc.Empty;
@@ -166,6 +179,18 @@ namespace Usivity.Services.Core.Logic {
             }
             var flat = doc[".//message"];
             return depth == 0 ? new XDoc("messages.children").AddAll(flat) : flat; 
+        }
+
+        private IClient NewClient(IConnection connection) {
+            var twitterConnection = connection as TwitterConnection;
+            if(twitterConnection != null) {
+                return _twitterClientFactory.NewTwitterClient(twitterConnection);
+            }
+            var emailConnection = connection as EmailConnection;
+            if(emailConnection != null) {
+                return _emailClientFactory.NewEmailClient(emailConnection); 
+            }
+            throw new NotSupportedException("Source connection client is not supported");
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Usivity.Data {
 
         //--- Methods ---
         IEnumerable<Contact> Get(IOrganization organization);
-        Contact Get(Message message);
+        Contact Get(IMessage message);
         Contact Get(string id, IOrganization organization);
         void Save(Contact contact);
     }

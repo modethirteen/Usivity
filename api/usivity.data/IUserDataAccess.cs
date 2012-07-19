@@ -8,7 +8,6 @@ namespace Usivity.Data {
         //--- Methods ---
         IEnumerable<User> Get(IOrganization organization = null);
         User Get(string id, IOrganization organization = null);
-        User GetAnonymous();
         User GetAuthenticated(string name, string password);
         bool Exists(string name);
         void Save(User user);

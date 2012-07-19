@@ -8,6 +8,7 @@ namespace Usivity.Services.Core {
         User User { get; set; }
         User.UserRole Role { get; set; }
         XUri ApiUri { get; set; }
+        XUri UiUri { get; set; }
     }
 
     public class UsivityContext : ICurrentContext, IDisposable {
@@ -39,6 +40,7 @@ namespace Usivity.Services.Core {
         public User User { get; set; }
         public User.UserRole Role { get; set; }
         public XUri ApiUri { get; set; }
+        public XUri UiUri { get; set; }
 
         //--- Methods ---
         public void Dispose() {}

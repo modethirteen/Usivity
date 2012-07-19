@@ -11,9 +11,7 @@ namespace Usivity.Services.Core.Logic {
         public IOrganization CurrentOrganization {
             get {
                 if(_currentOrganization == null) {
-                    _currentOrganization =_context.User != null
-                        ? GetOrganization(_context.User.CurrentOrganization)
-                        : Organization.NewMockOrganization();        
+                    _currentOrganization = GetOrganization(_context.User.CurrentOrganization);
                 }
                 return _currentOrganization;
             }

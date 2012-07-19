@@ -1,5 +1,6 @@
 using System;
 using MongoDB.Driver;
+using Usivity.Data.Serializers;
 using Usivity.Entities;
 
 namespace Usivity.Data {
@@ -8,11 +9,25 @@ namespace Usivity.Data {
         
         //--- Class Constructors ---
         public static IUsivityDataCatalog NewUsivityDataCatalog(string connection) {
-            ContactDataAccess.RegisterEntityClassMap();
-            UserDataAccess.RegisterEntityClassMap();
-            SubscriptionDataAccess.RegisterEntityClassMap();
-            OrganizationDataAccess.RegisterEntityClassMap();
-            ConnectionDataAccess.RegisterConnectionClassMaps();
+
+            // register custom type serializers
+            var contactSerializer = new ContactSerializer();
+            contactSerializer.RegisterSerializer();
+            var organizationSerializer = new OrganizationSerializer();
+            organizationSerializer.RegisterSerializer();
+            var subscriptionSerializer = new SubscriptionSerializer();
+            subscriptionSerializer.RegisterSerializer();
+            var userSerializer = new UserSerializer();
+            userSerializer.RegisterSerializer();
+
+            var xuriSerializer = new XUriSerializer();
+            xuriSerializer.RegisterSerializer();
+
+            var twitterConnectionSerializer = new TwitterConnectionSerializer();
+            twitterConnectionSerializer.RegisterSerializer();
+            var emailConnectionSerializer = new EmailConnectionSerializer();
+            emailConnectionSerializer.RegisterSerializer();
+ 
             return new UsivityDataCatalog(connection);
         }
 
