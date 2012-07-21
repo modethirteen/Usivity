@@ -44,20 +44,18 @@ function process(form)
 {
 	var respicon = form.find(".responseicon");
 	respicon.removeClass("responsesuccess");
+	respicon.removeClass("responseerror");
 	respicon.addClass("responseprocessing");
 	respicon.show();
 }
 
 // PROCESS ERROR
-function error(input, message)
+function error(input)
 {
-	// TODO: change from message popup to icon display (much cleaner) and add hover over popup on error icon
-	var form = input.parents("form");
-	var response = form.prev(".response");
-	response.html(message);
-	response.addClass("error");
-	response.removeClass("success");
-	response.slideDown(50);
+	var respicon = form.find(".responseicon");
+	respicon.removeClass("responseprocessing");
+	respicon.removeClass("responsesuccess");
+	respicon.addClass("responseerror");
 }
 
 // ADD THE SUCCESS ICON TO THE FORM
@@ -65,6 +63,7 @@ function success(form)
 {
 	var respicon = form.find(".responseicon");
 	respicon.removeClass("responseprocessing");
+	respicon.removeClass("responseerror");
 	respicon.addClass("responsesuccess");
 	respicon.delay(2000).fadeOut();
 	

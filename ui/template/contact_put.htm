@@ -1,62 +1,64 @@
 <h1>Contact Details</h1>
 
-<div class="panel">
-	<form class="contact_put" id="{contact_@id}" href="{contact_@href}">
-			<div class="buttons">
-				<button type="submit" class="button apply">save changes</button>
-				<a href="{contact_@href}" id="{contact_@id}" class="button contact_delete">delete</a>
-			</div>
-			
-			<h3>Personal</h3>
-	
-			<span class="contact_details">
-				<span class="contact_picture contact_picture_large">
-					<img src="{contact_uri.avatar}"/>
+<form class="contact_put" id="{contact_@id}" href="{contact_@href}">
+
+	<div class="panel_wrap">
+		<div class="buttons">
+			<button type="submit" class="button apply">save changes</button>
+			<a href="{contact_@href}" id="{contact_@id}" class="button contact_delete">delete</a>
+		</div>
+		<div class="panel">		
+				<h3>Personal</h3>
+		
+				<span class="contact_details">
+					<span class="contact_picture contact_picture_large">
+						<img src="{contact_uri.avatar}"/>
+					</span>
+					<input type="text" start="first name" class="contact_firstname" value="{contact_firstname}"/>
+					<input type="text" start="last name" class="contact_lastname" value="{contact_lastname}"/>
 				</span>
-				<input type="text" start="first name" class="contact_firstname" value="{contact_firstname}"/>
-				<input type="text" start="last name" class="contact_lastname" value="{contact_lastname}"/>
-			</span>
-			<input type="text" start="email address*" value="{contact_email}" class="contact_email long"/>
-			
-			<h3>Demographics</h3>
-			<input type="text" start="age" value="{contact_age}" class="contact_age contactdetail short"/>
-			<input type="text" start="gender" value="{contact_gender}" class="contact_gender contactdetail short"/>
-			<div class="break">
-				<input type="text" start="general location" value="{contact_location}" class="contact_locationgeneral contactdetail long"/>
-			</div>
-			
-			<h3>Contact Details</h3>
-			<input type="text" start="phone number" class="contact_phonenumber contactdetail"/>
-			<!--<input type="text" start="fax number" class="contact_faxnumber contactdetail"/>-->
-			<input type="text" start="address" class="contact_address contactdetail long"/>
-			<div class="break">
-				<input type="text" start="city" class="contact_city contactdetail"/>
-				<input type="text" start="state" class="contact_state contactdetail"/>
-				<input type="text" start="zip" class="contact_zip contactdetail short"/>
-			</div>
-			
-			<h3>Company Details</h3>
-			<input type="text" start="company name" value="{contact_company_name}" class="company_name contactdetail"/>
-			<input type="text" start="company phone" value="{contact_company_phone}" class="company_phonenumber contactdetail"/>
-			<!--<input type="text" start="fax number" class="company_faxnumber contactdetail"/>-->
-			<input type="text" start="address" value="{contact_company_address}" class="company_address contactdetail long"/>
-			<div class="break">
-				<input type="text" start="city" value="{contact_company_city}" class="company_city contactdetail"/>
-				<input type="text" start="state" value="{contact_company_state}" class="company_state contactdetail"/>
-				<input type="text" start="zip" value="{contact_company_zip}" class="company_zip contactdetail short"/>
-			</div>
-			<input type="text" start="industry" value="{contact_company_industry}" class="company_industry contactdetail long"/>
-			<input type="text" start="revenue" value="{contact_company_revenue}" class="company_revenue contactdetail"/>
-			<input type="text" start="competitors" value="{contact_company_competitors}" class="company_competitors contactdetail long"/>
-			
-			
-			<h3>Social Networks</h3>
-			<input type="text" start="linkedin" value="{contact_identity.linkedin}" class="contact_socialnetwork contact_linkedin contactdetail long"/>
-			<input type="text" start="facebook" value="{contact_identity.facebook}"  class="contact_socialnetwork contact_facebook contactdetail long"/>
-			<input type="text" start="twitter" value="{contact_identity.twitter}"  class="contact_socialnetwork contact_twitter contactdetail long"/>
-			<input type="text" start="google" value="{contact_identity.google}"  class="contact_socialnetwork contact_google contactdetail long"/>
-	</form>
-</div>
+				<input type="text" start="email address*" value="{contact_email}" class="contact_email long"/>
+				
+				<h3>Demographics</h3>
+				<input type="text" start="age" value="{contact_age}" class="contact_age contactdetail short"/>
+				<input type="text" start="gender" value="{contact_gender}" class="contact_gender contactdetail short"/>
+				<div class="break">
+					<input type="text" start="general location" value="{contact_location}" class="contact_locationgeneral contactdetail long"/>
+				</div>
+				
+				<h3>Contact Details</h3>
+				<input type="text" start="phone number" class="contact_phonenumber contactdetail" value="{contact_phone}"/>
+				<!--<input type="text" start="fax number" class="contact_faxnumber contactdetail"/>-->
+				<input type="text" start="address" class="contact_address contactdetail long" value="{contact_address}"/>
+				<div class="break">
+					<input type="text" start="city" class="contact_city contactdetail" value="{contact_city}"/>
+					<input type="text" start="state" class="contact_state contactdetail" value="{contact_state}"/>
+					<input type="text" start="zip" class="contact_zip contactdetail short" value="{contact_zip}"/>
+				</div>
+				
+				<h3>Company Details</h3>
+				<input type="text" start="company name" value="{contact_company_name}" class="company_name contactdetail"/>
+				<input type="text" start="company phone" value="{contact_company_phone}" class="company_phonenumber contactdetail"/>
+				<!--<input type="text" start="fax number" class="company_faxnumber contactdetail"/>-->
+				<input type="text" start="address" value="{contact_company_address}" class="company_address contactdetail long"/>
+				<div class="break">
+					<input type="text" start="city" value="{contact_company_city}" class="company_city contactdetail"/>
+					<input type="text" start="state" value="{contact_company_state}" class="company_state contactdetail"/>
+					<input type="text" start="zip" value="{contact_company_zip}" class="company_zip contactdetail short"/>
+				</div>
+				<input type="text" start="industry" value="{contact_company_industry}" class="company_industry contactdetail long"/>
+				<input type="text" start="revenue" value="{contact_company_revenue}" class="company_revenue contactdetail"/>
+				<input type="text" start="competitors" value="{contact_company_competitors}" class="company_competitors contactdetail long"/>
+				
+				
+				<h3>Social Networks</h3>
+				<input type="text" start="linkedin" value="{contact_identity.linkedin}" class="contact_socialnetwork contact_linkedin contactdetail long"/>
+				<input type="text" start="facebook" value="{contact_identity.facebook}"  class="contact_socialnetwork contact_facebook contactdetail long"/>
+				<input type="text" start="twitter" value="{contact_identity.twitter}"  class="contact_socialnetwork contact_twitter contactdetail long"/>
+				<input type="text" start="google" value="{contact_identity.google}"  class="contact_socialnetwork contact_google contactdetail long"/>		
+		</div>
+	</div>
+</form>
 <div class="panel_main">
 		
 	<h3>Message Thread</h3>
@@ -82,10 +84,7 @@
 						{source}
 					</span>
 					<span>
-						<a href="{@href}" class="message_reply_inline">reply</a>
-					</span>
-					<span>
-						<a href="{@href}" class="message_view_replies_inline">view 4 replies</a>
+						<a href="{@href}" class="message_reply_inline">reply (4)</a>
 					</span>
 				</span>
 			</div>

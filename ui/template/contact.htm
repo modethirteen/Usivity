@@ -4,14 +4,16 @@
 <tr id="{@id}" class="contact highlight">
 	<td class="contact_picture">
 		<span>
-			<img src="{uri.avatar}" />
+			<a href="/template/contact_put.htm" id="{@href}" class="popup contact_edit"><img src="{uri.avatar}" /></a>
 		</span>
 	</td>
-	<td class="contact_name">
-		{firstname} {lastname}
-	</td>
 	<td class="contact_edit">
-		<a href="/template/contact_put.htm" id="{@href}" class="popup contact_edit">message</a>
+		<a href="/template/contact_put.htm" id="{@href}" class="popup contact_edit">{firstname} {lastname}</a>
+	</td>
+	<td class="contact_details">
+		<span class="parens">
+			{email}
+		</span>
 	</td>
 </tr>
 foreach}

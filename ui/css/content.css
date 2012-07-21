@@ -26,7 +26,13 @@ p img {
 	margin:0 10px 10px 0;
 	-webkit-box-shadow: 2px 2px 2px #999;
 }
-
+.parens {
+	color:#999;	
+}
+.block {
+	clear:both;	
+	overflow:hidden;
+}
 /*IMAGES*/
 .img-center {
 	margin:10px auto 20px auto;
@@ -75,13 +81,15 @@ h3 {
 }
 .ftitle {
 	display:block;
-	padding:3px 4px;
+	padding:3px 15px 3px 3px;
 	font-size:.7em;
 	color:#999;	
 	text-shadow: #fff 1px 1px;
-	width:182px;
+	width:152px;
 	float:left;
 	margin:0 0 10px 0;
+	
+	
 }
 textarea,
 select,
@@ -92,7 +100,10 @@ input {/*TODO:  GET RID OF THIS, USE START INSTEAD*/
 	border:1px solid #ccc;
 	float:left;
 	margin:0 10px 5px 0;
-	-webkit-box-shadow: 1px 1px 1px #999;
+	background:#fff;
+}
+select {
+	width:160px;	
 }
 input[type=checkbox] {
 	min-width:0;
@@ -104,8 +115,9 @@ select {
 textarea {
 	padding:0;	
 }
-input.long {
+.long {
 	min-width:230px;	
+	clear:left;
 }
 select.short,
 input.short {

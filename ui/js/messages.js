@@ -13,17 +13,19 @@ $(document).ready(function() {
 	// SEND A MESSAGE
 	$(".message_send, .message_send_inline").live("submit", function() {
 		
-		var form = $(this);
+		form = $(this);
 		var uri	= form.attr("action");
 		var message	= form.find(".message_data").val();
 		var dcb = cb();
+		
+		process(form);
 		
 		messageparams = {
 			"dream.out.format" 	: "json"
 		};
 	
 		var uri = apiuri(uri,messageparams);
-				
+		
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
@@ -46,12 +48,13 @@ $(document).ready(function() {
 				
 				$.get(src, function(templatehtml) {		
 					template(templatehtml, objecturi, "null",function(html) {
-						$(".message_threads").append(html);
+						form.parents(".message_thread").next(".message_thread_children").prepend(html);
 						
 						var messageinput = form.find(".message_data");
 						
 						messageinput.val("");
 						messageinput.focus();
+						success(form);
 					});
 				});
 				
@@ -70,32 +73,45 @@ $(document).ready(function() {
 		return false;	
 	});
 	
-	// SHOW MESSAGE REPLIES
-	$(".message_view_replies_inline").live("click", function() {
+	// SHOW MESSAGE REPLIES AND REPLY FORM
+	$(".message_reply_inline").live("click", function() {
 		
+		link = $(this);
 		var target = $(this).parents(".message_thread").next(".message_thread_children");
 		
+		
 		// CHECK TO SEE IF REPLIES WERE ALREADY LOADED
+		if (link.hasClass("loaded"))
+		{
+			link.parents(".message_thread").find(".message_send_inline").toggle();
+			target.toggle();	
+			console.log("already loaded");
+		}
+		else
+		{		
+			console.log("not loaded");
+			// LOAD REPLIES FROM API
+			var objecturi = $(this).attr("href");
+			var src = "/template/message_thread.htm";
+			
+			
+			messageparams = {
+				"dream.out.format" : "jsonp",
+				"dream.out.pre": cb()
+			};
 		
-		
-		// LOAD REPLIES FROM API
-		var objecturi = $(this).attr("href");
-		var src = "/template/message_thread.htm";
-		
-		
-		messageparams = {
-			"dream.out.format" : "jsonp",
-			"dream.out.pre": cb()
-		};
-	
-		var objecturi = apiuri(objecturi,messageparams);
-		
-		$.get(src, function(templatehtml) {		
-			template(templatehtml, objecturi, "message_messages.children_message",function(html) {
-				target.html(html);
-				console.log(html);
+			var objecturi = apiuri(objecturi,messageparams);
+			
+			$.get(src, function(templatehtml) {		
+				template(templatehtml, objecturi, "message_messages.children_message",function(html) {
+					target.html(html);
+					
+					link.addClass("loaded");
+					link.parents(".message_thread").find(".message_send_inline").show();
+					target.show();
+				});
 			});
-		});
+		}
 		
 		return false;	
 	});

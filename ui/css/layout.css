@@ -148,7 +148,11 @@ body {
 }
 .message_thread_children {
 	clear:left;
-	margin-left:20px;	
+	margin-left:20px;
+	max-height:150px;
+	overflow-x:hidden;
+	overflow-y:auto;
+	
 }
 .message_thread_children .contact_picture_large {
 	width:30px;
@@ -201,6 +205,7 @@ body {
 	padding:5px 0;
 	display:none;
 	z-index:3;
+	display:none;
 }
 .message_send_inline textarea {
 	height:30px;
@@ -283,7 +288,7 @@ body {
 	float:right;
 	height:16px;
 	width:16px;
-	margin:5px;	
+	margin:1px;	
 	background-repeat:no-repeat;
 	background-position:center center;
 }
@@ -292,6 +297,12 @@ body {
 }
 .responsesuccess {
 	background-image:url(/img/icon_checkmark.png);	
+}
+.responseerror {
+	background-image:url(/img/icon_xmark.png);	
+}
+.errortext {
+	border:1px solid #E03F1B;	
 }
 /*MESSAGES - Sources Column*/
 .source_badge {

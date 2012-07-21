@@ -76,44 +76,74 @@ $(document).ready(function() {
 	
 	// CREATE NEW EMAIL CONNECTION
 	$(".connection_details_email").live("submit", function() {
-		var email 		= $(this).find(".connection_email_address");
-		var host		= $(this).find(".connection_host");
-		var name		= $(this).find(".connection_name");
-		var password 	= $(this).find(".connection_password");
+		form		= $(this);
+		var username 	= form.find(".connection_email_username").val();
+		var host		= form.find(".connection_host").val();
+		var name		= form.find(".connection_name").val();
+		var password 	= form.find(".connection_password").val();
+		var port 		= form.find(".connection_port").val();
+		var ssl			= form.find(".connection_ssl").val();
+		var authmethod	= form.find(".connection_authmethod").val();
+		
+		process(form);
+		// VALIDATE REQUIRED FIELDS
+		form.find(".required").removeClass("errortext");
+		required = form.find(".required:text[value=''],.required:password[value='']");
+		if (required.size() >= 1)
+		{
+			required.addClass("errortext");
+			error(form);
+			return false;
+		}
+		
 		
 		// VALIDATE THE EMAIL ADDRESS
-		if (email.val() == "" || !checkemail(email.val()))
+		if (username == "" || !checkemail(username))
 		{
-			error(email,"A valid email address is required to create a new connection.");
+			form.find(".connection_email_username").addClass("errortext");
+			error(form);
 			return false;
 		}
 		
 		// CREATE THE DATA OBJECT
 		data = {
-			    email: email.val()
-			}
-			
+		    connection:{
+		        imap:{
+		            host: host,
+		            username: username,
+		            password: password,
+		            port: port,
+		            ssl: ssl,
+		            "auth.method": authmethod
+		        }
+		    }
+		}
+		
 		// CREATE THE API URI
 		connectionparams = {
 			"dream.out.format" : "json",
 			"source" : "email"
 		};
+		
+		console.log(JSON.stringify(data));
 				
 		var uri = apiuri(api.sources,connectionparams);
+		
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
 			data: JSON.stringify(data),
-			url: apiuri,
+			url: uri,
 			dataType: "json",
 			mimeType: 'application/json',
 			contentType: 'application/json',
 			success: function(results)
 			{
-				console.log("connection saved");
+				success(form);
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);
+				error(form);
 			}   
 		});
 		return false;
