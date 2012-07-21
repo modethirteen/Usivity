@@ -89,7 +89,6 @@ $(document).ready(function() {
 		}
 		else
 		{		
-			console.log("not loaded");
 			// LOAD REPLIES FROM API
 			var objecturi = $(this).attr("href");
 			var src = "/template/message_thread.htm";
@@ -97,10 +96,13 @@ $(document).ready(function() {
 			
 			messageparams = {
 				"dream.out.format" : "jsonp",
-				"dream.out.pre": cb()
+				"dream.out.pre": cb(),
+				"children": "flat"
 			};
 		
 			var objecturi = apiuri(objecturi,messageparams);
+			
+			console.log(objecturi);
 			
 			$.get(src, function(templatehtml) {		
 				template(templatehtml, objecturi, "message_messages.children_message",function(html) {
