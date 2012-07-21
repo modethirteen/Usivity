@@ -39,6 +39,9 @@ namespace Usivity.Data {
         public IEnumerable<IMessage> GetConversations(Contact contact) {
             var queries = new List<IMongoQuery>();
             var identities = contact.GetSourceIdentities();
+            if(!identities.Any()) {
+                return new Message[0];
+            }
             foreach(var identity in identities.Where(i => !string.IsNullOrEmpty(i.Value.Id))) {
                 var subQuery = Query.And(
                     Query.EQ("Source", identity.Key),
@@ -103,7 +106,7 @@ namespace Usivity.Data {
                 .FindAs<Message>(query)
                 .SetLimit(count)
                 .SetSkip(offset)
-                .SetSortOrder(SortBy.Descending("Timestamp"));
+                .SetSortOrder(SortBy.Descending("_id"));
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
         protected Mock<IGuidGenerator> _guidGeneratorMock;
         protected Mock<ITwitterClientFactory> _twitterClientFactoryMock;
         protected Mock<IEmailClientFactory> _emailClientFactoryMock;
+        protected Mock<IDateTime> _dateTimeMock;
 
         //--- Methods ---
         protected void SetUp() {
@@ -29,11 +30,13 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             _guidGeneratorMock = new Mock<IGuidGenerator>();
             _twitterClientFactoryMock = new Mock<ITwitterClientFactory>();
             _emailClientFactoryMock = new Mock<IEmailClientFactory>();
+            _dateTimeMock = new Mock<IDateTime>();
         }
 
         protected Connections GetConnections() {
             return new Connections(
                 _guidGeneratorMock.Object,
+                _dateTimeMock.Object,
                 _dataMock.Object,
                 _contextMock.Object,
                 _organizationsMock.Object,

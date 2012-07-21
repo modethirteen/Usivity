@@ -8,7 +8,7 @@
     <ProjectGuid>{09E39692-A52B-4330-94BC-E9DB82B37D18}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>usivity.entities</RootNamespace>
+    <RootNamespace>Usivity.Entities</RootNamespace>
     <AssemblyName>usivity.entities</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,11 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connections\EmailConnection.cs" />
     <Compile Include="Connections\IConnection.cs" />
     <Compile Include="Connections\IEmailConnection.cs" />
     <Compile Include="Connections\ITwitterConnection.cs" />
+    <Compile Include="Connections\TwitterConnection.cs" />
     <Compile Include="Contact.cs" />
-    <Compile Include="Connections\EmailConnection.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="IOrganization.cs" />
@@ -52,11 +53,10 @@
     <Compile Include="Message.cs" />
     <Compile Include="Organization.cs" />
     <Compile Include="Subscription.cs" />
-    <Compile Include="Connections\TwitterConnection.cs" />
+    <Compile Include="Types\Source.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Identity.cs" />
-    <Compile Include="Types\Source.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\usivity.util\usivity.util.csproj">

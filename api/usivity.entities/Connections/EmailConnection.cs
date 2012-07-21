@@ -8,10 +8,11 @@ namespace Usivity.Entities.Connections {
     public class EmailConnection : IEmailConnection {
 
         //--- Constructors ---
-        public EmailConnection(IGuidGenerator guidGenerator, IOrganization organization) {
+        public EmailConnection(IGuidGenerator guidGenerator, IOrganization organization, IDateTime dateTime) {
             Id = guidGenerator.GenerateNewObjectId();
-            LastSearch = DateTime.MinValue;
             OrganizationId = organization.Id;
+            Created = dateTime.UtcNow;
+            Modified = dateTime.UtcNow;
             Source = Source.Email;
         }
 
@@ -20,14 +21,15 @@ namespace Usivity.Entities.Connections {
         public string OrganizationId { get; private set; }
         public Source Source { get; private set; }
         public Identity Identity { get; set; }
+        public DateTime Modified { get; set; }
+        public DateTime Created { get; set; }
+        public bool Active { get { return IsActive(); } }
         public string Host { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public int Port { get; set; }
         public bool UseCramMd5 { get; set; }
         public bool UseSsl { get; set; }
-        public bool Active { get { return IsActive(); } }
-        public DateTime LastSearch { get; set; }
 
         //--- Methods ---
         public XDoc ToDocument(string relation = null) {

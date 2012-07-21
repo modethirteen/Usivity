@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using MindTouch.Xml;
 using Usivity.Entities.Types;
 using Usivity.Util;
@@ -15,14 +14,14 @@ namespace Usivity.Entities {
         public string SourceMessageId { get; set; }
         public string SourceInReplyToMessageId { get; set; }
         public string SourceInReplyToIdentityId { get; set; }
-        public DateTime SourceTimestamp { get; set; }
+        public DateTime SourceCreated { get; set; }
         public string ParentMessageId { get; set; }
         public IList<string> MessageThreadIds { get; private set; }
         public Identity Author { get; set; }
         public string UserId { get; set; }
         public string Body { get; set; }
         public string Subject { get; set; }
-        public DateTime Timestamp { get; private set; }
+        public DateTime Created { get; private set; }
         public DateTime? Expires { get; private set; }
         public bool OpenStream { get; set; }
 
@@ -30,7 +29,7 @@ namespace Usivity.Entities {
         public Message(IGuidGenerator guidGenerator, IDateTime dateTime, TimeSpan? expiration = null) {
             Id = guidGenerator.GenerateNewObjectId();
             MessageThreadIds = new List<string>();
-            Timestamp = dateTime.UtcNow;
+            Created = dateTime.UtcNow;
             OpenStream = true;
             if(expiration != null) {
                 Expires = dateTime.UtcNow.Add(expiration.Value);    
@@ -43,7 +42,6 @@ namespace Usivity.Entities {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            var datetime = SourceTimestamp.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
             var author = new XDoc("author")
                 .Elem("name", Author.Name ?? Author.Id);
             if(Author.Avatar != null) {
@@ -55,7 +53,8 @@ namespace Usivity.Entities {
                 .AddAll(author)
                 .Elem("subject", Subject)
                 .Elem("body", Body)
-                .Elem("timestamp", datetime);
+                .Elem("created.source", SourceCreated.ToISO8601String())
+                .Elem("created.openstream", Created.ToISO8601String());
         }
 
         public void SetParent(IMessage message) {
