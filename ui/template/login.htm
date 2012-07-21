@@ -2,17 +2,25 @@
 
 <div class="panel">
 	<!--<p>Usivity is a support agent portal for social and traditional mediums of support.  </p>-->
-	<p><img src="/img/logo_medium.gif" class="img-center">Usivity organizes targeted content from social networks and multiple email accounts in a collaborative support agent portal.</p>
-	<p><a href="" class="watch_video">watch the demo video</a></p>
+	<div class="control_panel_nav">
+		<a href="template/login.htm" class="selected popup cp_login">Login</a>
+		<a href="template/register.htm" class="popup login">Register</a>
+	</div>
 </div>
 <div class="panel_main">
+	<div class="instructions">
+		<img src="/img/logo_medium.gif" >
+		<p>Usivity organizes targeted content from social networks and multiple email accounts in a collaborative support agent portal.</p>
+		<p><a href="" class="watch_video">watch the demo video</a></p>
+	</div>
 	<h3>User Credentials</h3>
 	<form class="login">	
-		<span class="ititle">username</span>
-		<input type="text" name="email" class="user" />
 		
-		<span class="ititle">password</span>
+		<input type="text" name="email" class="user"/>
+		<span class="ftitle">username</span>
+		
 		<input type="password" name="password" class="password">
+		<span class="ftitle">password</span>
 		
 		<div class="buttons">
 			<button type="submit" class="button">login</button>

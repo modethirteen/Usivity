@@ -51,7 +51,7 @@
 .modal .panel {
 	width:250px;
 	float:left;
-	overflow:hidden;
+	overflow-x:visible;
 	border-right:1px dotted #ccc;
 	min-height:400px;
 	padding-bottom:50px;
@@ -60,6 +60,15 @@
 	width:500px;
 	margin-left:270px;
 	overflow:hidden;
+}
+.modal .instructions {
+	width:200px;
+	float:right;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(47%,#f6f6f6), color-stop(100%,#ededed));
+	padding:5px;
+	border:1px solid #ccc;
+	margin-top:10px;
+	-webkit-box-shadow: 2px 2px 2px #999;
 }
 /* DIALOG MODAL - USED FOR YES/NO FUNCTIONS*/
 .modalsmall {
