@@ -102,8 +102,6 @@ $(document).ready(function() {
 		
 			var objecturi = apiuri(objecturi,messageparams);
 			
-			console.log(objecturi);
-			
 			$.get(src, function(templatehtml) {		
 				template(templatehtml, objecturi, "message_messages.children_message",function(html) {
 					target.html(html);

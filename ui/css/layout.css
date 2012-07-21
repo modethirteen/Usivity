@@ -149,7 +149,7 @@ body {
 .message_thread_children {
 	clear:left;
 	margin-left:20px;
-	max-height:150px;
+	max-height:200px;
 	overflow-x:hidden;
 	overflow-y:auto;
 	
@@ -188,6 +188,19 @@ body {
 	color:#fff;
 	background:#51B310;
 	margin:4px 5px 0 0 ;	
+}
+/*Thread Depth*/
+.thread_depth1 {
+	margin-left:40px;
+}
+.thread_depth2 {
+	margin-left:60px;
+}
+.thread_depth3 {
+	margin-left:80px;
+}
+.thread_depth4 {
+	margin-left:100px;
 }
 /*Message Send*/
 .message_send {
