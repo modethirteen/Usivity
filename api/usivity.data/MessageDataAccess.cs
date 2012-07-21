@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using Usivity.Entities;
 using Usivity.Entities.Types;
+using Usivity.Util;
 
 namespace Usivity.Data {
 
@@ -89,8 +90,8 @@ namespace Usivity.Data {
             _db.Remove(Query.EQ("_id", message.Id));
         }
 
-        public void RemoveExpired() {
-            _db.FindAndRemove(Query.LTE("Expires", DateTime.UtcNow), SortBy.Null);
+        public void RemoveExpired(IDateTime dateTime) {
+            _db.FindAndRemove(Query.LTE("Expires", dateTime.UtcNow), SortBy.Null);
         }
 
         public long GetCount() {

@@ -6,6 +6,7 @@ using MindTouch.Dream;
 using MindTouch.Web;
 using Usivity.Data;
 using Usivity.Entities;
+using Usivity.Util;
 
 namespace Usivity.Services.Core {
     
@@ -22,14 +23,16 @@ namespace Usivity.Services.Core {
 
         //--- Fields ---
         private readonly string _salt;
+        private readonly IDateTime _dateTime;
         private readonly IUsivityDataCatalog _data;
         private readonly MD5 _md5;
         private readonly int _expiration;
     
         //--- Constructors ---
-        public UsivityAuth(string salt, int expiration, IUsivityDataCatalog data) {
+        public UsivityAuth(string salt, int expiration, IDateTime dateTime, IUsivityDataCatalog data) {
             _salt = salt;
             _data = data;
+            _dateTime = dateTime;
             _md5 = MD5.Create();
             _expiration = expiration;
         }
@@ -74,11 +77,11 @@ namespace Usivity.Services.Core {
         }
 
         public string GenerateAuthToken(User user) {
-            return user == null ? null : GenerateAuthTokenHelper(user, DateTime.UtcNow.ToUniversalTime().Ticks.ToString());
+            return user == null ? null : GenerateAuthTokenHelper(user, _dateTime.UtcNow.ToUniversalTime().Ticks.ToString());
         }
 
         public DreamCookie GetAuthCookie(string authToken, XUri uri) {
-            var expires = DateTime.UtcNow.Add(TimeSpan.FromSeconds(_expiration));
+            var expires = _dateTime.UtcNow.Add(TimeSpan.FromSeconds(_expiration));
             return DreamCookie.NewSetCookie(AUTHTOKEN_COOKIENAME, authToken, uri, expires);
         }
 

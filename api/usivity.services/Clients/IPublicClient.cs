@@ -8,6 +8,5 @@ namespace Usivity.Services.Clients {
 
         //--- Methods ---
         IEnumerable<IMessage> GetNewPublicMessages(Subscription subscription, TimeSpan? expiration);
-        void SetNewSubscriptionQuery(Subscription subscription);
     }
 }

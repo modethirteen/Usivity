@@ -25,7 +25,6 @@ namespace Usivity.Entities {
         public IEnumerable<string> Constraints { get; private set; }
         public SubscriptionLanguage Language { get; private set; }
         public bool Active { get; set; }
-        public string ResultsCursor { get; set; }
 
         //--- Fields ---
         private IDictionary<Source, Uri> _uris;
