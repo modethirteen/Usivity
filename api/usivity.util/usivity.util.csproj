@@ -47,6 +47,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DateTimeEx.cs" />
     <Compile Include="DateTimeImpl.cs" />
     <Compile Include="GuidGenerator.cs" />
     <Compile Include="IDateTime.cs" />

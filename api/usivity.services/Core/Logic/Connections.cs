@@ -15,6 +15,7 @@ namespace Usivity.Services.Core.Logic {
     public class Connections : IConnections {
 
         //--- Fields ---
+        private readonly IDateTime _dateTime;
         private readonly IGuidGenerator _guidGenerator;
         private readonly ICurrentContext _context;
         private readonly IUsivityDataCatalog _data;
@@ -25,6 +26,7 @@ namespace Usivity.Services.Core.Logic {
         //--- Constructors ---
         public Connections(
             IGuidGenerator guidGenerator,
+            IDateTime dateTime,
             IUsivityDataCatalog data,
             ICurrentContext context,
             IOrganizations organizations,
@@ -32,6 +34,7 @@ namespace Usivity.Services.Core.Logic {
             ITwitterClientFactory twitterClientFactory
         ) {
             _guidGenerator = guidGenerator;
+            _dateTime = dateTime;
             _context = context;
             _data = data;
             _currentOrganization = organizations.CurrentOrganization;
@@ -41,14 +44,14 @@ namespace Usivity.Services.Core.Logic {
 
         //--- Methods ---
         public ITwitterConnection NewTwitterConnection() {
-            var connection = new TwitterConnection(_guidGenerator, _currentOrganization);
+            var connection = new TwitterConnection(_guidGenerator, _currentOrganization, _dateTime);
             var client = _twitterClientFactory.NewTwitterClient(connection);
             connection.OAuthRequest = client.NewOAuthRequestToken();
             return connection;
         }
 
         public IEmailConnection NewEmailConnection() {
-            return new EmailConnection(_guidGenerator, _currentOrganization); 
+            return new EmailConnection(_guidGenerator, _currentOrganization, _dateTime); 
         }
 
         public void ActivateTwitterConnection(ITwitterConnection connection, TwitterAuthorization authorization) {
@@ -62,6 +65,7 @@ namespace Usivity.Services.Core.Logic {
             connection.Identity = identity;
             connection.OAuthAccess = accessToken;
             connection.OAuthRequest = null;
+            connection.Modified = _dateTime.UtcNow;
         }
 
         public void ActivateEmailConnection(IEmailConnection connection, EmailAuthorization authorization) {
@@ -88,12 +92,17 @@ namespace Usivity.Services.Core.Logic {
             catch(Exception e) {
                 throw new Exception("Could not successfully validate email connection settings", e);
             }
+            var user = authorization.Username;
             connection.Host = authorization.Host;
-            connection.Username = authorization.Username;
+            connection.Username = user;
             connection.Password = authorization.Password;
             connection.Port = authorization.Port;
             connection.UseSsl = authorization.UseSsl;
             connection.UseCramMd5 = authorization.UseCramMd5;
+            var id = user.Contains("@") ? user : string.Format("{0}@{1}", user, connection.Host);
+            var identity = new Identity { Id = id, Name = id };
+            connection.Identity = identity;
+            connection.Modified = _dateTime.UtcNow;
         }
 
         public IConnection GetConnection(string id) {

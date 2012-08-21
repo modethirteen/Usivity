@@ -39,23 +39,19 @@ namespace Usivity.Services.Clients.Email {
 
         //--- Methods ---
         #region IClient implementation
-        public IEnumerable<IMessage> GetNewMessages(TimeSpan? expiration, out DateTime lastSearch) {
+        public IEnumerable<IMessage> GetNewMessages(TimeSpan? expiration) {
             var imap = GetImapClient();
             var search = SearchCondition.Unseen();
-            if(_connection.LastSearch != DateTime.MinValue) {
-                search = search.And(new SearchCondition {
+            search = search.And(new SearchCondition {
                     Field = SearchCondition.Fields.Since,
-                    Value = _connection.LastSearch.ToLocalTime()
-                });
-            }
-            lastSearch = _dateTime.UtcNow;
-            var mailMessages = imap.SearchMessages(search);
+                    Value = _connection.Modified.ToLocalTime()
+            });
 
+            var mailMessages = imap.SearchMessages(search);
             var messages = new List<IMessage>();
             foreach(var mailMessageDeferred in mailMessages) {
                 var mailMessage = mailMessageDeferred.Value;
                 imap.AddFlags(Flags.Seen, mailMessage);
-
                 var identity = new Identity();
                 var sender = mailMessage.From ?? mailMessage.Sender;
                 if(sender != null) {
@@ -69,7 +65,7 @@ namespace Usivity.Services.Clients.Email {
                     Body = mailMessage.Body,
                     Subject = mailMessage.Subject,
                     Author = identity,
-                    SourceTimestamp = mailMessage.Date,
+                    SourceCreated = mailMessage.Date,
                     OpenStream = true
                 };
                 messages.Add(message);

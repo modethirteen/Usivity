@@ -6,4 +6,7 @@
     <StartWorkingDirectory>\\vmware-host\Shared Folders\jamesvaughn On My Mac\Projects\Usivity\api\bin</StartWorkingDirectory>
     <StartArguments>config usivity.startup.xml</StartArguments>
   </PropertyGroup>
+  <PropertyGroup>
+    <ProjectView>ShowAllFiles</ProjectView>
+  </PropertyGroup>
 </Project>

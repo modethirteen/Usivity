@@ -9,10 +9,11 @@ namespace Usivity.Entities.Connections {
     public class TwitterConnection : ITwitterConnection {
 
         //--- Constructors ---
-        public TwitterConnection(IGuidGenerator guidGenerator, IOrganization organization) {
+        public TwitterConnection(IGuidGenerator guidGenerator, IOrganization organization, IDateTime dateTime) {
             Id = guidGenerator.GenerateNewObjectId();
-            LastSearch = DateTime.MinValue;
             OrganizationId = organization.Id;
+            Created = dateTime.UtcNow;
+            Modified = dateTime.UtcNow;
             Source = Source.Twitter;
         }
 
@@ -21,10 +22,11 @@ namespace Usivity.Entities.Connections {
         public string OrganizationId { get; private set; }
         public Source Source { get; private set; }
         public Identity Identity { get; set; }
+        public DateTime Modified { get; set; }
+        public DateTime Created { get; set; }
         public OAuthRequestToken OAuthRequest { get; set;}
         public OAuthAccessToken OAuthAccess { get; set; }
         public bool Active { get { return Identity != null && OAuthAccess != null; } }
-        public DateTime LastSearch { get; set; }
 
         //--- Methods ---
         public XDoc ToDocument(string relation = null) {
