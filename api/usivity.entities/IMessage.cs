@@ -12,14 +12,14 @@ namespace Usivity.Entities {
         string SourceMessageId { get; set; }
         string SourceInReplyToMessageId { get; set; }
         string SourceInReplyToIdentityId { get; set; }
-        DateTime SourceTimestamp { get; set; }
+        DateTime SourceCreated { get; set; }
         string ParentMessageId { get; set; }
         IList<string> MessageThreadIds { get; }
         Identity Author { get; set; }
         string UserId { get; set; }
         string Body { get; set; }
         string Subject { get; set; }
-        DateTime Timestamp { get; }
+        DateTime Created { get; }
         DateTime? Expires { get; }
         bool OpenStream { get; set; }
 

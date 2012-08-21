@@ -31,7 +31,7 @@ namespace Usivity.Services {
         private const int DEFAULT_MESSAGES_LIMIT = 100;
         private const int DEFAULT_MESSAGES_OFFSET = 0;
         private const int DEFAULT_MESSAGES_START = 3600000;
-       
+
         //--- Types ---
         [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
         class UsivityFeatureAccessAttribute : Attribute {
@@ -182,13 +182,14 @@ namespace Usivity.Services {
         [DreamFeature("GET:contacts/{contactid}", "Get contact")]
         [DreamFeatureParam("contactid", "string", "Contact id")]
         [DreamFeatureParam("messages", "{tree,flat}?", "Conversation message hiearchy mode (default: tree)")]
-        internal Yield GetContact(DreamContext context, IContacts contacts, IMessages messages, Result<DreamMessage> response) {
+        internal Yield GetContact(DreamContext context, IContacts contacts, Result<DreamMessage> response) {
             var contact = contacts.GetContact(context.GetParam<string>("contactid"));
             if(contact == null) {
                 response.Return(DreamMessage.NotFound("The requested contact could not be located"));
                 yield break;
             }
             var tree = context.GetParam("messages", "tree").ToLowerInvariant() == "tree";
+            var messages = Resolve<IMessages>(context);
             var doc = contacts.GetContactVerboseXml(contact).AddAll(messages.GetConversationsXml(contact, tree));
             response.Return(DreamMessage.Ok(doc));
             yield break;
@@ -196,7 +197,6 @@ namespace Usivity.Services {
 
         [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("POST:contacts", "Create a new contact")]
-        [DreamFeatureParam("contactid", "string", "Contact id")]
         internal Yield PostContact(DreamContext context, DreamMessage request, IContacts contacts, Result<DreamMessage> response) {
             var contact = contacts.GetNewContact(GetRequestXml(request));
             contacts.SaveContact(contact);

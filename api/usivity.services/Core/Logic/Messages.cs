@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using log4net;
+using MindTouch;
 using MindTouch.Dream;
 using MindTouch.Xml;
 using Usivity.Data;
@@ -14,6 +16,9 @@ using Usivity.Util;
 namespace Usivity.Services.Core.Logic {
 
     public class Messages : IMessages {
+
+        //--- Class Fields ---
+        private static readonly ILog _log = LogUtils.CreateLog();
 
         //--- Fields ---
         private readonly ICurrentContext _context;
@@ -59,11 +64,12 @@ namespace Usivity.Services.Core.Logic {
 
         public XDoc GetConversationsXml(Contact contact, bool renderChildrenAsTree = true) {
             var messages = _messageStream.GetConversations(contact);
-            var doc = new XDoc("messages");
+            var doc = new XDoc("messages").Attr("count", messages.Count());
             foreach(var message in messages) {
-                doc.AddAll(GetMessageXml(message))
-                    .AddAll(GetMessageChildrenXml(message, 0, renderChildrenAsTree));
+                doc.AddAll(GetMessageXml(message)
+                    .AddAll(GetMessageChildrenXml(message, 0, renderChildrenAsTree)));
             }
+            doc.Attr("totalcount", doc[".//message"].ListLength);
             return doc;
         }
 
@@ -84,9 +90,13 @@ namespace Usivity.Services.Core.Logic {
         }            
 
         public XDoc GetMessageStreamXml(DateTime startTime, DateTime endTime, int count, int offset, Source? source) {
+            _log.DebugFormat("Getting {0} {1} messages, offset by {2}, from openstream from {3} to {4}",
+                count, source != null ? source.ToString() : "all", offset, startTime, endTime);
             var messages = _messageStream.GetStream(startTime, endTime, count, offset, source);
+            var messagesCount = messages.Count();
+            _log.DebugFormat("Received {0} messages from openstream", messagesCount);
             var doc = new XDoc("messages")
-                .Attr("count", messages.Count())
+                .Attr("count", messagesCount)
                 .Attr("href", _context.ApiUri.At("messages"));
             foreach(var message in messages) {
                 doc.Add(GetMessageXml(message));
@@ -134,6 +144,7 @@ namespace Usivity.Services.Core.Logic {
             }
             var client = NewClient(connection);
             var replyMessage = client.PostNewReplyMessage(_context.User, message, reply);
+            replyMessage.OpenStream = false;
 
             // once a message has been replied to, it should not be purged from the stream
             if(message.Expires != null) {
@@ -162,10 +173,10 @@ namespace Usivity.Services.Core.Logic {
 
         private XDoc GetMessageChildrenXml(IMessage message, int depth, bool tree = true) {
             var children = _messageStream.GetChildren(message);
-            if(children.Count() <= 0) {
+            if(!children.Any()) {
                 return XDoc.Empty;
             }
-            var doc = new XDoc("messages.children");
+            var doc = new XDoc("messages.children").Attr("count", children.Count());
             foreach(var child in children) {
                 var childDoc = GetMessageXml(child); 
                 if(!tree) {
@@ -174,11 +185,18 @@ namespace Usivity.Services.Core.Logic {
                 doc.AddAll(childDoc)
                     .AddAll(GetMessageChildrenXml(child, depth + 1, tree));
             }
+            var flatChildMessages = doc[".//message"];
+            var totalCount = flatChildMessages.ListLength;
+            doc.EndAll();
             if(tree) {
-                return doc;    
+                return doc.Attr("totalcount", totalCount);
             }
-            var flat = doc[".//message"];
-            return depth == 0 ? new XDoc("messages.children").AddAll(flat) : flat; 
+            return depth == 0
+                ? new XDoc("messages.children")
+                    .Attr("count", children.Count())
+                    .Attr("totalcount", totalCount)
+                    .AddAll(flatChildMessages)
+                : flatChildMessages; 
         }
 
         private IClient NewClient(IConnection connection) {

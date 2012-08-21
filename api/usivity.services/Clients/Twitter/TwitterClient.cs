@@ -107,7 +107,7 @@ namespace Usivity.Services.Clients.Twitter {
 
         //--- Methods ---
         #region IClient implementations
-        public IEnumerable<IMessage> GetNewMessages(TimeSpan? expiration, out DateTime lastSearch) {
+        public IEnumerable<IMessage> GetNewMessages(TimeSpan? expiration) {
             throw new NotImplementedException();
         }
 
@@ -175,7 +175,7 @@ namespace Usivity.Services.Clients.Twitter {
                 try {
                     msg = Plug.New(uri).Get(); 
                 } catch(Exception e) {
-                    _log.Warn("Error while fetching twitter messages, exception: " + e.Message);
+                    _log.Warn("Error while fetching twitter messages, exception: " + e);
                     return messages;
                 }
                 var response = new JDoc(msg.ToText()).ToDocument("response");
@@ -198,7 +198,7 @@ namespace Usivity.Services.Clients.Twitter {
                         .With("since_id", cursor.ToString());
                 }
                 else {
-                    if(ids.Last() > cursor) {
+                    if(ids.Any() && ids.Last() > cursor) {
                         
                         // move end range to highest id ever fetched
                         cursor = ids.First();     
@@ -256,7 +256,7 @@ namespace Usivity.Services.Clients.Twitter {
                     Name = result["from_user"].AsText,
                     Avatar = uri != null ? uri.ToUri() : null
                 },
-                SourceTimestamp = DateTime.Parse(result["created_at"].AsText)
+                SourceCreated = DateTime.Parse(result["created_at"].AsText)
             };
         }
 
@@ -268,7 +268,7 @@ namespace Usivity.Services.Clients.Twitter {
                 SourceInReplyToIdentityId = result["to_user_id_str"].AsText,
                 Body = result["text"].AsText,
                 Author = GetIdentityByUserId(result["user/id_str"].AsText),
-                SourceTimestamp = _dateTime.UtcNow
+                SourceCreated = _dateTime.UtcNow
             };
         }
     }
