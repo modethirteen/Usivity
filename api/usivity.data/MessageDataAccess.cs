@@ -26,14 +26,18 @@ namespace Usivity.Data {
         //--- Methods ---
         public IEnumerable<IMessage> GetStream(DateTime start, DateTime end, int count, int offset, Source? source) {
             var query = Query.And(
-                Query.GTE("Timestamp", start),
-                Query.LTE("Timestamp", end),
+                Query.GTE("Created", start),
+                Query.LTE("Created", end),
                 Query.EQ("OpenStream", true)
             );
             if(source != null) {
                 query = Query.And(query, Query.EQ("Source", source));
             }
-            return GetMessages(query, count, offset);
+            return _db
+                .FindAs<Message>(query)
+                .SetLimit(count)
+                .SetSkip(offset)
+                .SetSortOrder(SortBy.Descending("_id"));
         }
 
         public IEnumerable<IMessage> GetConversations(Contact contact) {
@@ -51,12 +55,12 @@ namespace Usivity.Data {
                 queries.Add(subQuery);
             }
             var query = Query.Or(queries.ToArray());
-            return _db.FindAs<Message>(query);
+            return _db.FindAs<Message>(query).SetSortOrder(SortBy.Descending("SourceCreated"));
         }
 
         public IEnumerable<IMessage> GetChildren(IMessage message) {
             var query = Query.EQ("ParentMessageId", message.Id);
-            return _db.FindAs<Message>(query);
+            return _db.FindAs<Message>(query).SetSortOrder(SortBy.Descending("SourceCreated"));
         }
 
         public IMessage Get(string id) {
@@ -99,14 +103,6 @@ namespace Usivity.Data {
 
         public long GetCount() {
             return _db.Count();
-        }
-
-        private IEnumerable<IMessage> GetMessages(IMongoQuery query, int count, int offset) {
-            return _db
-                .FindAs<Message>(query)
-                .SetLimit(count)
-                .SetSkip(offset)
-                .SetSortOrder(SortBy.Descending("_id"));
         }
     }
 }

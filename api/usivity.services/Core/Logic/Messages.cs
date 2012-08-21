@@ -69,6 +69,7 @@ namespace Usivity.Services.Core.Logic {
                 doc.AddAll(GetMessageXml(message)
                     .AddAll(GetMessageChildrenXml(message, 0, renderChildrenAsTree)));
             }
+            doc.Attr("totalcount", doc[".//message"].ListLength);
             return doc;
         }
 
@@ -184,12 +185,18 @@ namespace Usivity.Services.Core.Logic {
                 doc.AddAll(childDoc)
                     .AddAll(GetMessageChildrenXml(child, depth + 1, tree));
             }
+            var flatChildMessages = doc[".//message"];
+            var totalCount = flatChildMessages.ListLength;
             doc.EndAll();
             if(tree) {
-                return doc;    
+                return doc.Attr("totalcount", totalCount);
             }
-            var flat = doc[".//message"];
-            return depth == 0 ? new XDoc("messages.children").AddAll(flat) : flat; 
+            return depth == 0
+                ? new XDoc("messages.children")
+                    .Attr("count", children.Count())
+                    .Attr("totalcount", totalCount)
+                    .AddAll(flatChildMessages)
+                : flatChildMessages; 
         }
 
         private IClient NewClient(IConnection connection) {
