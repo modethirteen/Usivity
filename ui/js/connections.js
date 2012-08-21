@@ -113,33 +113,56 @@ $(document).ready(function() {
 		            username: username,
 		            password: password,
 		            port: port,
-		            ssl: ssl,
-		            "auth.method": authmethod
+		            ssl: ssl
 		        }
 		    }
 		}
 		
+		if (authmethod != "")
+		{
+			data.connection.imap["auth.method"] = authmethod;
+		}
+	
 		// CREATE THE API URI
 		connectionparams = {
 			"dream.out.format" : "json",
 			"source" : "email"
 		};
-		
-		console.log(JSON.stringify(data));
 				
 		var uri = apiuri(api.sources,connectionparams);
 		
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
-			data: JSON.stringify(data),
 			url: uri,
 			dataType: "json",
 			mimeType: 'application/json',
 			contentType: 'application/json',
 			success: function(results)
-			{
-				success(form);
+			{				
+				connectionparams = {
+					"dream.out.format" : "json",
+					"dream.in.verb" : "PUT"
+				};
+				var confirmuri = apiuri(results["@href"],connectionparams);
+				
+				$.ajax({
+					type: "POST",
+					crossDomain:true,
+					data: JSON.stringify(data),
+					url: confirmuri,
+					dataType: "json",
+					mimeType: 'application/json',
+					contentType: 'application/json',
+					success: function(results)
+					{
+						success(form);
+					},
+					error:function (xhr, ajaxOptions, thrownError){
+						console.log(xhr.statusText);
+						error(form);
+					}   
+				});
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);

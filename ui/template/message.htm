@@ -18,20 +18,20 @@
 		<!--<span class="subscription-tag">#subscription</span>-->
 		{body}
 	</td>
-	<td class="message_time" value="{timestamp.source}">
-		{timestamp.source}
+	<td class="message_time" value="{created.source}">
+		{created.source}
 	</td>
 	<td class="message_source">
 		<span title="{source}" class="source_badge source_{source}">{source}</span>
 	</td>
-{if:!contact}
+{if:!contact.author}
 	<td class="message_reply">
 		<a href="/template/message_post.htm" id="{@href}" class="popup message_reply">reply</a>
 	</td>
 {!if}
-{if:contact}
+{if:contact.author}
 	<td class="contact_edit">
-		<a href="/template/contact_put.htm" id="{contact_@href}" class="popup message_reply">contact</a>
+		<a href="/template/contact_put.htm" id="{contact.author_@href}" class="popup message_reply">contact</a>
 	</td>
 {if}
 	<td class="message_delete">

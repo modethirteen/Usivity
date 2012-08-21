@@ -74,23 +74,20 @@
 				<img src="{message_author_uri.avatar}" />
 			</span>
 			<div class="message_details">
+				<span class="message_meta">
+					<span class="message_time">
+						{message_created.source}
+					</span>
+					<span class="message_source">
+						{message_source}
+					</span>
+				</span>
 				<span class="contact_name">
 					<a target="_new" class="profile" href="http://twitter.com/{message_author_name}">{message_author_name}</a>
 				</span>
 				<div class="message_text">
 					{message_body}
 				</div>
-				<span class="message_meta">
-					<span class="message_time">
-						{message_timestamp}
-					</span>
-					<span class="message_source">
-						{message_source}
-					</span>
-					<span>
-						<a href="{@href}" class="message_reply_inline">reply</a>
-					</span>
-				</span>
 			</div>
 			<form class="message_send_inline" id="{message_@id}" action="{message_@href}">	
 				<textarea name="message" class="message_data" start="enter your message"></textarea>
@@ -107,23 +104,20 @@
 				<img src="{author_uri.avatar}" />
 			</span>
 			<div class="message_details">
+				<span class="message_meta">
+					<span class="message_time">
+						{created.source}
+					</span>
+					<span class="message_source">
+						{source}
+					</span>
+				</span>
 				<span class="contact_name">
 					<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
 				</span>
 				<div class="message_text">
 					{body}
 				</div>
-				<span class="message_meta">
-					<span class="message_time">
-						{timestamp.source}
-					</span>
-					<span class="message_source">
-						{source}
-					</span>
-					<span>
-						<a href="{@href}" class="message_reply_inline">reply</a>
-					</span>
-				</span>
 			</div>
 			<form class="message_send_inline" id="{@id}" action="{@href}">	
 				<textarea name="message" class="message_data" start="enter your message"></textarea>

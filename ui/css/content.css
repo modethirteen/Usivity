@@ -88,8 +88,10 @@ h3 {
 	width:152px;
 	float:left;
 	margin:0 0 10px 0;
-	
-	
+}
+.ftitle-single {
+	clear:left;
+	width:100%;	
 }
 textarea,
 select,
@@ -214,6 +216,14 @@ td.even {
 	font-family: 'Myriad Pro','Helvetica';
 	text-shadow: #fff 1px 1px;
 	padding-top:20px;	
+}
+.delete_row td div {
+	background-color:#ffcccc;
+	border:1px solid #ff9999;
+	font-size:9px;
+	padding:2px;
+	text-align:center;
+	border-radius:2px;
 }
 tbody tr:hover {
 	background:#fff;

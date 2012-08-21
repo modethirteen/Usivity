@@ -57,7 +57,7 @@ function buildModal(ele, href)
 		var src = href;
 	}
 	
-	// TODO:  GET RID OF THIS IF STATEMENT
+	// TODO:  GET RID OF THIS IF STATEMENT // WHY??
 	if (objecturi)
 	{		
 		var objecturi = apiuri(objecturi,api.params);
@@ -114,6 +114,12 @@ function showmodal() {
 	// Show Modal
 	$(".modal_bg").fadeIn();
 	$(".modal").fadeIn();
+	
+	// LOAD <SELECT> MENU'S THAT HAVE VALUES
+	$(".modal select[saved]").each( function() {
+		var saved = $(this).attr("saved");
+		$(this).find('option[value="' + saved + '"]').attr("selected","selected");
+	});
 	
 	// Resize Modal
 	resizemodal();

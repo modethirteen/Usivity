@@ -150,8 +150,6 @@ body {
 	clear:left;
 	margin-left:20px;
 	max-height:200px;
-	overflow-x:hidden;
-	overflow-y:auto;
 	
 }
 .message_thread_children .contact_picture_large {
@@ -170,11 +168,12 @@ body {
 	font-size:.7em;
 	color:#999;	
 	overflow:hidden;
+	float:right;
 }
 .message_thread .message_meta span {
 	display:block;
 	float:left;
-	margin:0 20px 0 0;
+	margin:0 0 0 20px;
 }
 .message_thread .message_text {
 	font-size:.8em;	
@@ -188,19 +187,6 @@ body {
 	color:#fff;
 	background:#51B310;
 	margin:4px 5px 0 0 ;	
-}
-/*Thread Depth*/
-.thread_depth1 {
-	margin-left:40px;
-}
-.thread_depth2 {
-	margin-left:60px;
-}
-.thread_depth3 {
-	margin-left:80px;
-}
-.thread_depth4 {
-	margin-left:100px;
 }
 /*Message Send*/
 .message_send {
