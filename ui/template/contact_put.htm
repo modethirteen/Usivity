@@ -83,7 +83,10 @@
 						{source}
 					</span>
 					<span>
-						<a href="{@href}" class="message_reply_inline">reply ({@count})</a>
+						<a href="{@href}" class="message_reply_inline">reply 
+{if:messages.children}
+	({messages.children_@totalcount})</a>
+{if}
 					</span>
 				</span>
 				<span class="contact_name">

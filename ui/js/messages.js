@@ -25,7 +25,7 @@ $(document).ready(function() {
 		};
 	
 		var uri = apiuri(uri,messageparams);
-		
+
 		$.ajax({
 			type: "POST",
 			crossDomain:true,

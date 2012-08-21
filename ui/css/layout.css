@@ -144,13 +144,12 @@ body {
 .message_thread {
 	display:block;
 	overflow:hidden;
-	margin:0 0 20px 0;	
+	margin:0 0 20px 0;
 }
 .message_thread_children {
 	clear:left;
-	margin-left:20px;
+	padding-left:20px;
 	max-height:200px;
-	
 }
 .message_thread_children .contact_picture_large {
 	width:30px;

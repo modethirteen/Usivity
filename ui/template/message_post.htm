@@ -17,7 +17,11 @@
 				
 				<h3>Demographics</h3>
 				<input type="text" start="age" class="contact_age contactdetail short"/>
-				<input type="text" start="gender" class="contact_gender contactdetail short"/>
+				<select class="contact_gender contactdetail short">
+					<option value="">Gender</option>
+					<option value="male">Male</option>
+					<option value="female">Female</option>
+				</select>
 				<div class="break">
 					<input type="text" start="general location" class="contact_locationgeneral contactdetail long"/>
 				</div>
@@ -64,7 +68,7 @@
 			<button type="submit" class="button apply">send</button>
 			<button type="submit" class="button cancel">cancel</button>
 		</div>
-	</form>
+	
 
 
 	<h3>Message Thread</h3>
@@ -96,6 +100,9 @@
 				</div>
 			</form>
 		</div>
+		<div class="message_thread_children">
+		</div>
+	</form>
 		
 {foreach
 	{in:message_messages.children_message}
