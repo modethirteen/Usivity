@@ -21,7 +21,12 @@
 				
 				<h3>Demographics</h3>
 				<input type="text" start="age" value="{contact_age}" class="contact_age contactdetail short"/>
-				<input type="text" start="gender" value="{contact_gender}" class="contact_gender contactdetail short"/>
+				<select saved="{contact_gender}" class="contact_gender contactdetail short">
+					<option value="">Gender</option>
+					<option value="male">Male</option>
+					<option value="female">Female</option>
+				</select>
+				<!--<input type="text" start="gender" value="{contact_gender}" class="contact_gender contactdetail short"/>-->
 				<div class="break">
 					<input type="text" start="general location" value="{contact_location}" class="contact_locationgeneral contactdetail long"/>
 				</div>
@@ -70,23 +75,23 @@
 				<img src="{author_uri.avatar}" />
 			</span>
 			<div class="message_details">
+				<span class="message_meta">
+					<span class="message_time">
+						{created.source}
+					</span>
+					<span class="message_source">
+						{source}
+					</span>
+					<span>
+						<a href="{@href}" class="message_reply_inline">reply ({@count})</a>
+					</span>
+				</span>
 				<span class="contact_name">
 					<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
 				</span>
 				<div class="message_text">
 					{body}
 				</div>
-				<span class="message_meta">
-					<span class="message_time">
-						{timestamp.source}
-					</span>
-					<span class="message_source">
-						{source}
-					</span>
-					<span>
-						<a href="{@href}" class="message_reply_inline">reply (4)</a>
-					</span>
-				</span>
 			</div>
 			<form class="message_send_inline" id="{@id}" action="{@href}">	
 				<textarea name="message" class="message_data" start="enter your message"></textarea>
@@ -96,7 +101,7 @@
 				</div>
 			</form>
 		</div>
-		<div class="message_thread message_thread_children">
+		<div class="message_thread_children">
 		</div>
 foreach}
 	</div>

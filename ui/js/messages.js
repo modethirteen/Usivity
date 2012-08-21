@@ -134,8 +134,10 @@ $(document).ready(function() {
 			crossDomain:true, 
 			url: deleteuri,
 			success: function(results)
-			{		
-				$("#" + id).slideUp();
+			{	
+				var deleterow = '<td colspan="9"><div>message deleted</div></td>';
+				$("#" + id).addClass("delete_row");
+				$("#" + id).html(deleterow);
 				closeModal();	
 			}
 		});

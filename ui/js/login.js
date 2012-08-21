@@ -12,9 +12,12 @@ $(document).ready( function() {
 	// POST AUTHENTICATION
 	$(".login").live("submit", function() {
 		
+		form = $(this);
 		var input = $(this).find(".user");
 		var user = $(this).find(".user").val();
 		var pass = $(this).find(".password").val();
+		
+		process(form);
 		
 		var apiurl = ("/api/1/users/authentication"); // TODO:  CHANGE TO USE APIURI()
 
@@ -33,6 +36,8 @@ $(document).ready( function() {
 				closeModal();
 			},
 			error: function (xhr, ajaxOptions, thrownError){
+				error(form);
+				errormessage(form, "Incorrect username or password");
 				console.log(xhr.statusText);
 				error(input,xhr.statusText);
 			} 

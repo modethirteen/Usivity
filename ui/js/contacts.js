@@ -98,6 +98,7 @@ $(document).ready( function() {
 			url: updateuri,
 			success: function(results)
 			{
+				loadusercontacts();
 				success(form);
 			},
 			error:function (xhr, ajaxOptions, thrownError){

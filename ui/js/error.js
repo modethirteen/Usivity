@@ -79,3 +79,13 @@ function hint(input, message)
 	response.removeClass("error");
 	response.slideDown(50);
 }
+
+// ERROR MESSAGE
+function errormessage(form, message)
+{
+	var response = form.prev(".response");
+	response.html(message);
+	response.removeClass("success");
+	response.addClass("error");
+	response.slideDown(50);
+}
