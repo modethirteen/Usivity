@@ -57,6 +57,16 @@ function buildModal(ele, href)
 		var src = href;
 	}
 	
+	// CHECK SIZE OF THE MODAL
+	if (ele.hasClass("dialog"))
+	{
+		$(".modal").addClass("dialog");
+	}
+	else
+	{
+		$(".modal").removeClass("dialog");
+	}
+	
 	// TODO:  GET RID OF THIS IF STATEMENT // WHY??
 	if (objecturi)
 	{		
@@ -121,6 +131,9 @@ function showmodal() {
 		$(this).find('option[value="' + saved + '"]').attr("selected","selected");
 	});
 	
+	// LOAD .TIMEAGO VALUES
+	jQuery(".modal .timeago").timeago();
+	
 	// Resize Modal
 	resizemodal();
 	
@@ -149,7 +162,7 @@ function scrollmodal(ele) {
 			panelwrap.css("top",mtop);
 			
 			panel.css("position","absolute");
-			panel.css("top",(mheight-pheight) + "px");
+			panel.css("top",(mheight-pheight-50) + "px");
 		}
 		else
 		{

@@ -129,14 +129,13 @@ function replacevariable(templatehtml,objectref)
 				//  STATE   = NEGATIVE
 				if( (typeof objectref[val] == "undefined" && val.indexOf("!") == -1) )
 				{
-					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+\{if\}', "g"),"");
+					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+?\{if\}', "g"),"");
 				}
 				
 				//  OBJECT 	= EXISTS
 				//  STATE   = NEGATIVE
 				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") == -1) )
 				{
-					//templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+\{if\}', "g"),"");
 					templatehtml = templatehtml.replace('{if:' + val + '}',"");
 					templatehtml = templatehtml.replace('{if}',"");
 				} 
@@ -145,7 +144,7 @@ function replacevariable(templatehtml,objectref)
 				//  STATE   = POSITIVE
 				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") >= 0) )
 				{
-					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+\{!if\}', "g"),"");
+					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+?\{!if\}', "g"),"");
 				}  
 				
 			});	
@@ -189,7 +188,7 @@ function replacevariable(templatehtml,objectref)
 						// REPLACE THE VARIABLE WITH THE OBJECT VALUE (pointer)
 						if(typeof pointer != "undefined")
 						{
-							templatehtml = templatehtml.replace(value, pointer);
+							templatehtml = $.trim(templatehtml.replace(value, pointer));
 						}
 					}
 				}

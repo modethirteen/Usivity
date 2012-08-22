@@ -50,6 +50,12 @@ $(document).ready(function() {
 			input.addClass("start");
 		}
 	});
+	
+	// UPDATE CHARACTER COUNTER
+	$("textarea").live("keyup", function() {
+		var count = $(this).val().length;
+		$(this).next(".char-count").html(count + " characters");	
+	});
 });
 // SET ANY FIELDS WITH A "START" VALUE
 function startset()
@@ -108,3 +114,19 @@ function resetstart(form)
 		}
 	});
 }
+
+// ADD CHARACTER COUNTER TO INPUT
+function charactercount(input)
+{
+	var charcountele = input.next(".char-count");
+	
+	if (charcountele.length == 0)
+	{
+		var newele = $(document.createElement('span'));
+		newele.addClass("char-count");
+		newele.html("0 characters");
+		input.after(newele);
+	}
+}
+
+

@@ -78,14 +78,16 @@ $(document).ready(function() {
 		
 		link = $(this);
 		var target = $(this).parents(".message_thread").next(".message_thread_children");
+		var input = $(this).parents(".message_thread").find("textarea");
 		
+		// ADD CHARCTER COUNTER
+		charactercount(input);
 		
 		// CHECK TO SEE IF REPLIES WERE ALREADY LOADED
 		if (link.hasClass("loaded"))
 		{
 			link.parents(".message_thread").find(".message_send_inline").toggle();
 			target.toggle();	
-			console.log("already loaded");
 		}
 		else
 		{		
@@ -109,10 +111,13 @@ $(document).ready(function() {
 					link.addClass("loaded");
 					link.parents(".message_thread").find(".message_send_inline").show();
 					target.show();
+					
+					// LOAD .TIMEAGO VALUES
+					jQuery(".message_thread .timeago").timeago();
 				});
 			});
 		}
-		
+
 		return false;	
 	});
 	

@@ -172,7 +172,16 @@ textarea {
 	opacity:.5;
 	-webkit-box-shadow: none;
 }
-
+/*CHARACTER COUNT*/
+.char-count {
+	font-size:9px;
+	float:left;
+	display:block;
+	background:#efefef;
+	color:#999;
+	padding:2px;
+	border-radius:2px;	
+}
 /*TABLES*/
 table {
 	width:100%;

@@ -68,7 +68,7 @@
 			<button type="submit" class="button apply">send</button>
 			<button type="submit" class="button cancel">cancel</button>
 		</div>
-	
+	</form>
 
 
 	<h3>Message Thread</h3>
@@ -79,8 +79,8 @@
 			</span>
 			<div class="message_details">
 				<span class="message_meta">
-					<span class="message_time">
-						{message_created.source}
+					<span class="message_time timeago" title="{message_created.source}">
+						
 					</span>
 					<span class="message_source">
 						{message_source}
@@ -89,9 +89,7 @@
 				<span class="contact_name">
 					<a target="_new" class="profile" href="http://twitter.com/{message_author_name}">{message_author_name}</a>
 				</span>
-				<div class="message_text">
-					{message_body}
-				</div>
+				<div class="message_text">{message_body}</div>
 			</div>
 			<form class="message_send_inline" id="{message_@id}" action="{message_@href}">	
 				<textarea name="message" class="message_data" start="enter your message"></textarea>
@@ -100,9 +98,6 @@
 				</div>
 			</form>
 		</div>
-		<div class="message_thread_children">
-		</div>
-	</form>
 		
 {foreach
 	{in:message_messages.children_message}

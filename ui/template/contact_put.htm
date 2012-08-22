@@ -76,8 +76,8 @@
 			</span>
 			<div class="message_details">
 				<span class="message_meta">
-					<span class="message_time">
-						{created.source}
+					<span class="message_time timeago" title="{created.source}">
+						
 					</span>
 					<span class="message_source">
 						{source}
@@ -85,8 +85,9 @@
 					<span>
 						<a href="{@href}" class="message_reply_inline">reply 
 {if:messages.children}
-	({messages.children_@totalcount})</a>
+	({messages.children_@totalcount})
 {if}
+</a>
 					</span>
 				</span>
 				<span class="contact_name">
@@ -98,6 +99,7 @@
 			</div>
 			<form class="message_send_inline" id="{@id}" action="{@href}">	
 				<textarea name="message" class="message_data" start="enter your message"></textarea>
+				
 				<div class="buttons">
 					<button type="submit" class="button apply">send</button>
 					<button type="submit" class="button cancel">cancel</button>

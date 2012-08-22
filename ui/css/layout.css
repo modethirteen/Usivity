@@ -175,7 +175,9 @@ body {
 	margin:0 0 0 20px;
 }
 .message_thread .message_text {
-	font-size:.8em;	
+	font-size:.8em;
+	white-space:pre-wrap;
+	padding-left:63px;
 }
 .subscription-tag {
 	float:left;
@@ -186,6 +188,10 @@ body {
 	color:#fff;
 	background:#51B310;
 	margin:4px 5px 0 0 ;	
+}
+/*CUSTOM ROWS IN OPENSTREAM*/
+tr.message_contact {
+	background-color:#E4F5E4;	
 }
 /*Message Send*/
 .message_send {

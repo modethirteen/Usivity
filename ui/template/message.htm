@@ -1,22 +1,31 @@
 {foreach
 {in:messages_message}
-<tr id="{@id}" class="message message_new message_source_{source}">
-	<!--
-	<td class="contact_klout">
-		<span class="source_klout">34</span>
-	</td>
-	-->
+<tr id="{@id}" class="message message_new message_source_{source} 
+{if:contact.author}
+message_contact
+{if}
+">
 	<td class="contact_picture">
 		<span>
 			<a href="/template/message_post.htm" id="{@href}" class="popup message_reply"><img src="{author_uri.avatar}"></a>
 		</span>
 	</td>
 	<td class="contact_name">
+{if:contact.author}
+		<span class="contact_fullname">{contact.author_firstname} {contact.author_lastname}</span>
+{if}
+{if:!contact.author}
 		<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
+{!if}
 	</td>
 	<td class="message_text">
 		<!--<span class="subscription-tag">#subscription</span>-->
-		{body}
+{if:subject}
+		<span class="subject">{subject}</span>
+{if}
+{if:!subject}
+		<span class="body">{body}</span>
+{!if}		
 	</td>
 	<td class="message_time" value="{created.source}">
 		{created.source}
