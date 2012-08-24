@@ -58,13 +58,13 @@ function buildModal(ele, href)
 	}
 	
 	// CHECK SIZE OF THE MODAL
-	if (ele.hasClass("dialog"))
+	if (ele && ele.hasClass("dialog"))
 	{
-		$(".modal").addClass("dialog");
+		$(".modal").addClass("modal_dialog");
 	}
 	else
 	{
-		$(".modal").removeClass("dialog");
+		$(".modal").removeClass("modal_dialog");
 	}
 	
 	// TODO:  GET RID OF THIS IF STATEMENT // WHY??

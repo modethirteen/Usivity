@@ -7,9 +7,36 @@
 */
 
 
-$(document).ready(function() {
+$(document).ready(function() 
+{
 	
+	// DELETE MESSAGE
+	$(".message_delete").live("submit", function() {
+		var href = $(this).attr("id");
+		var id = $(this).find(".id").val();
+		
+		deleteparams = {
+			"dream.in.verb" : "DELETE"
+		};
+		
+		var deleteuri = apiuri(href,deleteparams);
+		$.ajax({
+			type: "POST",
+			crossDomain:true, 
+			url: deleteuri,
+			success: function(results)
+			{	
+				var deleterow = '<td colspan="9"><div>message deleted</div></td>';
+				$("#" + id).addClass("delete_row");
+				$("#" + id).html(deleterow);
+				closeModal();	
+			}
+		});
+		
+		return false;
+	});
 	
+		
 	// SEND A MESSAGE
 	$(".message_send, .message_send_inline").live("submit", function() {
 		
@@ -119,35 +146,6 @@ $(document).ready(function() {
 		}
 
 		return false;	
-	});
-	
-	
-	// DELETE MESSAGE
-	$(".message_delete").live("submit", function() {
-		
-		var href = $(this).attr("id");
-		var id = $(this).find(".id").val();
-		
-		deleteparams = {
-			"dream.in.verb" : "DELETE"
-		};
-		
-		var deleteuri = apiuri(href,deleteparams);
-		
-		$.ajax({
-			type: "POST",
-			crossDomain:true, 
-			url: deleteuri,
-			success: function(results)
-			{	
-				var deleterow = '<td colspan="9"><div>message deleted</div></td>';
-				$("#" + id).addClass("delete_row");
-				$("#" + id).html(deleterow);
-				closeModal();	
-			}
-		});
-		
-		return false;
 	});
 });
 
