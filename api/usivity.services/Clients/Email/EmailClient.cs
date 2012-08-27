@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Mail;
 using AE.Net.Mail;
 using Usivity.Entities;
 using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
 using Usivity.Util;
+using MailMessage = System.Net.Mail.MailMessage;
 
 namespace Usivity.Services.Clients.Email {
 
@@ -26,15 +28,23 @@ namespace Usivity.Services.Clients.Email {
         private readonly IEmailConnection _connection;
         private readonly IGuidGenerator _guidGenerator;
         private readonly IDateTime _dateTime;
+        private readonly SmtpClient _smtp;
         private ImapClient _imap;
-        private SmtpClient _smtp;
 
         //--- Constructors ---
         public EmailClient(EmailClientConfig config, IEmailConnection connection, IGuidGenerator guidGenerator, IDateTime dateTime) {
             _connection = connection;
             _guidGenerator = guidGenerator;
             _dateTime = dateTime;
-            _smtp = null;
+            _smtp = new SmtpClient {
+                Host = config.Host,
+                EnableSsl = config.UseSsl,
+                Port = config.Port != int.MinValue ? config.Port : 25
+            };
+            if(!string.IsNullOrEmpty(config.Username)) {
+                var credentials = new NetworkCredential(config.Username, config.Password);
+                _smtp.Credentials = credentials;
+            }
         }
 
         //--- Methods ---
@@ -75,11 +85,38 @@ namespace Usivity.Services.Clients.Email {
         }
 
         public IMessage PostNewReplyMessage(IUser user, IMessage message, string reply) {
-            throw new NotImplementedException();
+            var replyAddress = message.Author.Id;
+            var email = new MailMessage {
+                From = new MailAddress(_connection.Identity.Id)
+            };
+            email.To.Add(replyAddress);
+            var subject = message.Subject;
+            if(!subject.StartsWith("Re:")) {
+                subject = "Re:" + subject;
+            }
+            email.Subject = subject;
+            _smtp.Send(email);
+
+            // TODO: add SourceMessageId and SourceInReplyToMessageId
+            var replyMessage = new Message(_guidGenerator, _dateTime) {
+                Source = Source.Email,
+                SourceInReplyToIdentityId = replyAddress,
+                Subject = subject,
+                Body = reply,
+                Author = _connection.Identity,
+                SourceCreated = _dateTime.UtcNow,
+                UserId = user.Id
+            };
+            replyMessage.SetParent(message);
+            return replyMessage;
         }
 
         public Contact NewContact(Identity identity) {
-            throw new NotImplementedException();
+            var contact = new Contact(_guidGenerator) {
+                Avatar = identity.Avatar
+            };
+            contact.SetIdentity(Source.Email, identity);
+            return contact;
         }
         #endregion
 
