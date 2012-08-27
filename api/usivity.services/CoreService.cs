@@ -572,7 +572,16 @@ namespace Usivity.Services {
             }
             if(!container.IsRegistered<IEmailClientFactory>()) {
                 builder.Register(c => {
-                    var emailClientConfig = new EmailClientConfig();
+                    var emailDoc = config["sources/email"];
+                    var port = int.MinValue;
+                    int.TryParse(emailDoc["port"].AsText, out port);
+                    var emailClientConfig = new EmailClientConfig {
+                        Host = emailDoc["host"].AsText,
+                        Port = port,
+                        UseSsl = Convert.ToBoolean(emailDoc["ssl"].AsText),
+                        Username = emailDoc["username"].AsText,
+                        Password = emailDoc["password"].AsText
+                    };
                     var guidGenerator = c.Resolve<IGuidGenerator>();
                     var dateTime = c.Resolve<IDateTime>();
                     return new EmailClientFactory(emailClientConfig, guidGenerator, dateTime);
