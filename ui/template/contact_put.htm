@@ -85,7 +85,7 @@
 					<span>
 						<a href="{@href}" class="message_reply_inline">reply 
 {if:messages.children}
-	({messages.children_@totalcount})
+	<span class="totalcount" value="{messages.children_@totalcount}">({messages.children_@totalcount})</span>
 {if}
 </a>
 					</span>
@@ -104,8 +104,7 @@
 				</div>
 			</form>
 		</div>
-		<div class="message_thread_children">
-		</div>
+		<div class="message_thread_children"></div>
 foreach}
 	</div>
 

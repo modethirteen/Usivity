@@ -7,8 +7,10 @@
 		<a href="/template/user_profile.htm" class="popup cp_userprofile">{name}</a>
 		<span class="user_role">{role}</span>
 	</li>
+{if:role=Owner}
 	<li class="menu_cp">
 		<a href="/template/setup.htm" class="popup cp_subscriptions">control panel</a>
 		<span class="user_role">application settings</span>
 	</li>
+{if}
 </ul>

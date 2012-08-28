@@ -5,18 +5,22 @@
 message_contact
 {if}
 ">
-	<td class="contact_picture">
+	<td class="author_picture">
 		<span>
 			<a href="/template/message_post.htm" id="{@href}" class="popup message_reply"><img src="{author_uri.avatar}"></a>
 		</span>
 	</td>
-	<td class="contact_name">
+	<td class="author_name">
+{if:source=email}
+		<span class="profile">{author_name}</span>
+{if}
+{if:source=twitter}
+		<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
+{if}
 {if:contact.author}
 		<span class="contact_fullname">{contact.author_firstname} {contact.author_lastname}</span>
+
 {if}
-{if:!contact.author}
-		<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
-{!if}
 	</td>
 	<td class="message_text">
 		<!--<span class="subscription-tag">#subscription</span>-->

@@ -63,7 +63,13 @@ $(document).ready( function() {
 		});	
 		
 		return false;		
-	});		
+	});
+	
+	// FORMAT PHONE NUMBERS
+	$(".contact_phonenumber").live("keyup", function() {
+		var number = $(this).val().replace(/(\d{3})(\d{3})(\d{4})/, "($1)-$2-$3");	
+		$(this).val(number);
+	});
 	
 	
 	// EDIT EXISTING CONTACTS  

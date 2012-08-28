@@ -174,10 +174,18 @@ body {
 	float:left;
 	margin:0 0 0 20px;
 }
+.message_thread .message_meta span.totalcount {
+	display:inline;
+	float:none;
+	margin:0;
+}
 .message_thread .message_text {
 	font-size:.8em;
 	white-space:pre-wrap;
 	padding-left:63px;
+}
+.message_thread_children .message_thread .message_text {
+	padding-left:43px;	
 }
 .subscription-tag {
 	float:left;
@@ -193,10 +201,14 @@ body {
 tr.message_contact {
 	background-color:#E4F5E4;	
 }
+tr.message_contact .contact_fullname {
+	display:block;
+	font-size:10px;
+}
 /*Message Send*/
 .message_send {
 	position:absolute;
-	margin-top:380px;
+	margin-top:335px;
 	width:475px;
 	padding:0 10px;
 	height:160px;
@@ -216,10 +228,13 @@ tr.message_contact {
 	min-height:30px;
 }
 /*Contact*/
-.contact_picture {
+.contact_picture,
+.author_picture {
 	cursor:pointer;
+	width:30px;
 }
-.contact_picture span {
+.contact_picture span,
+.author_picture span {
 	display:block;
 	height:26px;
 	width:26px;
@@ -228,19 +243,20 @@ tr.message_contact {
 	background-image:url(/img/usivity_logo_26.gif);
 	box-shadow: 2px 2px 2px #ccc;
 }
-.contact_picture img {
+.contact_picture img,
+.author_picture img {
 	width:26px;
 }
 .contact_picture_large {
 	overflow:hidden;
-	border:1px solid #ccc;
-	border-left:2px solid #ccc;
+	border:2px solid #fff;
 	width:50px;
 	height:50px;
 	display:block;
 	float:left;
 	margin:0 10px 0 0;
 	background-image:url(/img/usivity_logo_50.gif);
+	box-shadow: 2px 2px 2px #CCC;
 }
 .contact_picture_large img{
 	width:50px;

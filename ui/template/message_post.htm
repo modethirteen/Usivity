@@ -1,3 +1,4 @@
+{in:message}
 <h1>Reply</h1>
 <div class="panel_wrap">
 	<div class="panel">
@@ -60,45 +61,42 @@
 	</div>
 </div>
 <div class="panel_main">
-		
-	<form class="message_send" id="{message_@id}" action="{message_@href}">	
-	<h3>Post a Message</h3>
-		<textarea name="message" class="message_data" start="enter your message"></textarea>
-		<div class="buttons">
-			<button type="submit" class="button apply">send</button>
-			<button type="submit" class="button cancel">cancel</button>
-		</div>
-	</form>
-
-
+	
 	<h3>Message Thread</h3>
 	<div class="message_threads" empty="There are no messages in the queue.">
 		<div class="message_thread">
-			<span class="contact_picture contact_picture_large"> 
-				<img src="{message_author_uri.avatar}" />
-			</span>
-			<div class="message_details">
-				<span class="message_meta">
-					<span class="message_time timeago" title="{message_created.source}">
-						
-					</span>
-					<span class="message_source">
-						{message_source}
-					</span>
+			<form class="message_send" id="{message_@id}" action="{message_@href}">	
+				<h3>Post a Message</h3>
+					<textarea name="message" class="message_data" start="enter your message"></textarea>
+					<div class="buttons">
+						<button type="submit" class="button apply">send</button>
+						<button type="submit" class="button cancel">cancel</button>
+					</div>
+				</form>
+				<span class="contact_picture contact_picture_large"> 
+					<img src="{message_author_uri.avatar}" />
 				</span>
-				<span class="contact_name">
-					<a target="_new" class="profile" href="http://twitter.com/{message_author_name}">{message_author_name}</a>
-				</span>
-				<div class="message_text">{message_body}</div>
-			</div>
-			<form class="message_send_inline" id="{message_@id}" action="{message_@href}">	
-				<textarea name="message" class="message_data" start="enter your message"></textarea>
-				<div class="buttons">
-					<button type="submit" class="button apply">send</button>
+				<div class="message_details">
+					<span class="message_meta">
+						<span class="message_time timeago" title="{message_created.source}">
+							
+						</span>
+						<span class="message_source">
+							{message_source}
+						</span>
+					</span>
+					<span class="contact_name">
+{if:message_source=twitter}
+						<a target="_new" class="profile" href="http://twitter.com/{message_author_name}">{message_author_name}</a>
+{if}
+{if:message_source=email}
+						<span class="profile">{message_author_name}</span>
+{if}
+					</span>
+					<div class="message_text">{message_body}</div>
 				</div>
-			</form>
-		</div>
-		
+			</div>
+			<div class="message_thread_children"></div>
 {foreach
 	{in:message_messages.children_message}
 		<div class="message_thread message_thread_children">

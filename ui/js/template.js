@@ -45,34 +45,7 @@ function template(templatehtml,objecturi,xpath,callback)// TODO: CHANGE NAME FRO
 		success: function(objectref) // TODO:  Change ObjectRef to a better name
 		{
 			// Load the data from the object with XPATH
-			if (xpath.indexOf("_") > 0)  // TODO:  CHOOSE A BETTER SEPARATOR
-			{
-				var arr = xpath.split("_");
-				var pointer = objectref[arr[0]];
-				arr.splice(0,1);
-				
-				// TODO: REPLACE WITH $.EACH
-				for (i=0;i<=arr.length-1;i++)  // TRY TO GET RID OF .LENGTH, CAUSED JS PROBLEMS
-				{
-					if (typeof pointer !="undefined")
-					{
-						pointer = pointer[arr[i]];
-					}
-					else
-					{
-						xpath = "";	
-					}
-				}
-				obj = pointer;
-			}
-			else if (xpath != null)
-			{
-				obj =  objectref[xpath];
-			}		
-			else
-			{
-				obj = objectref;	
-			}
+			var obj = xpathvalue(objectref,xpath);
 			
 			// REPLACE THE TEMPLATE HTML WITH OBJECT VARIABLES
 			var returnhtml = "";
@@ -122,19 +95,17 @@ function replacevariable(templatehtml,objectref)
 				// ISOLATE THE CONDITIONAL VARIABLE AND CHECK TO SEE IF IT EXISTS
 				var val = value.replace("{if:","");
 				var val = val.replace("}","");
-				
-				// TODO: GET CODE TO LOOP THROUGH NESTED VARIABLES REFERENCES				
-				
+			
 				//  OBJECT 	= NONE
 				//  STATE   = NEGATIVE
-				if( (typeof objectref[val] == "undefined" && val.indexOf("!") == -1) )
+				if( (typeof objectref[val] == "undefined" && val.indexOf("!") == -1 && val.indexOf("=") == -1) )
 				{
 					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+?\{if\}', "g"),"");
 				}
 				
 				//  OBJECT 	= EXISTS
 				//  STATE   = NEGATIVE
-				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") == -1) )
+				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") == -1 && val.indexOf("=") == -1) )
 				{
 					templatehtml = templatehtml.replace('{if:' + val + '}',"");
 					templatehtml = templatehtml.replace('{if}',"");
@@ -142,10 +113,28 @@ function replacevariable(templatehtml,objectref)
 				
 				//  OBJECT 	= EXISTS
 				//  STATE   = POSITIVE
-				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") >= 0) )
+				if ( (typeof objectref[val.replace("!","")] != "undefined" && val.indexOf("!") >= 0 && val.indexOf("=") == -1) )
 				{
 					templatehtml = templatehtml.replace(new RegExp('\{if:' + val + '([^\n]*\n+)+?\{!if\}', "g"),"");
 				}  
+				
+				//  OBJECT  = EXISTS
+				//  STATE   = POSITIVE
+				//  VALUE   = SOMEVALUE
+				if ( (val.indexOf("!") == -1 && val.indexOf("=") >= 0) )
+				{
+					// FIND THE VALUE
+					var object = val.substring(0,val.indexOf("="));
+					var value  = val.substring(val.indexOf("=") + 1);
+					var xvalue = xpathvalue(objectref, val);
+
+					
+					if (xvalue && xvalue != value)
+					{
+						
+						templatehtml = templatehtml.replace(new RegExp('\{if:' + object + '=' + value + '([^\n]*\n+)+?\{if\}', "g"),"");
+					}
+				} 
 				
 			});	
 			
@@ -171,6 +160,8 @@ function replacevariable(templatehtml,objectref)
 				{
 					var arr = val.split("_");
 					
+					
+					// TODO:  TRY TO REMOVE THE POINTER VARIABLE AND USE XPATHVALUE() INSTEAD
 					if(typeof objectref[arr[0]] != "undefined")
 					{
 						var pointer = objectref[arr[0]];
@@ -205,4 +196,40 @@ function replacevariable(templatehtml,objectref)
 		return templatehtml;
 	}
 	return "";
+}
+
+// TAKE AN OBJECT AND AN XPATH AND RETURN THE SELECTED VALUE
+function xpathvalue(object,xpath)
+{
+	// Remove the "=" value before processing the object
+	if (xpath.indexOf("=") >= 0)
+		var xpath = xpath.substring(0,xpath.indexOf("="));
+	
+	if (xpath.indexOf("_") > 0)
+	{
+		var xpath = xpath.split("_");
+		var selected = object[xpath[0]];
+		xpath.splice(0,1);
+		
+		$.each(xpath, function(i) {
+			if (typeof selected !="undefined")
+			{
+				selected = selected[xpath[i]];
+			}
+			else
+			{
+				xpath = "";		
+			}
+		});
+
+		return selected;
+	}
+	else if (xpath != null)
+	{
+		return(object[xpath]);
+	}		
+	else
+	{
+		return(object);	
+	}
 }

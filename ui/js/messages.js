@@ -44,7 +44,10 @@ $(document).ready(function()
 		var uri	= form.attr("action");
 		var message	= form.find(".message_data").val();
 		var dcb = cb();
+		var totalcountele = $(this).parents(".message_thread").find(".totalcount");
+		var replyele = $(this).parents(".message_thread").find(".message_reply_inline");
 		
+		// ADD THE PROCESSING ICON
 		process(form);
 		
 		messageparams = {
@@ -52,7 +55,7 @@ $(document).ready(function()
 		};
 	
 		var uri = apiuri(uri,messageparams);
-
+		
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
@@ -81,7 +84,26 @@ $(document).ready(function()
 						
 						messageinput.val("");
 						messageinput.focus();
+						
+						// ADD THE COMPLETE/SUCCESS ICON
 						success(form);
+
+						// UPDATE THE NUMBER COUNTS // TODO: REPLACE THIS WITH A CALL TO THE API TO GET LATEST MESSAGES AND COUNTS						
+						if (totalcountele.length >= 1)
+						{
+							var count = totalcountele.attr("value");
+							var newcount = (Number(count)+1);
+							totalcountele.attr("value",newcount);
+							totalcountele.html("(" + newcount + ")");
+						}
+						else
+						{
+							var newele = $(document.createElement('span'));
+							newele.addClass("totalcount");
+							newele.attr("value","1");
+							newele.html("(1)");
+							replyele.append(newele);
+						}
 					});
 				});
 				
@@ -94,6 +116,7 @@ $(document).ready(function()
 				console.log(xhr.statusText);
 				console.log(xhr.status);
 				console.log(thrownError);
+				error(form);
 			}  
 		});
 		
