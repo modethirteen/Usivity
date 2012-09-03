@@ -32,7 +32,6 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             connection.Setup(c => c.Id).Returns(id);
             connection.Setup(c => c.Source).Returns(source);
             connection.Setup(c => c.Identity).Returns(identity);
-            connection.Setup(c => c.Active).Returns(true);
             connection.Setup(c => c.OrganizationId).Returns(currentOrganization.Id);
 
             // attach connection to mock data catalog
@@ -67,7 +66,6 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             connection.Setup(c => c.Id).Returns(id);
             connection.Setup(c => c.Source).Returns(source);
             connection.Setup(c => c.Identity).Returns(identity);
-            connection.Setup(c => c.Active).Returns(true);
             connection.Setup(c => c.OrganizationId).Returns(currentOrganization.Id);
 
             // attach connection to mock data catalog

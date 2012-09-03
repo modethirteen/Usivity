@@ -77,13 +77,13 @@ namespace Usivity.Services.Core.Logic {
             // Email
             var email = info["email"].Contents;
             if(!string.IsNullOrEmpty(email)) {
-                contact.SetIdentity(Source.Email, EmailClient.GetIdentityByEmailAddress(email));
+                contact.SetIdentity(Source.Email, EmailClient.NewIdentityFromEmailAddress(email));
             }
 
             // Twitter
             var twitter = info["identity.twitter"].Contents;
-            if(!string.IsNullOrEmpty(twitter)) {
-                contact.SetIdentity(Source.Twitter, TwitterClient.GetIdentityByScreenName(twitter));
+            if(!string.IsNullOrEmpty(twitter) && (contact.Twitter == null || contact.Twitter.Name != twitter)) {
+                contact.SetIdentity(Source.Twitter, TwitterClient.NewIdentityFromScreenName(twitter));
             }
 
             // Facebook

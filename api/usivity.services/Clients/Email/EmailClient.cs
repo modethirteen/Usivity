@@ -1,62 +1,87 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
 using AE.Net.Mail;
+using log4net;
+using MindTouch;
+using MindTouch.Dream;
+using MindTouch.Xml;
 using Usivity.Entities;
 using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
 using Usivity.Util;
-using MailMessage = System.Net.Mail.MailMessage;
 
 namespace Usivity.Services.Clients.Email {
+
+    public interface IEmailClient : IClient {}
 
     public class EmailClient : IEmailClient {
 
         //--- Constants ---
         private const string IN_REPLY_TO_HEADER = "In-Reply-To";
+        private const string AMAZON_SES_HOST = "https://email.us-east-1.amazonaws.com";
+
+        //--- Class Fields ---
+        private static readonly ILog _log = LogUtils.CreateLog();
 
         //--- Class Methods ---
-        public static Identity GetIdentityByEmailAddress(string email) {
-            return new Identity {
-                Id = email,
-                Name = email
-            };
+        public static Identity NewIdentityFromEmailAddress(string email) {
+            return new Identity { Id = email };
+        }
+
+        public static void CheckEmailConnectionCredentials(IEmailConnection connection) {
+            try {
+                NewImapClient(connection);
+            } catch(Exception e) {
+                throw new ConnectionResponseException(DreamStatus.BadRequest,
+                    "Could not successfully validate email connection settings", e);
+            }
+        }
+
+        public static bool IsValidEmailAddress(string email) {
+            return email.Contains("@");
+        }
+
+        private static ImapClient NewImapClient(IEmailConnection connection) {
+            var imap = new ImapClient(
+                connection.Host,
+                connection.Username,
+                connection.Password,
+                connection.UseCramMd5 ? ImapClient.AuthMethods.CRAMMD5 : ImapClient.AuthMethods.Login,
+                connection.Port,
+                connection.UseSsl,
+                true
+                );
+            imap.SelectMailbox("INBOX");
+            return imap;
         }
 
         //--- Fields ---
         private readonly IEmailConnection _connection;
         private readonly IGuidGenerator _guidGenerator;
         private readonly IDateTime _dateTime;
-        private readonly SmtpClient _smtp;
-        private ImapClient _imap;
+        private readonly string _awsPublicKey;
+        private readonly string _awsPrivateKey;
 
         //--- Constructors ---
-        public EmailClient(EmailClientConfig config, IEmailConnection connection, IGuidGenerator guidGenerator, IDateTime dateTime) {
+        public EmailClient(SimpleEmailServiceConfig config, IEmailConnection connection, IGuidGenerator guidGenerator, IDateTime dateTime) {
             _connection = connection;
             _guidGenerator = guidGenerator;
             _dateTime = dateTime;
-            _smtp = new SmtpClient {
-                Host = config.Host,
-                EnableSsl = config.UseSsl,
-                Port = config.Port != int.MinValue ? config.Port : 25
-            };
-            if(!string.IsNullOrEmpty(config.Username)) {
-                var credentials = new NetworkCredential(config.Username, config.Password);
-                _smtp.Credentials = credentials;
-            }
+            _awsPublicKey = config.AwsPublicKey;
+            _awsPrivateKey = config.AwsPrivateKey;
         }
 
         //--- Methods ---
         #region IClient implementation
         public IEnumerable<IMessage> GetNewMessages(TimeSpan? expiration) {
-            var imap = GetImapClient();
+            var imap = NewImapClient(_connection);
             var search = SearchCondition.Unseen();
             search = search.And(new SearchCondition {
                     Field = SearchCondition.Fields.Since,
-                    Value = _connection.Modified.ToLocalTime()
+                    Value = _connection.Created.ToLocalTime()
             });
-
             var mailMessages = imap.SearchMessages(search);
             var messages = new List<IMessage>();
             foreach(var mailMessageDeferred in mailMessages) {
@@ -85,22 +110,42 @@ namespace Usivity.Services.Clients.Email {
         }
 
         public IMessage PostNewReplyMessage(IUser user, IMessage message, string reply) {
-            var replyAddress = message.Author.Id;
-            var email = new MailMessage {
-                From = new MailAddress(_connection.Identity.Id)
-            };
-            email.To.Add(replyAddress);
+            var date = _dateTime.UtcNow.ToString("R");
+
+            // generate auth header
+            var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_awsPrivateKey));
+            var signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(date)));
+            var auth = string.Format("AWS3-HTTPS AWSAccessKeyId={0}, Algorithm=HmacSHA256, Signature={1}", _awsPublicKey, signature);
+
+            // prepend replies with reply prefix
             var subject = message.Subject;
             if(!subject.StartsWith("Re:")) {
                 subject = "Re:" + subject;
             }
-            email.Subject = subject;
-            _smtp.Send(email);
-
-            // TODO: add SourceMessageId and SourceInReplyToMessageId
+            var plug = Plug.New(AMAZON_SES_HOST)
+                .WithHeader("X-Amz-Date", date)
+                .WithHeader("X-Amzn-Authorization", auth)
+                .With("Timestamp", _dateTime.UtcNow.ToISO8601String())
+                .With("AwsAccessKeyId", _awsPublicKey)
+                .With("Action", "SendEmail")
+                .With("Destination.ToAddresses.member.1", message.Author.Id)
+                .With("Message.Body.Text.Data", reply)
+                .With("Message.Subject.Data", subject)
+                .With("Source", _connection.Identity.Id);
+            DreamMessage response;
+            try {
+                response = plug.PostAsForm();
+            }
+            catch(DreamResponseException e) {
+                throw new ConnectionResponseException(e.Response.Status, "Error posting message", e);
+            }
+            var sendEmailResult = response.ToDocument();
+            sendEmailResult.UsePrefix("ses", "http://ses.amazonaws.com/doc/2010-12-01/");
             var replyMessage = new Message(_guidGenerator, _dateTime) {
                 Source = Source.Email,
-                SourceInReplyToIdentityId = replyAddress,
+                SourceMessageId = sendEmailResult["ses:SendEmailResult/ses:MessageId"].AsText,
+                SourceInReplyToMessageId = message.Id,
+                SourceInReplyToIdentityId = message.Author.Id,
                 Subject = subject,
                 Body = reply,
                 Author = _connection.Identity,
@@ -112,42 +157,11 @@ namespace Usivity.Services.Clients.Email {
         }
 
         public Contact NewContact(Identity identity) {
-            var contact = new Contact(_guidGenerator) {
-                Avatar = identity.Avatar
-            };
+            var contact = new Contact(_guidGenerator);
             contact.SetIdentity(Source.Email, identity);
+            contact.FirstName = identity.Name;
             return contact;
         }
         #endregion
-
-        #region IEmailClient implementation
-        public bool AreEmailConnectionCredentialsValid(out Exception clientErrorResponse) {
-            clientErrorResponse = null;
-            ImapClient imap = null;
-            try {
-                imap = GetImapClient(); 
-            }
-            catch(Exception e) {
-                clientErrorResponse = e;
-            }
-            return imap != null; 
-        }
-        #endregion
-
-        private ImapClient GetImapClient() {
-            if(_imap == null || _imap.IsDisposed) {
-                _imap = new ImapClient(
-                    _connection.Host,
-                    _connection.Username,
-                    _connection.Password,
-                    _connection.UseCramMd5 ? ImapClient.AuthMethods.CRAMMD5 : ImapClient.AuthMethods.Login,
-                    _connection.Port,
-                    _connection.UseSsl,
-                    true
-                    );
-                _imap.SelectMailbox("INBOX");
-            }
-            return _imap;
-        }
     }
 }

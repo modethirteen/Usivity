@@ -85,7 +85,6 @@ namespace Usivity.Entities {
                 .Elem("age", Age ?? "")
                 .Elem("gender", Gender ?? "")
                 .Elem("location", Location ?? "")
-                .Elem("email", Email != null ? Email.Name : "")
                 .Elem("phone", Phone ?? "")
                 .Elem("fax", Fax ?? "")
                 .Elem("address", Address ?? "")
@@ -119,6 +118,7 @@ namespace Usivity.Entities {
                 .Attr("id", Id ?? "")
                 .Elem("firstname", FirstName ?? "")
                 .Elem("lastname", LastName ?? "")
+                .Elem("email", Email != null ? Email.Id : "")
                 .Elem("uri.avatar", Avatar != null ? Avatar.ToString() : "");
         }
 

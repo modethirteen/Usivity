@@ -5,7 +5,8 @@ namespace Usivity.Entities {
     public interface IUser : IEntity {
 
         //--- Properties ---
-        string Name { get; }
+        string Name { get; set; }
+        string EmailAddress { get; set; }
         string Password { get; set; }
         string CurrentOrganization { get; set; }
         bool IsAnonymous { get; }

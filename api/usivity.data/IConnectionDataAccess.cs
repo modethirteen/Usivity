@@ -12,5 +12,9 @@ namespace Usivity.Data {
         IConnection Get(string id);
         void Save(IConnection connection);
         void Delete(IConnection connection);
+
+        // temporary token storage
+        void StashTokenInfo(OAuthTokenInfo token);
+        OAuthTokenInfo FetchTokenInfo(string token, Source source, IOrganization organization, IUser user);
     }
 }

@@ -82,7 +82,6 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             var connection = new Mock<IConnection>();
             connection.Setup(c => c.Id).Returns(id);
             connection.Setup(c => c.Source).Returns(source);
-            connection.Setup(c => c.Active).Returns(true);
             connection.Setup(c => c.OrganizationId).Returns(currentOrganizationMock.Object.Id);
 
             // attach connection to mock data catalog

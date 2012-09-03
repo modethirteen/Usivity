@@ -9,8 +9,6 @@ namespace Usivity.Entities.Connections {
         string OrganizationId { get; }
         Source Source { get; }
         Identity Identity { get; set; }
-        DateTime Modified { get; set; }
         DateTime Created { get; set; }
-        bool Active { get; }
     }
 }

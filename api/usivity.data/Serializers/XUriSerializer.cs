@@ -11,7 +11,10 @@ namespace Usivity.Data.Serializers {
 
         //--- Methods ---
         public void RegisterSerializer() {
-            BsonSerializer.RegisterSerializer(typeof(XUri), new XUriSerializer());
+            var type = typeof(XUri);
+            if(BsonSerializer.LookupSerializer(type) == null) {
+                BsonSerializer.RegisterSerializer(type, new XUriSerializer());    
+            }
         }
 
         public override object Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options) {

@@ -4,6 +4,7 @@ using System.Linq;
 using log4net;
 using MindTouch;
 using MindTouch.Dream;
+using MindTouch.OAuth;
 using MindTouch.Tasking;
 using MindTouch.Xml;
 using Usivity.Data;
@@ -12,6 +13,7 @@ using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
 using Usivity.Services.Clients;
 using Usivity.Services.Clients.Email;
+using Usivity.Services.Clients.OAuth;
 using Usivity.Services.Clients.Twitter;
 using Usivity.Util;
 
@@ -32,8 +34,10 @@ namespace Usivity.Services {
         //--- Fields ---
         private readonly IGuidGenerator _guidGenerator = new GuidGenerator();
         private IUsivityDataCatalog _data;
-        private TwitterClientConfig _twitterClientConfig;
-        private EmailClientConfig _emailClientConfig;
+        private string _twitterConsumerKey;
+        private string _twitterConsumerSecret;
+        private string _awsPublicKey;
+        private string _awsPrivateKey;
         private long _messageCount;
         private TimeSpan _messageExpiration;
 
@@ -55,19 +59,15 @@ namespace Usivity.Services {
                 throw new DreamInternalErrorException("Database connection string required");
             }
             _data = UsivityDataCatalog.NewUsivityDataCatalog(dbConnection);
-
-            _log.Debug("Stashing network connection settings");
-            var twitterDoc = config["sources/twitter"];
-            _twitterClientConfig = new TwitterClientConfig {
-                OAuthConsumerKey = twitterDoc["oauth/consumer.key"].Contents,
-                OAuthConsumerSecret = twitterDoc["oauth/consumer.secret"].Contents
-            };
-            _emailClientConfig = new EmailClientConfig();
-
+            _twitterConsumerKey = config["sources/twitter/consumer.key"].AsText;
+            _twitterConsumerSecret = config["sources/twitter/consumer.secret"].AsText;
+            _awsPublicKey = config["aws/public.key"].AsText;
+            _awsPrivateKey = config["aws/private.key"].AsText;
             var ms = double.MinValue;
             double.TryParse(config["openstream/expiration"].AsText, out ms);
-            _messageExpiration = TimeSpan.FromMilliseconds(ms);
+
             _log.DebugFormat("Setting message expiration to {0}ms", _messageExpiration);
+            _messageExpiration = TimeSpan.FromMilliseconds(ms);
 
             _log.Debug("Starting open stream queue");
             TaskTimerFactory.Current.New(TimeSpan.Zero, QueueMessages, null, TaskEnv.None);
@@ -114,7 +114,7 @@ namespace Usivity.Services {
             }
 
             // queue private and direct messages
-            foreach (var connection in connections.Where(connection => connection.Active)) {
+            foreach (var connection in connections) {
                 _log.DebugFormat(
                     "Fetching {0} messages for organization {1}, identity: {2}", connection.Source, organization.Name, connection.Identity.Id
                 );
@@ -158,12 +158,22 @@ namespace Usivity.Services {
         }
 
         private ITwitterClient NewTwitterClient(ITwitterConnection connection) {
-            var factory = new TwitterClientFactory(_twitterClientConfig, _guidGenerator, NewDateTime());
+            var config = new OAuthConfig {
+                ConsumerKey = _twitterConsumerKey,
+                ConsumerSecret = _twitterConsumerSecret,
+                NonceFactory = new OAuthNonceFactory(),
+                TimeStampFactory = new OAuthTimeStampFactory()
+            };
+            var factory = new TwitterClientFactory(config, _guidGenerator, NewDateTime());
             return factory.NewTwitterClient(connection);
         }
 
         private IEmailClient NewEmailClient(IEmailConnection connection) {
-            var factory = new EmailClientFactory(_emailClientConfig, _guidGenerator, NewDateTime());
+            var config = new SimpleEmailServiceConfig {
+                AwsPublicKey = _awsPublicKey,
+                AwsPrivateKey = _awsPrivateKey
+            };
+            var factory = new EmailClientFactory(config, _guidGenerator, NewDateTime());
             return factory.NewEmailClient(connection); 
         }
     }

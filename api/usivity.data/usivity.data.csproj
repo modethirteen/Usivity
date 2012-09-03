@@ -56,6 +56,7 @@
     <Compile Include="ConnectionDataAccess.cs" />
     <Compile Include="IConnectionDataAccess.cs" />
     <Compile Include="Serializers\ContactSerializer.cs" />
+    <Compile Include="Serializers\OAuthTokenInfoSerializer.cs" />
     <Compile Include="Serializers\EmailConnectionSerializer.cs" />
     <Compile Include="Serializers\TwitterConnectionSerializer.cs" />
     <Compile Include="Serializers\IUsivityDataSerializer.cs" />

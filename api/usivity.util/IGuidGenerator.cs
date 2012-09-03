@@ -3,6 +3,6 @@
     public interface IGuidGenerator {
 
         //--- Methods ---
-        string GenerateNewObjectId();
+        string GenerateNewObjectId(string salt = null);
     }
 }

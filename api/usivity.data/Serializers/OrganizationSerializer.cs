@@ -5,7 +5,7 @@ namespace Usivity.Data.Serializers {
 
     public class OrganizationSerializer : IUsivityDataSerializer {
 
-        //--- Class Methods ---
+        //--- Methods ---
         public void RegisterSerializer() {
             if(!BsonClassMap.IsClassMapRegistered(typeof(Organization))) {
                 BsonClassMap.RegisterClassMap<Organization>(cm => {

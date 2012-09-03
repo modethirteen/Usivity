@@ -2,7 +2,7 @@
 
 namespace Usivity.Entities.Connections {
 
-    public interface IEmailConnection : IConnection, ICloneable {
+    public interface IEmailConnection : IConnection {
 
         //--- Properties ---
         string Host { get; set; }

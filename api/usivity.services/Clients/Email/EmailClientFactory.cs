@@ -6,12 +6,12 @@ namespace Usivity.Services.Clients.Email {
     public class EmailClientFactory : IEmailClientFactory {
 
         //--- Fields ---
-        private readonly EmailClientConfig _config;
+        private readonly SimpleEmailServiceConfig _config;
         private readonly IGuidGenerator _guidGenerator;
         private readonly IDateTime _dateTime;
 
         //--- Constructors ---
-        public EmailClientFactory(EmailClientConfig config, IGuidGenerator guidGenerator, IDateTime dateTime) {
+        public EmailClientFactory(SimpleEmailServiceConfig config, IGuidGenerator guidGenerator, IDateTime dateTime) {
             _config = config;
             _guidGenerator = guidGenerator;
             _dateTime = dateTime;

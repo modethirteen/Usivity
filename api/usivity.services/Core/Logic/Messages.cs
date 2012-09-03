@@ -11,7 +11,6 @@ using Usivity.Entities.Types;
 using Usivity.Services.Clients;
 using Usivity.Services.Clients.Email;
 using Usivity.Services.Clients.Twitter;
-using Usivity.Util;
 
 namespace Usivity.Services.Core.Logic {
 
@@ -28,7 +27,6 @@ namespace Usivity.Services.Core.Logic {
         private readonly IUsers _users;
         private readonly IOrganizations _organizations;
         private readonly IConnections _connections;
-        private readonly IGuidGenerator _guidGenerator;
         private readonly ITwitterClientFactory _twitterClientFactory;
         private readonly IEmailClientFactory _emailClientFactory;
 
@@ -40,7 +38,6 @@ namespace Usivity.Services.Core.Logic {
             IUsers users,
             IOrganizations organizations,
             IConnections connections,
-            IGuidGenerator guidGenerator,
             ITwitterClientFactory twitterClientFactory,
             IEmailClientFactory emailClientFactory
         ) {
@@ -52,7 +49,6 @@ namespace Usivity.Services.Core.Logic {
             _users = users;
             _organizations = organizations;
             _connections = connections;
-            _guidGenerator = guidGenerator;
             _twitterClientFactory = twitterClientFactory;
             _emailClientFactory = emailClientFactory;
         }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MindTouch.OAuth;
 using MindTouch.Xml;
 using Usivity.Data;
 using Usivity.Entities;
 using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
 using Usivity.Services.Clients.Email;
+using Usivity.Services.Clients.OAuth;
 using Usivity.Services.Clients.Twitter;
 using Usivity.Util;
 
@@ -43,66 +45,58 @@ namespace Usivity.Services.Core.Logic {
         }
 
         //--- Methods ---
-        public ITwitterConnection NewTwitterConnection() {
-            var connection = new TwitterConnection(_guidGenerator, _currentOrganization, _dateTime);
-            var client = _twitterClientFactory.NewTwitterClient(connection);
-            connection.OAuthRequest = client.NewOAuthRequestToken();
+        public XDoc GetOAuthRequestTokenXml(OAuthRequestToken token) {
+            return new XDoc("token")
+                .Elem("uri.authorize", token.AuthorizeUri.ToString());
+        }
+
+        public OAuthRequestToken NewOAuthRequestToken(Source source) {
+            IOAuthAccessClient client = null;
+            switch(source) {
+                case Source.Twitter:
+                    client = _twitterClientFactory.NewTwitterOAuthAccessClient();
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+
+            // callback includes source to assist ui determining which endpoint to post oauth response to
+            var callback = _context.UiUri.With("source", source.ToString().ToLowerInvariant());
+            var token = client.NewOAuthRequestToken(callback);
+            var info = new OAuthTokenInfo(token, source, _guidGenerator, _currentOrganization, _context.User);
+            _data.Connections.StashTokenInfo(info);
+            return token;
+        }
+
+        public OAuthRequestToken GetOAuthRequestToken(Source source, string token) {
+            var info = _data.Connections.FetchTokenInfo(token, source, _currentOrganization, _context.User);
+            return (info != null) ? info.Token : null;
+        }
+
+        public ITwitterConnection NewTwitterConnection(OAuthRequestToken token, string verifier) {
+            token.Verifier = verifier;
+            var access = _twitterClientFactory.NewTwitterOAuthAccessClient().NewOAuthAccessToken(token);
+            var connection = new TwitterConnection(_guidGenerator, _currentOrganization, _dateTime) {
+                OAuthAccess = access.Token,
+                Identity = TwitterClient.NewIdentityFromUserId(access.Identity.Id)
+            };
             return connection;
         }
 
-        public IEmailConnection NewEmailConnection() {
-            return new EmailConnection(_guidGenerator, _currentOrganization, _dateTime); 
-        }
-
-        public void ActivateTwitterConnection(ITwitterConnection connection, TwitterAuthorization authorization) {
-            if(authorization.OAuthRequestToken != connection.OAuthRequest.Token) {
-                throw new Exception("OAuth request token mismatch");
-            }
-            var client = _twitterClientFactory.NewTwitterClient(connection);
-            connection.OAuthRequest.Verifier = authorization.OAuthVerifier;
-            Identity identity;
-            var accessToken = client.NewOAuthAccessToken(connection.OAuthRequest, out identity);
-            connection.Identity = identity;
-            connection.OAuthAccess = accessToken;
-            connection.OAuthRequest = null;
-            connection.Modified = _dateTime.UtcNow;
-        }
-
-        public void ActivateEmailConnection(IEmailConnection connection, EmailAuthorization authorization) {
-            if(string.IsNullOrEmpty(authorization.Username) || string.IsNullOrEmpty(authorization.Host)) {
-                throw new Exception("Invalid authorization. Required fields: host, username");
-            }
-            var testConnection = connection.Clone() as IEmailConnection;
-            try {
-                if(testConnection == null) {
-                    throw new Exception("Could not create test email connection for validation");
-                }
-                testConnection.Host = authorization.Host;
-                testConnection.Username = authorization.Username;
-                testConnection.Password = authorization.Password;
-                testConnection.Port = authorization.Port;
-                testConnection.UseSsl = authorization.UseSsl;
-                testConnection.UseCramMd5 = authorization.UseCramMd5;
-                var emailClient = _emailClientFactory.NewEmailClient(testConnection);
-                Exception clientErrorResponse;
-                if(!emailClient.AreEmailConnectionCredentialsValid(out clientErrorResponse)) {
-                    throw clientErrorResponse;
-                }
-            }
-            catch(Exception e) {
-                throw new Exception("Could not successfully validate email connection settings", e);
-            }
-            var user = authorization.Username;
-            connection.Host = authorization.Host;
-            connection.Username = user;
-            connection.Password = authorization.Password;
-            connection.Port = authorization.Port;
-            connection.UseSsl = authorization.UseSsl;
-            connection.UseCramMd5 = authorization.UseCramMd5;
-            var id = user.Contains("@") ? user : string.Format("{0}@{1}", user, connection.Host);
+        public IEmailConnection NewEmailConnection(string host, string username, string password, int port, bool useSsl, bool useCramMd5) {
+            var connection = new EmailConnection(_guidGenerator, _currentOrganization, _dateTime) {
+                Host = host,
+                Username = username,
+                Password = password,
+                Port = port,
+                UseSsl = useSsl,
+                UseCramMd5 = useCramMd5
+            };
+            EmailClient.CheckEmailConnectionCredentials(connection);
+            var id = username.Contains("@") ? username : string.Format("{0}@{1}", username, connection.Host);
             var identity = new Identity { Id = id, Name = id };
             connection.Identity = identity;
-            connection.Modified = _dateTime.UtcNow;
+            return connection;
         }
 
         public IConnection GetConnection(string id) {
@@ -119,14 +113,14 @@ namespace Usivity.Services.Core.Logic {
             if(connection == null) {
 
                 // if no default set get first matching active source
-                connection = GetConnections(source).FirstOrDefault(c => c.Active);
+                connection = GetConnections(source).FirstOrDefault();
             }
             return connection; 
         }
 
         public IConnection GetConnectionReceipient(IMessage message) {
             return GetConnections().FirstOrDefault(c =>
-                c.Active && c.Identity.Id == message.SourceInReplyToIdentityId && c.Source == message.Source
+                c.Identity.Id == message.SourceInReplyToIdentityId && c.Source == message.Source
                 );         
         }
 

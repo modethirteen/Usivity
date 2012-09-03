@@ -12,7 +12,6 @@ namespace Usivity.Entities.Connections {
             Id = guidGenerator.GenerateNewObjectId();
             OrganizationId = organization.Id;
             Created = dateTime.UtcNow;
-            Modified = dateTime.UtcNow;
             Source = Source.Email;
         }
 
@@ -21,9 +20,7 @@ namespace Usivity.Entities.Connections {
         public string OrganizationId { get; private set; }
         public Source Source { get; private set; }
         public Identity Identity { get; set; }
-        public DateTime Modified { get; set; }
         public DateTime Created { get; set; }
-        public bool Active { get { return IsActive(); } }
         public string Host { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
@@ -37,29 +34,15 @@ namespace Usivity.Entities.Connections {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            var doc = new XDoc(resource)
+            return new XDoc(resource)
                 .Attr("id", Id)
                 .Elem("source", Source.ToString().ToLowerInvariant())
-                .Elem("type", "imap");
-            if(Active) {
-                doc.Start("identity")
+                .Start("identity")
                     .Attr("id", Identity.Id)
                     .Elem("name", Identity.Name)
+                    .Elem("uri.avatar", Identity.Avatar)
                 .End()
-                .Elem("active", true);
-            }
-            else {
-                doc.Elem("active", false);
-            }
-            return doc; 
-        }
-
-        private bool IsActive() {
-            return Identity != null && Host != null && Username != null;
-        }
-
-        public object Clone() {
-            return MemberwiseClone();
+                .Elem("created", Created.ToISO8601String());
         }
     }
 }
