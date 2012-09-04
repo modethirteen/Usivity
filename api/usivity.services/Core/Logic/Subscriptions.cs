@@ -61,8 +61,16 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetSubscriptionXml(Subscription subscription, string relation = null) {
-            return subscription.ToDocument(relation)
-                .Attr("href", _context.ApiUri.At("subscriptions", subscription.Id));
+            var resource = "subscription";
+            if(!string.IsNullOrEmpty(relation)) {
+                resource += "." + relation;
+            }
+            return new XDoc(resource)
+                .Attr("id", subscription.Id)
+                .Attr("href", _context.ApiUri.At("subscriptions", subscription.Id))
+                .Elem("active", subscription.Active ? "true" : "false")
+                .Elem("constraints", string.Join(",", subscription.Constraints.ToArray()))
+                .EndAll();   
         }
     }
 }

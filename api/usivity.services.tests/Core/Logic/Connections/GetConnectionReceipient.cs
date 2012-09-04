@@ -8,7 +8,7 @@ using Usivity.Entities.Types;
 namespace Usivity.Tests.Services.Core.Logic.Connections {
 
     [TestFixture]
-    public class GetConnectionReceipient : ConnectionsTests {
+    class GetConnectionReceipient : ConnectionsTests {
 
         //--- Methods ---
         [SetUp]

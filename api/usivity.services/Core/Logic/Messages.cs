@@ -11,6 +11,8 @@ using Usivity.Entities.Types;
 using Usivity.Services.Clients;
 using Usivity.Services.Clients.Email;
 using Usivity.Services.Clients.Twitter;
+using Usivity.Services.Parser;
+using Usivity.Util;
 
 namespace Usivity.Services.Core.Logic {
 
@@ -70,8 +72,24 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetMessageXml(IMessage message, string relation = null) {
-            var doc = message.ToDocument(relation)
-                .Attr("href", _context.ApiUri.At("messages", message.Id));
+            var resource = "message";
+            if(!string.IsNullOrEmpty(relation)) {
+                resource += "." + relation;
+            }
+            var author = new XDoc("author")
+                .Elem("name", message.Author.Name ?? message.Author.Id);
+            if(message.Author.Avatar != null) {
+                author.Elem("uri.avatar", message.Author.Avatar.ToString());
+            }
+            var doc = new XDoc(resource)
+                .Attr("id", message.Id)
+                .Attr("href", _context.ApiUri.At("messages", message.Id))
+                .Elem("source", message.Source.ToString().ToLowerInvariant())
+                .AddAll(author)
+                .Elem("subject", message.Subject)
+                .Elem("body", message.Body)
+                .Elem("created.source", message.SourceCreated.ToISO8601String())
+                .Elem("created.openstream", message.Created.ToISO8601String());
             var contact = _data.Contacts.Get(message);
             if(contact != null) {
                 doc.AddAll(_contacts.GetContactXml(contact, "author"));
@@ -172,7 +190,9 @@ namespace Usivity.Services.Core.Logic {
             if(!children.Any()) {
                 return XDoc.Empty;
             }
-            var doc = new XDoc("messages.children").Attr("count", children.Count());
+
+            // build child messages document
+            var doc = new XDoc("messages.children");
             foreach(var child in children) {
                 var childDoc = GetMessageXml(child); 
                 if(!tree) {
@@ -181,18 +201,21 @@ namespace Usivity.Services.Core.Logic {
                 doc.AddAll(childDoc)
                     .AddAll(GetMessageChildrenXml(child, depth + 1, tree));
             }
-            var flatChildMessages = doc[".//message"];
-            var totalCount = flatChildMessages.ListLength;
-            doc.EndAll();
+
+            // flatten message nodes for total tree message count
+            var flattenedMessageNodes = doc[".//message"];
+            doc.EndAll()
+                .Attr("count", children.Count())
+                .Attr("totalcount", flattenedMessageNodes.ListLength);
             if(tree) {
-                return doc.Attr("totalcount", totalCount);
+
+                // return nested messages
+                return doc;
             }
-            return depth == 0
-                ? new XDoc("messages.children")
-                    .Attr("count", children.Count())
-                    .Attr("totalcount", totalCount)
-                    .AddAll(flatChildMessages)
-                : flatChildMessages; 
+
+            // return flattened messages
+            doc.RemoveNodes().AddAll(flattenedMessageNodes);
+            return (depth == 0) ? doc : flattenedMessageNodes;
         }
 
         private IClient NewClient(IConnection connection) {

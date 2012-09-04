@@ -40,18 +40,6 @@ namespace Usivity.Entities {
         }
 
         //--- Methods ---
-        public XDoc ToDocument(string relation = null) {
-            var resource = "subscription";
-            if(!string.IsNullOrEmpty(relation)) {
-                resource += "." + relation;
-            }
-            return new XDoc(resource)
-                .Attr("id", Id)
-                .Elem("active", Active ? "true" : "false")
-                .Elem("constraints", string.Join(",", Constraints.ToArray()))
-                .EndAll();   
-        }
-
         public void SetSourceUri(Source source, Uri uri) {
             _uris[source] = uri;
         }

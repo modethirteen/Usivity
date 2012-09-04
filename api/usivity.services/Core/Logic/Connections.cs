@@ -129,7 +129,16 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetConnectionXml(IConnection connection) {
-            return connection.ToDocument().Attr("href", _context.ApiUri.At("connections", connection.Id));
+            return new XDoc("connection")
+                .Attr("id", connection.Id)
+                .Attr("href", _context.ApiUri.At("connections", connection.Id))
+                .Elem("source", connection.Source.ToString().ToLowerInvariant())
+                .Start("identity")
+                    .Attr("id", connection.Identity.Id)
+                    .Elem("name", connection.Identity.Name)
+                    .Elem("uri.avatar", connection.Identity.Avatar)
+                .End()
+                .Elem("created", connection.Created.ToISO8601String());
         }
 
         public XDoc GetConnectionsXml() {

@@ -38,7 +38,16 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetUserXml(User user, string relation = null) {
-            return user.ToDocument(relation).Attr("href", _context.ApiUri.At("users", user.Id));
+            var resource = "user";
+            if(!string.IsNullOrEmpty(relation)) {
+                resource += "." + relation;
+            }
+            return new XDoc(resource)
+                .Attr("id", user.Id)
+                .Attr("href", _context.ApiUri.At("users", user.Id))
+                .Elem("name", user.Name)
+                .Elem("email", user.EmailAddress)
+                .Elem("role", user.GetOrganizationRole(_organizations.CurrentOrganization));
         }
 
         public XDoc GetUsersXml() {

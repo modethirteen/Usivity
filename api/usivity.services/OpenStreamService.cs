@@ -15,6 +15,7 @@ using Usivity.Services.Clients;
 using Usivity.Services.Clients.Email;
 using Usivity.Services.Clients.OAuth;
 using Usivity.Services.Clients.Twitter;
+using Usivity.Services.Parser;
 using Usivity.Util;
 
 namespace Usivity.Services {
@@ -137,6 +138,16 @@ namespace Usivity.Services {
 
                     // message is already in openstream
                     continue;
+                }
+                try {
+                    var parser = new MessageContentParser(message);
+                    parser.Process();
+                    var parsedContent = parser.MessageContent;
+                    if(!string.IsNullOrEmpty(parsedContent)) {
+                        message.Body = parsedContent;
+                    }
+                } catch(Exception e) {
+                    _log.WarnFormat("Could not parse {0} message content for id {1}, exception: {2}", message.Source, message.Id, e.Message);
                 }
                 stream.Queue(message);
             }

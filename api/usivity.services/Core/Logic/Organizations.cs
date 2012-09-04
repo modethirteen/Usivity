@@ -33,8 +33,14 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetOrganizationXml(IOrganization organization, string relation = null) {
-            return organization.ToDocument(relation)
-                .Attr("href", _context.ApiUri.At("organizations", organization.Id));
+            var resource = "organization";
+            if(!string.IsNullOrEmpty(relation)) {
+                resource += "." + relation;
+            }
+            return new XDoc(resource)
+                .Attr("id", organization.Id)
+                .Attr("href", _context.ApiUri.At("organizations", organization.Id))
+                .Elem("name", organization.Name);
         }
 
         public XDoc GetOrganizationsXml() {

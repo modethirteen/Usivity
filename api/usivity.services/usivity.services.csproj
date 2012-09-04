@@ -82,6 +82,7 @@
     <Compile Include="Core\Logic\Users.cs" />
     <Compile Include="Core\UsivityAuth.cs" />
     <Compile Include="Core\UsivityContext.cs" />
+    <Compile Include="Parser\MessageContentParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OpenStreamService.cs" />
   </ItemGroup>

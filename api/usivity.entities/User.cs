@@ -49,24 +49,8 @@ namespace Usivity.Entities {
         private User() {}
 
         //--- Methods ---
-        public XDoc ToDocument(string relation = null) {
-            var resource = "user";
-            if(!string.IsNullOrEmpty(relation)) {
-                resource += "." + relation;
-            }
-            UserRole role;
-            _organizations.TryGetValue(CurrentOrganization, out role);
-            return new XDoc(resource).Attr("id", Id)
-                .Elem("name", Name)
-                .Elem("email", EmailAddress)
-                .Elem("role", role);
-        }
-
         public UserRole GetOrganizationRole(IOrganization organization) {
-            if(organization == null) {
-                return UserRole.None;
-            }
-            return _organizations.TryGetValue(organization.Id, UserRole.None);
+            return (organization == null) ? UserRole.None : _organizations.TryGetValue(organization.Id, UserRole.None);
         }
 
         public void SetOrganizationRole(IOrganization organization, UserRole role) {

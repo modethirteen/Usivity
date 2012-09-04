@@ -6,7 +6,6 @@ using AE.Net.Mail;
 using log4net;
 using MindTouch;
 using MindTouch.Dream;
-using MindTouch.Xml;
 using Usivity.Entities;
 using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
