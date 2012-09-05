@@ -107,7 +107,8 @@ namespace Usivity.Services.Clients.Twitter {
                 response = plug.WithOAuthAuthentication(_oauth, _connection.OAuthAccess).PostAsForm();
             }
             catch(DreamResponseException e) {
-                throw new ConnectionResponseException(e.Response.Status, "Error posting message", e);
+                var msg = "Error posting message, response from Twitter API: " + e.Response.ToDocument();
+                throw new ConnectionResponseException(e.Response.Status, msg, e);
             }
             var replyMessage = NewMessageFromStatusUpdate(new JDoc(response.ToText()).ToDocument("response"));
             replyMessage.SetParent(message);

@@ -34,8 +34,7 @@ namespace Usivity.Services.Clients.Email {
                 NewImapClient(connection);
             }
             catch(Exception e) {
-                throw new ConnectionResponseException(DreamStatus.BadRequest,
-                    "Could not successfully validate email connection settings", e);
+                throw new ConnectionResponseException(DreamStatus.BadRequest, "Could not successfully validate email connection settings", e);
             }
         }
 
@@ -145,7 +144,8 @@ namespace Usivity.Services.Clients.Email {
                 response = plug.PostAsForm();
             }
             catch(DreamResponseException e) {
-                throw new ConnectionResponseException(e.Response.Status, "Error posting message", e);
+                var msg = "Error posting message, response from Amazon SES API: " + e.Response.ToDocument();
+                throw new ConnectionResponseException(e.Response.Status, msg, e);
             }
             var sendEmailResult = response.ToDocument();
             sendEmailResult.UsePrefix("ses", "http://ses.amazonaws.com/doc/2010-12-01/");
