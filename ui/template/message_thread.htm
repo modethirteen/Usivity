@@ -6,6 +6,9 @@
 	</span>
 	<div class="message_details">
 		<span class="message_meta">
+{if:user.author}
+			<span class="usivity-user">posted by {user.author_name}</span>
+{if}
 			<span class="message_time timeago" title="{created.source}">
 				
 			</span>
@@ -18,15 +21,5 @@
 		</span>
 		<div class="message_text">{body}</div>
 	</div>
-	<!--
-	<form class="message_send_inline" id="{@id}" action="{@href}">
-		<div class="twrap">
-			<textarea name="message" class="message_data" start="enter your message"></textarea>
-		</div>
-		<div class="buttons">
-			<button type="submit" class="button apply">send</button>
-		</div>
-	</form>
-	-->
 </div>
 foreach}

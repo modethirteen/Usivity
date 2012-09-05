@@ -92,8 +92,6 @@ $(document).ready( function() {
 		
 		var updateuri = apiuri(href,updateparams);
 		
-		console.log(data);
-		
 		$.ajax({
 			type: "POST",
 			crossDomain:true,

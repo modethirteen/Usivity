@@ -145,6 +145,7 @@ body {
 	display:block;
 	overflow:hidden;
 	margin:0 0 20px 0;
+	min-height:60px;
 }
 .message_thread_children {
 	clear:left;
@@ -163,6 +164,7 @@ body {
 	text-shadow: #fff 1px 1px;
 	font-size:.8em;
 }
+
 .message_thread .message_meta {
 	font-size:.7em;
 	color:#999;	
@@ -204,6 +206,7 @@ tr.message_contact {
 tr.message_contact .contact_fullname {
 	display:block;
 	font-size:10px;
+	color:#666;
 }
 /*Message Send*/
 .message_send {

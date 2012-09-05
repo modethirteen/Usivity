@@ -104,6 +104,10 @@ $(document).ready(function()
 							newele.html("(1)");
 							replyele.append(newele);
 						}
+						
+						// UPDATE THE .TIMEAGO ELEMENT
+						jQuery(".timeago").timeago();
+						
 					});
 				});
 				
@@ -163,7 +167,7 @@ $(document).ready(function()
 					target.show();
 					
 					// LOAD .TIMEAGO VALUES
-					jQuery(".message_thread .timeago").timeago();
+					jQuery(".timeago").timeago();
 				});
 			});
 		}
