@@ -77,16 +77,24 @@ namespace Usivity.Services.Clients.Email {
         #region IClient implementation
         public IEnumerable<IMessage> GetNewMessages(TimeSpan? expiration) {
             var imap = NewImapClient(_connection);
+
+            // build search conditions; unseen messages since connection creation -1 day
             var search = SearchCondition.Unseen();
+            var since = _connection.Created.Subtract(TimeSpan.FromDays(1));
             search = search.And(new SearchCondition {
                     Field = SearchCondition.Fields.Since,
-                    Value = _connection.Created.ToLocalTime()
+                    Value = since.ToString("dd-MMM-yyyy").QuoteString()
             });
             var mailMessages = imap.SearchMessages(search);
             var messages = new List<IMessage>();
             foreach(var mailMessageDeferred in mailMessages) {
                 var mailMessage = mailMessageDeferred.Value;
                 imap.AddFlags(Flags.Seen, mailMessage);
+
+                // ignore messages older than connection
+                if(mailMessage.Date < _connection.Created) {
+                    continue;
+                }
                 var identity = new Identity();
                 var sender = mailMessage.From ?? mailMessage.Sender;
                 if(sender != null) {
