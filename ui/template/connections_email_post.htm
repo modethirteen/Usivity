@@ -21,32 +21,34 @@
 			<span class="ftitle">*host <span class="parens">(imap.gmail.com)</span></span>
 			<span class="ftitle">port <span class="parens">(993)</span></span>
 			
+			<!--
 			<div class="block">			
-				<select class="connection_ssl">
-					<option value="true">Yes</option>
-					<option value="false">No</option>
-				</select>
-				
 				<select class="connection_authmethod">
 					<option value="">None</option>
 					<option value="login">login</option>
 					<option value="crammd5">crammd5</option>
 				</select>
 			</div>
-			
-			
-			<span class="ftitle">SSL </span>
 			<span class="ftitle">Authenticaion Method</span>
+			-->
 			
-			<input type="text" class="connection_username required"/>
+			<!--<input type="text" class="connection_username required"/>-->
+			<input type="text" class="connection_email_username long required"/>
 			<input type="password" class="connection_password required"/>
 			
-			<span class="ftitle">*username <span class="parens">(Usivity Support)</span></span>
+			<!--<span class="ftitle">*username <span class="parens">(Usivity Support)</span></span>-->
+			<span class="ftitle long">*email address <span class="parens">(support@usivity.com)</span></span>
 			<span class="ftitle">*password</span>
 			
 			
-			<input type="text" class="connection_email_username long required"/>
-			<span class="ftitle long">*email address <span class="parens">(support@usivity.com)</span></span>
+			<select class="connection_ssl">
+				<option value="true">Yes</option>
+				<option value="false">No</option>
+			</select>
+			
+			<span class="ftitle">SSL </span>
+			
+			
 			
 			<div class="buttons">
 				<button type="submit" class="add">add email connection</button>

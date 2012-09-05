@@ -47,28 +47,14 @@ $(document).ready(function() {
 		if (source)
 		{
 			connectionparams = {
-				"dream.out.format" : "json",
-				"source" : source
+				"dream.out.format" : "json"
 			};
 				
-			var uri = apiuri(api.sources,connectionparams);
+			var uri = apiuri("/connections/" + source + "/token",connectionparams);
 			
-			$.ajax({
-				type: "POST",
-				crossDomain:true,
-				url: uri,
-				dataType: "json",
-				mimeType: 'application/json',
-				contentType: 'application/json',
-				success: function(results)
-				{
-					var url = results["uri.authorize"];
-					location.href = url	
-				},
-				error:function (xhr, ajaxOptions, thrownError){
-					console.log(xhr.statusText);
-					return false;
-				}   
+			$.get(uri, function(results) {	
+				var url = results["uri.authorize"];
+				location.href = url	
 			});
 			return false;
 		}
@@ -83,7 +69,6 @@ $(document).ready(function() {
 		var password 	= form.find(".connection_password").val();
 		var port 		= form.find(".connection_port").val();
 		var ssl			= form.find(".connection_ssl").val();
-		var authmethod	= form.find(".connection_authmethod").val();
 		
 		process(form);
 		// VALIDATE REQUIRED FIELDS
@@ -96,7 +81,6 @@ $(document).ready(function() {
 			return false;
 		}
 		
-		
 		// VALIDATE THE EMAIL ADDRESS
 		if (username == "" || !checkemail(username))
 		{
@@ -108,61 +92,32 @@ $(document).ready(function() {
 		// CREATE THE DATA OBJECT
 		data = {
 		    connection:{
-		        imap:{
-		            host: host,
-		            username: username,
-		            password: password,
-		            port: port,
-		            ssl: ssl
-		        }
+	            host: host,
+	            username: username,
+	            password: password,
+	            port: port,
+	            ssl:  ssl
 		    }
-		}
-		
-		if (authmethod != "")
-		{
-			data.connection.imap["auth.method"] = authmethod;
 		}
 	
 		// CREATE THE API URI
 		connectionparams = {
-			"dream.out.format" : "json",
-			"source" : "email"
+			"dream.out.format" : "json"
 		};
 				
-		var uri = apiuri(api.sources,connectionparams);
+		var uri = apiuri("/connections/email",connectionparams);
 		
 		$.ajax({
 			type: "POST",
 			crossDomain:true,
+			data: JSON.stringify(data),
 			url: uri,
 			dataType: "json",
 			mimeType: 'application/json',
 			contentType: 'application/json',
 			success: function(results)
 			{				
-				connectionparams = {
-					"dream.out.format" : "json",
-					"dream.in.verb" : "PUT"
-				};
-				var confirmuri = apiuri(results["@href"],connectionparams);
-				
-				$.ajax({
-					type: "POST",
-					crossDomain:true,
-					data: JSON.stringify(data),
-					url: confirmuri,
-					dataType: "json",
-					mimeType: 'application/json',
-					contentType: 'application/json',
-					success: function(results)
-					{
-						success(form);
-					},
-					error:function (xhr, ajaxOptions, thrownError){
-						console.log(xhr.statusText);
-						error(form);
-					}   
-				});
+				success(form);
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);

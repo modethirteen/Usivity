@@ -9,11 +9,6 @@
 function fixcontent()
 {
 	$(".message_new").each( function() {
-				
-		// PROCESS LINKS
-		var text = $(this).find(".message_text").html();
-		var text = fixlinks($(this).find(".message_text").html());
-		$(this).find(".message_text").html(text);
 		
 		// PROCESS DATE/TIME
 		var date = $(this).find(".message_time").attr("value");
@@ -23,29 +18,6 @@ function fixcontent()
 	});	
 }
 
-
-// REGEX REPLACE CONTENT SUCH AS LINKS, TWITTER NAMES, ETC
-function fixlinks(text) 
-{
-	if (text)
-	{
-		// CONVERT URL TO HREF
-		var text = text.replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig,'<a class="external" target="_new" href="$1">$1</a>'); 
-		
-		// LINK TWITTER NAMES
-		var text = text.replace(/(^|\s)@(\w+)/g, '$1<a target="_new" class="profile" href="http://www.twitter.com/#!/$2">@$2</a>');
-		
-		// CONVERT DATES
-		var text = text.replace(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/,'hey');
-		
-		
-		return text;
-	}
-	else
-	{
-		return false;	
-	}
-}
 
 function fixdate (date)
 {

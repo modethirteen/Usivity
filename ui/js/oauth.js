@@ -13,18 +13,16 @@ $(document).ready(function() {
 	if (authtoken)
 	{
 		var authverifier	= queryparam("oauth_verifier");
-		var connection 		= queryparam("connection");
+		var connection		= queryparam("source");
 		
 		data = {
 			    connection: {
-				    oauth : {
-			        	token		: authtoken,
-			        	verifier 	: authverifier
-		        	}
+		        	token		: authtoken,
+		        	verifier 	: authverifier
 			    }
 			}
-		
-		var apiuri = ("/api/1/connections/" + connection + "?dream.in.verb=PUT&dream.out.format=json");
+			
+		var apiuri = ("/api/1/connections/" + connection + "?dream.out.format=json");
 		
 		
 		$.ajax({
@@ -38,11 +36,12 @@ $(document).ready(function() {
 			success: function(results)
 			{
 				console.log("connection saved");
+				location.href = "http://usivity.com";
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);
 			}   
-		});
+		});		
 	}
 	
 });
