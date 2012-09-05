@@ -32,7 +32,8 @@ namespace Usivity.Services.Clients.Email {
         public static void CheckEmailConnectionCredentials(IEmailConnection connection) {
             try {
                 NewImapClient(connection);
-            } catch(Exception e) {
+            }
+            catch(Exception e) {
                 throw new ConnectionResponseException(DreamStatus.BadRequest,
                     "Could not successfully validate email connection settings", e);
             }

@@ -107,7 +107,8 @@ namespace Usivity.Services {
                         var fetchedMessages = twitterClient.GetNewPublicMessages(subscription, _messageExpiration);
                         messages.AddRange(fetchedMessages);
                         _log.DebugFormat("Recieved {0} messages for organization {1}", fetchedMessages.Count(), organization.Name);
-                    } catch(Exception e) {
+                    }
+                    catch(Exception e) {
                         _log.WarnFormat("Could not receive messages for organization {0}, exception: {1}", organization.Name, e);    
                     }
                     _data.Subscriptions.Save(subscription);
@@ -124,7 +125,8 @@ namespace Usivity.Services {
                     var fetchedMessages = client.GetNewMessages(_messageExpiration);
                     messages.AddRange(fetchedMessages);
                     _log.DebugFormat("Received {0} messages for organization {1}", fetchedMessages.Count(), organization.Name);
-                } catch(Exception e) {
+                }
+                catch(Exception e) {
                     _log.WarnFormat("Could not receive messages for organization {0}, exception: {1}", organization.Name, e.Message);    
                 }
                 _data.Connections.Save(connection);
@@ -146,7 +148,8 @@ namespace Usivity.Services {
                     if(!string.IsNullOrEmpty(parsedContent)) {
                         message.Body = parsedContent;
                     }
-                } catch(Exception e) {
+                }
+                catch(Exception e) {
                     _log.WarnFormat("Could not parse {0} message content for id {1}, exception: {2}", message.Source, message.Id, e.Message);
                 }
                 stream.Queue(message);

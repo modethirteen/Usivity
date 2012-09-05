@@ -59,7 +59,7 @@ namespace Usivity.Services {
                 var json = new JDoc(request.ToText());
                 doc = json.ToDocument();   
             }
-            catch {
+            catch(Exception e) {
                 try {
                     doc = XDocFactory.From(request.ToText(), MimeType.TEXT_XML);
                     if(doc.IsEmpty) {
@@ -709,6 +709,7 @@ namespace Usivity.Services {
         }
 
         private DreamMessage Translator(DreamContext context, Exception e) {
+            _log.Error(e);
             if(e is ConnectionResponseException) {
                 var connectionResponseException = (ConnectionResponseException)e;
                 switch(connectionResponseException.Status) {
@@ -717,10 +718,10 @@ namespace Usivity.Services {
                     case DreamStatus.NotFound:
                         return DreamMessage.NotFound(e.Message);
                     default:
-                        return DreamMessage.InternalError(e);
+                        return new UsivityInternalErrorMessage();
                 }
             }
-            return DreamMessage.InternalError(e);
+            return new UsivityInternalErrorMessage();
         }
     }
 }

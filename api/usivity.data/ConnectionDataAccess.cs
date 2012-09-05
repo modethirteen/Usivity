@@ -25,7 +25,7 @@ namespace Usivity.Data {
             _tokenDb.EnsureIndex(new IndexKeysBuilder().Ascending("Token.Created"),
                 IndexOptions.SetTimeToLive(TimeSpan.FromMinutes(15)));
             var indexes = new IndexKeysBuilder().Ascending("Source", "OrganizationId", "UserId");
-            _db.EnsureIndex(indexes, IndexOptions.SetUnique(true));
+            _tokenDb.EnsureIndex(indexes, IndexOptions.SetUnique(true));
         }
    
         //--- Methods ---

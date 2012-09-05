@@ -66,6 +66,7 @@
     <Compile Include="Clients\OAuth\OAuthConfig.cs" />
     <Compile Include="Clients\ConnectionResponseException.cs" />
     <Compile Include="Clients\Twitter\TwitterOAuthAccessClient.cs" />
+    <Compile Include="UsivityInternalErrorMessage.cs" />
     <Compile Include="CoreService.cs" />
     <Compile Include="Core\IUsivityAuth.cs" />
     <Compile Include="Core\Logic\Connections.cs" />

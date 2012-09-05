@@ -158,7 +158,8 @@ namespace Usivity.Services.Clients.Twitter {
                 DreamMessage msg;
                 try {
                     msg = Plug.New(uri).Get(); 
-                } catch(Exception e) {
+                }
+                catch(Exception e) {
                     _log.Warn("Error while fetching twitter messages, exception: " + e);
                     return messages;
                 }
