@@ -9,7 +9,7 @@ using Usivity.Util;
 namespace Usivity.Tests.Services.Core.Logic.Connections {
     using Connections = Usivity.Services.Core.Logic.Connections;
 
-    public class ConnectionsTests {
+    class ConnectionsTests {
 
         //--- Fields ---
         protected Mock<IUsivityDataCatalog> _dataMock;

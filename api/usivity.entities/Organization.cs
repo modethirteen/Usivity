@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using MindTouch.Xml;
 using Usivity.Entities.Types;
 using Usivity.Util;
 
@@ -21,14 +20,6 @@ namespace Usivity.Entities {
         }
 
         //--- Methods ---
-        public XDoc ToDocument(string relation = null) {
-            var resource = "organization";
-            if(!string.IsNullOrEmpty(relation)) {
-                resource += "." + relation;
-            }
-            return new XDoc(resource).Attr("id", Id).Elem("name", Name);
-        }
-
         public string GetDefaultConnectionId(Source source) {
             string connectionId;
             GetDefaultConnections().TryGetValue(source, out connectionId);

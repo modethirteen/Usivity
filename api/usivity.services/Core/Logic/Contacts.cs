@@ -77,13 +77,13 @@ namespace Usivity.Services.Core.Logic {
             // Email
             var email = info["email"].Contents;
             if(!string.IsNullOrEmpty(email)) {
-                contact.SetIdentity(Source.Email, EmailClient.GetIdentityByEmailAddress(email));
+                contact.SetIdentity(Source.Email, EmailClient.NewIdentityFromEmailAddress(email));
             }
 
             // Twitter
             var twitter = info["identity.twitter"].Contents;
-            if(!string.IsNullOrEmpty(twitter)) {
-                contact.SetIdentity(Source.Twitter, TwitterClient.GetIdentityByScreenName(twitter));
+            if(!string.IsNullOrEmpty(twitter) && (contact.Twitter == null || contact.Twitter.Name != twitter)) {
+                contact.SetIdentity(Source.Twitter, TwitterClient.NewIdentityFromScreenName(twitter));
             }
 
             // Facebook
@@ -131,13 +131,46 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetContactXml(Contact contact, string relation = null) {
-            return contact.ToDocument(relation)
-                .Attr("href", _context.ApiUri.At("contacts", contact.Id));
+            var resource = "contact";
+            if(!string.IsNullOrEmpty(relation)) {
+                resource += "." + relation;
+            }
+            return new XDoc(resource)
+                .Attr("id", contact.Id ?? "")
+                .Attr("href", _context.ApiUri.At("contacts", contact.Id))
+                .Elem("firstname", contact.FirstName ?? "")
+                .Elem("lastname", contact.LastName ?? "")
+                .Elem("email", contact.Email != null ? contact.Email.Id : "")
+                .Elem("uri.avatar", contact.Avatar != null ? contact.Avatar.ToString() : "");
         }
 
         public XDoc GetContactVerboseXml(Contact contact, string relation = null) {
-            return contact.ToDocumentVerbose(relation)
-                .Attr("href", _context.ApiUri.At("contacts", contact.Id));
+            return GetContactXml(contact, relation)
+                .Elem("age", contact.Age ?? "")
+                .Elem("gender", contact.Gender ?? "")
+                .Elem("location", contact.Location ?? "")
+                .Elem("phone", contact.Phone ?? "")
+                .Elem("fax", contact.Fax ?? "")
+                .Elem("address", contact.Address ?? "")
+                .Elem("city", contact.City ?? "")
+                .Elem("state", contact.State ?? "")
+                .Elem("zip", contact.Zip ?? "")
+                .Elem("identity.twitter", contact.Twitter != null ? contact.Twitter.Name : "")
+                .Elem("identity.facebook", contact.Facebook != null ? contact.Facebook.Name : "")
+                .Elem("identity.linkedin", contact.LinkedIn != null ? contact.LinkedIn.Name : "")
+                .Elem("identity.google", contact.Google != null ? contact.Google.Name : "")
+                .Start("company")
+                    .Elem("name", contact.CompanyName ?? "")
+                    .Elem("phone", contact.CompanyPhone ?? "")
+                    .Elem("fax", contact.CompanyFax ?? "")
+                    .Elem("address", contact.CompanyAddress ?? "")
+                    .Elem("city", contact.CompanyCity ?? "")
+                    .Elem("state", contact.CompanyState ?? "")
+                    .Elem("zip", contact.CompanyZip ?? "")
+                    .Elem("industry", contact.CompanyIndustry ?? "")
+                    .Elem("revenue", contact.CompanyRevenue ?? "")
+                    .Elem("competitors", contact.CompanyCompetitors ?? "")
+                .EndAll();
         }
 
         public void RemoveContact(Contact contact) {

@@ -22,6 +22,8 @@ namespace Usivity.Data {
 
             var xuriSerializer = new XUriSerializer();
             xuriSerializer.RegisterSerializer();
+            var oauthTokenInfoSerializer = new OAuthTokenInfoSerializer();
+            oauthTokenInfoSerializer.RegisterSerializer();
 
             var twitterConnectionSerializer = new TwitterConnectionSerializer();
             twitterConnectionSerializer.RegisterSerializer();

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MindTouch.Xml;
 using Usivity.Entities.Types;
 using Usivity.Util;
 
@@ -37,26 +36,6 @@ namespace Usivity.Entities {
         }
 
         //--- Methods ---
-        public XDoc ToDocument(string relation = null) {
-            var resource = "message";
-            if(!string.IsNullOrEmpty(relation)) {
-                resource += "." + relation;
-            }
-            var author = new XDoc("author")
-                .Elem("name", Author.Name ?? Author.Id);
-            if(Author.Avatar != null) {
-                author.Elem("uri.avatar", Author.Avatar.ToString());
-            }
-            return new XDoc(resource)
-                .Attr("id", Id)
-                .Elem("source", Source.ToString().ToLowerInvariant())
-                .AddAll(author)
-                .Elem("subject", Subject)
-                .Elem("body", Body)
-                .Elem("created.source", SourceCreated.ToISO8601String())
-                .Elem("created.openstream", Created.ToISO8601String());
-        }
-
         public void SetParent(IMessage message) {
             ParentMessageId = message.Id;
             MessageThreadIds = new List<string>();

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MindTouch.Xml;
 using Usivity.Entities.Types;
 using Usivity.Util;
 
@@ -80,48 +79,6 @@ namespace Usivity.Entities {
         }
 
         //--- Methods ---
-        public XDoc ToDocumentVerbose(string relation = null) {
-            return ToDocument(relation)
-                .Elem("age", Age ?? "")
-                .Elem("gender", Gender ?? "")
-                .Elem("location", Location ?? "")
-                .Elem("email", Email != null ? Email.Name : "")
-                .Elem("phone", Phone ?? "")
-                .Elem("fax", Fax ?? "")
-                .Elem("address", Address ?? "")
-                .Elem("city", City ?? "")
-                .Elem("state", State ?? "")
-                .Elem("zip", Zip ?? "")
-                .Elem("identity.twitter", Twitter != null ? Twitter.Name : "")
-                .Elem("identity.facebook", Facebook != null ? Facebook.Name : "")
-                .Elem("identity.linkedin", LinkedIn != null ? LinkedIn.Name : "")
-                .Elem("identity.google", Google != null ? Google.Name : "")
-                .Start("company")
-                    .Elem("name", CompanyName ?? "")
-                    .Elem("phone", CompanyPhone ?? "")
-                    .Elem("fax", CompanyFax ?? "")
-                    .Elem("address", CompanyAddress ?? "")
-                    .Elem("city", CompanyCity ?? "")
-                    .Elem("state", CompanyState ?? "")
-                    .Elem("zip", CompanyZip ?? "")
-                    .Elem("industry", CompanyIndustry ?? "")
-                    .Elem("revenue", CompanyRevenue ?? "")
-                    .Elem("competitors", CompanyCompetitors ?? "")
-                .EndAll();
-        }
-
-        public XDoc ToDocument(string relation = null) {
-            var resource = "contact";
-            if(!string.IsNullOrEmpty(relation)) {
-                resource += "." + relation;
-            }
-            return new XDoc(resource)
-                .Attr("id", Id ?? "")
-                .Elem("firstname", FirstName ?? "")
-                .Elem("lastname", LastName ?? "")
-                .Elem("uri.avatar", Avatar != null ? Avatar.ToString() : "");
-        }
-
         public void SetIdentity(Source source, Identity identity) {
             _identities[source] = identity;
         }

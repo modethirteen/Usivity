@@ -5,7 +5,7 @@ using Usivity.Entities.Connections;
 namespace Usivity.Tests.Services.Core.Logic.Connections {
 
     [TestFixture]
-    public class GetConnection : ConnectionsTests {
+    class GetConnection : ConnectionsTests {
 
         //--- Methods ---
         [SetUp]

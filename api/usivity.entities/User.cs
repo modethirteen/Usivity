@@ -30,7 +30,8 @@ namespace Usivity.Entities {
 
         //--- Properties ---
         public string Id { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; set; }
+        public string EmailAddress { get; set; }
         public string Password { get; set; }
         public string CurrentOrganization { get; set; }
         public bool IsAnonymous { get; private set; }
@@ -39,31 +40,17 @@ namespace Usivity.Entities {
         private Dictionary<string, UserRole> _organizations = new Dictionary<string, UserRole>();
 
         //--- Constructors ---
-        public User(IGuidGenerator guidGenerator, string name) {
+        public User(IGuidGenerator guidGenerator, string name, string email) {
             Id = guidGenerator.GenerateNewObjectId();
+            EmailAddress = email;
             Name = name;
         }
 
         private User() {}
 
         //--- Methods ---
-        public XDoc ToDocument(string relation = null) {
-            var resource = "user";
-            if(!string.IsNullOrEmpty(relation)) {
-                resource += "." + relation;
-            }
-            UserRole role;
-            _organizations.TryGetValue(CurrentOrganization, out role);
-            return new XDoc(resource).Attr("id", Id)
-                .Elem("name", Name)
-                .Elem("role", role);
-        }
-
         public UserRole GetOrganizationRole(IOrganization organization) {
-            if(organization == null) {
-                return UserRole.None;
-            }
-            return _organizations.TryGetValue(organization.Id, UserRole.None);
+            return (organization == null) ? UserRole.None : _organizations.TryGetValue(organization.Id, UserRole.None);
         }
 
         public void SetOrganizationRole(IOrganization organization, UserRole role) {

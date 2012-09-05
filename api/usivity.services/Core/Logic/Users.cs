@@ -38,7 +38,16 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetUserXml(User user, string relation = null) {
-            return user.ToDocument(relation).Attr("href", _context.ApiUri.At("users", user.Id));
+            var resource = "user";
+            if(!string.IsNullOrEmpty(relation)) {
+                resource += "." + relation;
+            }
+            return new XDoc(resource)
+                .Attr("id", user.Id)
+                .Attr("href", _context.ApiUri.At("users", user.Id))
+                .Elem("name", user.Name)
+                .Elem("email", user.EmailAddress)
+                .Elem("role", user.GetOrganizationRole(_organizations.CurrentOrganization));
         }
 
         public XDoc GetUsersXml() {
@@ -65,8 +74,8 @@ namespace Usivity.Services.Core.Logic {
             return _context.User.Id == id;
         }
 
-        public User GetNewUser(string name, string password) {
-            var user = new User(_guidGenerator, name);
+        public User NewUser(string name, string password, string email) {
+            var user = new User(_guidGenerator, name, email);
             var organization = _organizations.CurrentOrganization;
             user.SetOrganizationRole(organization, User.UserRole.Member);
             user.CurrentOrganization = organization.Id;
@@ -75,11 +84,6 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public void SaveUser(User user) {
-            _data.Users.Save(user);
-        }
-
-        public void SavePassword(User user, string password) {
-            user.Password = _auth.GetSaltedPassword(password);
             _data.Users.Save(user);
         }
 

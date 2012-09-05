@@ -11,10 +11,10 @@ using MindTouch.Web;
 using MindTouch.Xml;
 using Usivity.Data;
 using Usivity.Entities;
-using Usivity.Entities.Connections;
 using Usivity.Entities.Types;
 using Usivity.Services.Clients;
 using Usivity.Services.Clients.Email;
+using Usivity.Services.Clients.OAuth;
 using Usivity.Services.Clients.Twitter;
 using Usivity.Util;
 using Usivity.Util.Json;
@@ -59,7 +59,7 @@ namespace Usivity.Services {
                 var json = new JDoc(request.ToText());
                 doc = json.ToDocument();   
             }
-            catch {
+            catch(Exception e) {
                 try {
                     doc = XDocFactory.From(request.ToText(), MimeType.TEXT_XML);
                     if(doc.IsEmpty) {
@@ -103,23 +103,30 @@ namespace Usivity.Services {
             response.Return(DreamMessage.Ok(doc));
             yield break;
         }
+
+        [UsivityFeatureAccess(User.UserRole.Admin)]
+        [DreamFeature("GET:connections/twitter/token", "Get twitter new oauth request token")]
+        internal Yield GetTwitterConnectionRequest(DreamContext context, IConnections connections, Result<DreamMessage> response) {
+            var token = connections.NewOAuthRequestToken(Source.Twitter);
+            var doc = connections.GetOAuthRequestTokenXml(token);
+            response.Return(DreamMessage.Ok(doc));
+            yield break;
+        }
         
         [UsivityFeatureAccess(User.UserRole.Admin)]
-        [DreamFeature("POST:connections", "Add new source connection")]
-        [DreamFeatureParam("source", "{twitter,email}", "Source connection type")]
-        internal Yield PostConnection(DreamContext context, IConnections connections, Result<DreamMessage> response) {
-            IConnection connection;
-            switch(context.GetParam<string>("source").ToLowerInvariant()) {
-                case "twitter":
-                    connection = connections.NewTwitterConnection();
-                    break;
-                case "email":
-                    connection = connections.NewEmailConnection();
-                    break;
-                default:
-                    response.Return(DreamMessage.BadRequest("Invalid source connection type"));
-                    yield break;
+        [DreamFeature("POST:connections/twitter", "Add new twitter source connection")]
+        internal Yield PostTwitterConnection(DreamContext context, DreamMessage request, IConnections connections, Result<DreamMessage> response) {
+            var auth = GetRequestXml(request);
+            if(auth["token"].IsEmpty || auth["verifier"].IsEmpty) {
+                response.Return(DreamMessage.BadRequest("Twitter connections require an oauth request token and verifier"));
+                yield break;
             }
+            var requestToken = connections.GetOAuthRequestToken(Source.Twitter, auth["token"].AsText);
+            if(requestToken == null) {
+                response.Return(DreamMessage.BadRequest("Requested oauth request token information does not exist"));
+                yield break;
+            }
+            var connection = connections.NewTwitterConnection(requestToken, auth["verifier"].AsText);
             connections.SaveConnection(connection);
             var doc = connections.GetConnectionXml(connection);
             response.Return(DreamMessage.Ok(doc));
@@ -127,27 +134,35 @@ namespace Usivity.Services {
         }
 
         [UsivityFeatureAccess(User.UserRole.Admin)]
-        [DreamFeature("PUT:connections/{connectionid}", "Update your source connection")]
-        [DreamFeatureParam("connectionid", "string", "Source connection id")]
-        internal Yield UpdateConnection(DreamContext context, DreamMessage request, IConnections connections, Result<DreamMessage> response) {
-            var connection = connections.GetConnection(context.GetParam<string>("connectionid"));
-            if(connection == null) {
-                response.Return(DreamMessage.NotFound("Source connection does not exist"));
+        [DreamFeature("POST:connections/email", "Add new email source connection")]
+        internal Yield PostEmailConnection(DreamContext context, DreamMessage request, IConnections connections, Result<DreamMessage> response) {
+            var auth = GetRequestXml(request);
+            if(auth["host"].IsEmpty || auth["username"].IsEmpty) {
+                response.Return(DreamMessage.BadRequest("Email connections require an imap host and username"));
                 yield break;
             }
-            var updateDoc = GetRequestXml(request);
-            switch(connection.Source) {
-                case Source.Twitter:
-                    var twitterAuth = new TwitterAuthorization(updateDoc["oauth"]);
-                    connections.ActivateTwitterConnection((ITwitterConnection) connection, twitterAuth);
+            var host = auth["host"].AsText;
+            var username = auth["username"].AsText;
+            var password = auth["password"].AsText;
+            var port = auth["port"].AsInt ?? 143;
+            var useSsl = auth["ssl"].AsBool ?? false;
+            var authMethod = auth["auth.method"].AsText;
+            if(!string.IsNullOrEmpty(authMethod)) {
+                authMethod = authMethod.ToLowerInvariant();
+            }
+            var useCramMd5 = false;
+            switch(authMethod) {
+                case "crammd5":
+                    useCramMd5 = true;
                     break;
-                case Source.Email:
-                    var emailAuth = new EmailAuthorization(updateDoc["imap"]);
-                    connections.ActivateEmailConnection((IEmailConnection) connection, emailAuth);
+                case "login":
+                case null:
                     break;
                 default:
-                    throw new NotImplementedException();
+                    response.Return(DreamMessage.BadRequest("\"auth.method\" element is invalid. Allowed values: login, crammd5"));
+                    yield break;
             }
+            var connection = connections.NewEmailConnection(host, username, password, port, useSsl, useCramMd5);
             connections.SaveConnection(connection);
             var doc = connections.GetConnectionXml(connection);
             response.Return(DreamMessage.Ok(doc));
@@ -441,9 +456,11 @@ namespace Usivity.Services {
         
         [UsivityFeatureAccess(User.UserRole.Member)]
         [DreamFeature("GET:users/{userid}", "Get user")]
-        [DreamFeatureParam("userid", "string", "User id")]
+        [DreamFeatureParam("userid", "string", "User id or \"current\"")]
         internal Yield GetUser(DreamContext context, IUsers users, Result<DreamMessage> response) {
-            var user = users.GetUser(context.GetParam<string>("userid"));
+            var userId = context.GetParam<string>("userid");
+            var currentUser = users.GetCurrentUser();
+            var user = (userId != currentUser.Id && !userId.Equals("current")) ? users.GetUser(userId) : currentUser;
             if(user == null) {
                 response.Return(DreamMessage.NotFound("The requested user could not be located"));
                 yield break;
@@ -457,13 +474,14 @@ namespace Usivity.Services {
         [DreamFeature("POST:users", "Create a new user")]
         internal Yield PostUser(DreamContext context, DreamMessage request, Result<DreamMessage> response) {
             var userDoc = GetRequestXml(request);
-            var name = userDoc["name"].Contents;
-            var password = userDoc["password"].Contents;
+            var name = userDoc["name"].AsText;
+            var email = userDoc["email"].AsText;
+            var password = userDoc["password"].AsText;
             if(string.IsNullOrEmpty(name)) {
                 response.Return(DreamMessage.BadRequest("Request is missing a value for \"name\""));
                 yield break;
             }
-            if(name.ToLowerInvariant() == User.ANONYMOUS_USER.ToLowerInvariant()) {
+            if(name.EqualsInvariantIgnoreCase(User.ANONYMOUS_USER)) {
                 response.Return(DreamMessage.BadRequest("\"" + User.ANONYMOUS_USER + "\" is not a valid user name"));
                 yield break;
             }
@@ -471,11 +489,19 @@ namespace Usivity.Services {
                 response.Return(DreamMessage.BadRequest("Request is missing a value for \"password\""));
                 yield break;
             }
+            if(string.IsNullOrEmpty(email)) {
+                response.Return(DreamMessage.BadRequest("Request is missing a value for \"email\""));
+                yield break;
+            }
+            if(!EmailClient.IsValidEmailAddress(email)) {
+                response.Return(DreamMessage.BadRequest("Email address is invalid"));
+                yield break;
+            }
             var users = Resolve<IUsers>(context);
             if(users.UsernameExists(name)) {
                 response.Return(DreamMessage.Conflict("The requested user name has already been taken"));
             }
-            var user = users.GetNewUser(name, password);
+            var user = users.NewUser(name, password, email);
             users.SaveUser(user);
             var doc = users.GetUserXml(user);
             response.Return(DreamMessage.Ok(doc));
@@ -483,16 +509,39 @@ namespace Usivity.Services {
         }
 
         [UsivityFeatureAccess(User.UserRole.Member)]
-        [DreamFeature("PUT:users/{userid}/password", "Change user password")]
-        [DreamFeatureParam("userid", "string", "User id")]
-        internal Yield UpdateUserPassword(DreamContext context, DreamMessage request, IUsers users, Result<DreamMessage> response) {
-            var user = users.GetCurrentUser();
-            if(context.GetParam<string>("userid") != user.Id) {
-                response.Return(DreamMessage.Forbidden("You can only change your own user password"));
-                yield break;
+        [DreamFeature("PUT:users/{userid}", "Update user")]
+        [DreamFeatureParam("userid", "string", "User id or \"current\"")]
+        internal Yield UpdateUserPassword(DreamContext context, DreamMessage request, IUsivityAuth auth, IUsers users, IOrganizations organizations, Result<DreamMessage> response) {
+            var userId = context.GetParam<string>("userid");
+            var currentUser = users.GetCurrentUser();
+            var currentRole = currentUser.GetOrganizationRole(organizations.CurrentOrganization);
+            User user;
+            if(userId != currentUser.Id && !userId.Equals("current")) {
+                if(currentRole <= User.UserRole.Member) {
+                    response.Return(DreamMessage.Forbidden("You can only update your own user information"));
+                    yield break;
+                }
+                user = users.GetUser(userId);
+            } else {
+                user = currentUser;
+            } 
+            var userDoc = GetRequestXml(request);
+            if(!userDoc["name"].IsEmpty) {
+                user.Name = userDoc["name"].AsText;  
             }
-            users.SavePassword(user, request.ToText());
-            response.Return(DreamMessage.Ok(MimeType.TEXT_UTF8, "Your password has been successfully updated"));
+            if(!userDoc["email"].IsEmpty) {
+                var email = userDoc["email"].AsText;
+                if(!EmailClient.IsValidEmailAddress(email)) {
+                    response.Return(DreamMessage.BadRequest("Email address is invalid"));
+                    yield break;
+                }
+                user.EmailAddress = email;
+            }
+            if(!userDoc["password"].IsEmpty) {
+                user.Name = auth.GetSaltedPassword(userDoc["password"].AsText);
+            }
+            users.SaveUser(user);
+            response.Return(DreamMessage.Ok(MimeType.TEXT_UTF8, "User has been successfully updated"));
             yield break;
         }
         #endregion
@@ -533,6 +582,7 @@ namespace Usivity.Services {
                 "sid://usivity.com/2012/04/openstream",
                 new XDoc("config")
                     .Elem("apikey", MasterApiKey)
+                    .AddAll(config["aws"])
                     .AddAll(config["openstream"])
                     .AddAll(config["mongodb"])
                     .AddAll(config["sources"]),
@@ -555,32 +605,24 @@ namespace Usivity.Services {
             _log.Debug("Initializing source network clients");
             if(!container.IsRegistered<ITwitterClientFactory>()) {
                 builder.Register(c => {
-                    var twitterDoc = config["sources/twitter"];
-                    var twitterClientConfig = new TwitterClientConfig {
-                        OAuthConsumerKey = twitterDoc["oauth/consumer.key"].Contents,
-                        OAuthConsumerSecret = twitterDoc["oauth/consumer.secret"].Contents,
-                        OAuthCallbackBaseUri = config["uri.ui"].AsUri,
-                        OAuthNonceFactory = new OAuthNonceFactory(),
-                        OAuthTimeStampFactory = new OAuthTimeStampFactory()
+                    var twitterConfig = new OAuthConfig {
+                        ConsumerKey = config["sources/twitter/consumer.key"].AsText,
+                        ConsumerSecret = config["sources/twitter/consumer.secret"].AsText,
+                        NonceFactory = new OAuthNonceFactory(),
+                        TimeStampFactory = new OAuthTimeStampFactory()
                     };
                     var guidGenerator = c.Resolve<IGuidGenerator>();
                     var dateTime = c.Resolve<IDateTime>();
-                    return new TwitterClientFactory(twitterClientConfig, guidGenerator, dateTime);
+                    return new TwitterClientFactory(twitterConfig, guidGenerator, dateTime);
                 })
                 .As<ITwitterClientFactory>()
                 .RequestScoped();
             }
             if(!container.IsRegistered<IEmailClientFactory>()) {
                 builder.Register(c => {
-                    var emailDoc = config["sources/email"];
-                    var port = int.MinValue;
-                    int.TryParse(emailDoc["port"].AsText, out port);
-                    var emailClientConfig = new EmailClientConfig {
-                        Host = emailDoc["host"].AsText,
-                        Port = port,
-                        UseSsl = Convert.ToBoolean(emailDoc["ssl"].AsText),
-                        Username = emailDoc["username"].AsText,
-                        Password = emailDoc["password"].AsText
+                    var emailClientConfig = new SimpleEmailServiceConfig {
+                        AwsPublicKey = config["aws/public.key"].AsText,
+                        AwsPrivateKey = config["aws/private.key"].AsText
                     };
                     var guidGenerator = c.Resolve<IGuidGenerator>();
                     var dateTime = c.Resolve<IDateTime>();
@@ -652,10 +694,14 @@ namespace Usivity.Services {
             var auth = Resolve<IUsivityAuth>(context);
             var authToken = auth.GetAuthToken(request);
             var user = auth.GetUser(authToken);
+            var apiUri = Self.Uri.AsPublicUri();
             var usivityContext = new UsivityContext {
                 User = user,
                 Role = User.UserRole.None,
-                ApiUri = Self.Uri.AsPublicUri()
+                ApiUri = apiUri,
+
+                // Assumes UI is on same domain as API
+                UiUri = new XUri(apiUri.WithoutPathQueryFragment())
             };
             DreamContext.Current.SetState(usivityContext);
             response.Return(request);
@@ -663,6 +709,7 @@ namespace Usivity.Services {
         }
 
         private DreamMessage Translator(DreamContext context, Exception e) {
+            _log.Error(e);
             if(e is ConnectionResponseException) {
                 var connectionResponseException = (ConnectionResponseException)e;
                 switch(connectionResponseException.Status) {
@@ -671,10 +718,10 @@ namespace Usivity.Services {
                     case DreamStatus.NotFound:
                         return DreamMessage.NotFound(e.Message);
                     default:
-                        return DreamMessage.InternalError(e);
+                        return new UsivityInternalErrorMessage();
                 }
             }
-            return DreamMessage.InternalError(e);
+            return new UsivityInternalErrorMessage();
         }
     }
 }

@@ -33,7 +33,8 @@ namespace Usivity.Tests.Services {
                         builder.Append(symbol);
                     else
                         i--;
-                } catch(ArgumentOutOfRangeException) {
+                }
+                catch(ArgumentOutOfRangeException) {
                     i--;
                 }
             }

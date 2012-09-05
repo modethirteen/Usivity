@@ -21,16 +21,16 @@ namespace Usivity.Data {
             if(organization == null) {
                 return _db.FindAllAs<User>();    
             }
-            var query = Query.Exists("_organizations." + organization.Id, true);
+            var query = Query.Exists("_organizations." + organization.Id);
             return _db.FindAs<User>(query);
         }
 
         public User Get(string id, IOrganization organization = null) {
-            QueryComplete query;
+            IMongoQuery query;
             if(organization != null) {
                 query = Query.And(
                     Query.EQ("_id", id),
-                    Query.Exists("_organizations." + organization.Id, true)
+                    Query.Exists("_organizations." + organization.Id)
                     );
             }
             else {

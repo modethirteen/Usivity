@@ -45,6 +45,7 @@
     <Compile Include="Connections\IEmailConnection.cs" />
     <Compile Include="Connections\ITwitterConnection.cs" />
     <Compile Include="Connections\TwitterConnection.cs" />
+    <Compile Include="Connections\OAuthTokenInfo.cs" />
     <Compile Include="Contact.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IMessage.cs" />
