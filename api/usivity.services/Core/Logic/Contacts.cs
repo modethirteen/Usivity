@@ -47,9 +47,9 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public void UpdateContactInformation(Contact contact, XDoc info) {
-            contact.FirstName = info["firstname"].Contents ?? contact.FirstName;
-            contact.LastName = info["lastname"].Contents ?? contact.LastName;
-            var avatar = info["uri.avatar"].Contents;
+            contact.FirstName = info["firstname"].AsText ?? contact.FirstName;
+            contact.LastName = info["lastname"].AsText ?? contact.LastName;
+            var avatar = info["uri.avatar"].AsText;
             if(!string.IsNullOrEmpty(avatar)) {
                 XUri uri;
                 XUri.TryParse(avatar, out uri);
@@ -57,41 +57,42 @@ namespace Usivity.Services.Core.Logic {
                     contact.Avatar = uri;
                 }
             }
-            contact.Age = info["age"].Contents ?? contact.Age;
-            contact.Gender = info["gender"].Contents ?? contact.Gender;
-            contact.Location = info["location"].Contents ?? contact.Location;
-            contact.Phone = info["phone"].Contents ?? contact.Phone;
-            contact.Fax = info["fax"].Contents ?? contact.Fax;
-            contact.Address = info["address"].Contents ?? contact.Address;
-            contact.City = info["city"].Contents ?? contact.City;
-            contact.State = info["state"].Contents ?? contact.State;
-            contact.Zip = info["zip"].Contents ?? contact.Zip;
-            contact.CompanyName = info["company/name"].Contents ?? contact.CompanyName;
-            contact.CompanyPhone = info["company/phone"].Contents ?? contact.CompanyPhone;
-            contact.CompanyFax = info["company/fax"].Contents ?? contact.CompanyFax;
-            contact.CompanyAddress = info["company/address"].Contents ?? contact.CompanyAddress;
-            contact.CompanyCity = info["company/city"].Contents ?? contact.CompanyCity;
-            contact.CompanyState = info["company/state"].Contents ?? contact.CompanyState;
-            contact.CompanyZip = info["company/zip"].Contents ?? contact.CompanyZip;
-            contact.CompanyIndustry = info["company/industry"].Contents ?? contact.CompanyIndustry;
-            contact.CompanyRevenue = info["company/revenue"].Contents ?? contact.CompanyRevenue;
-            contact.CompanyCompetitors = info["company/competitors"].Contents ?? contact.CompanyCompetitors;
+            contact.Age = info["age"].AsText ?? contact.Age;
+            contact.Gender = info["gender"].AsText ?? contact.Gender;
+            contact.Location = info["location"].AsText ?? contact.Location;
+            contact.Phone = info["phone"].AsText ?? contact.Phone;
+            contact.Fax = info["fax"].AsText ?? contact.Fax;
+            contact.Address = info["address"].AsText ?? contact.Address;
+            contact.City = info["city"].AsText ?? contact.City;
+            contact.State = info["state"].AsText ?? contact.State;
+            contact.Zip = info["zip"].AsText ?? contact.Zip;
+            contact.CompanyName = info["company/name"].AsText ?? contact.CompanyName;
+            contact.CompanyPhone = info["company/phone"].AsText ?? contact.CompanyPhone;
+            contact.CompanyFax = info["company/fax"].AsText ?? contact.CompanyFax;
+            contact.CompanyAddress = info["company/address"].AsText ?? contact.CompanyAddress;
+            contact.CompanyCity = info["company/city"].AsText ?? contact.CompanyCity;
+            contact.CompanyState = info["company/state"].AsText ?? contact.CompanyState;
+            contact.CompanyZip = info["company/zip"].AsText ?? contact.CompanyZip;
+            contact.CompanyIndustry = info["company/industry"].AsText ?? contact.CompanyIndustry;
+            contact.CompanyRevenue = info["company/revenue"].AsText ?? contact.CompanyRevenue;
+            contact.CompanyCompetitors = info["company/competitors"].AsText ?? contact.CompanyCompetitors;
 
             // Email
-            var email = info["email"].Contents;
-            if(!string.IsNullOrEmpty(email)) {
-                contact.SetIdentity(Source.Email, EmailClient.NewIdentityFromEmailAddress(email));
+            var newEmail = info["email"].AsText;
+            var existingEmail = contact.GetIdentity(Source.Email);
+            if(!string.IsNullOrEmpty(newEmail) && (existingEmail == null || existingEmail.Id != newEmail)) {
+                contact.SetIdentity(Source.Email, EmailClient.NewIdentityFromEmailAddress(newEmail));
             }
 
             // Twitter
-            var newTwitter = info["identity.twitter"].Contents;
+            var newTwitter = info["identity.twitter"].AsText;
             var existingTwitter = contact.GetIdentity(Source.Twitter);
             if(!string.IsNullOrEmpty(newTwitter) && (existingTwitter == null || existingTwitter.Name != newTwitter)) {
                 contact.SetIdentity(Source.Twitter, TwitterClient.NewIdentityFromScreenName(newTwitter));
             }
 
             // Facebook
-            var facebook = info["identity.facebook"].Contents;
+            var facebook = info["identity.facebook"].AsText;
             if(!string.IsNullOrEmpty(facebook)) {
                 var facebookIdentity = new Identity {
                     Name = facebook
@@ -100,7 +101,7 @@ namespace Usivity.Services.Core.Logic {
             }
 
             // LinkedIn
-            var linkedIn = info["identity.linkedin"].Contents;
+            var linkedIn = info["identity.linkedin"].AsText;
             if(!string.IsNullOrEmpty(linkedIn)) {
                 var linkedInIdentity = new Identity {
                     Name = linkedIn
@@ -109,7 +110,7 @@ namespace Usivity.Services.Core.Logic {
             }
 
             // Google
-            var google = info["identity.google"].Contents;
+            var google = info["identity.google"].AsText;
             if(!string.IsNullOrEmpty(google)) {
                 var googleIdentity = new Identity {
                     Name = google
