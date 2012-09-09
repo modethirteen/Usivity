@@ -48,6 +48,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\redist\mindtouch.dream.dll</HintPath>
     </Reference>
+    <Reference Include="mindtouch.host">
+      <HintPath>..\redist\mindtouch.host.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
   </ItemGroup>
@@ -87,7 +90,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OpenStreamService.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\usivity.data\usivity.data.csproj">
       <Project>{62996F95-997C-481D-BBE6-F9BC9DF16D48}</Project>
@@ -102,9 +104,15 @@
       <Name>usivity.util</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="mindtouch.host.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(SolutionDir)redist\*" "$(SolutionDir)bin"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

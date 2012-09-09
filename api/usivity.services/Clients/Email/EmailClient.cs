@@ -26,7 +26,7 @@ namespace Usivity.Services.Clients.Email {
 
         //--- Class Methods ---
         public static Identity NewIdentityFromEmailAddress(string email) {
-            return new Identity { Id = email };
+            return new Identity { Id = email.ToLowerInvariant() };
         }
 
         public static void CheckEmailConnectionCredentials(IEmailConnection connection) {
@@ -144,8 +144,7 @@ namespace Usivity.Services.Clients.Email {
                 response = plug.PostAsForm();
             }
             catch(DreamResponseException e) {
-                var msg = "Error posting message, response from Amazon SES API: " + e.Response.ToDocument();
-                throw new ConnectionResponseException(e.Response.Status, msg, e);
+                throw new ConnectionResponseException(e.Response.Status, "Error posting message", plug.Uri, e.Response, e);
             }
             var sendEmailResult = response.ToDocument();
             sendEmailResult.UsePrefix("ses", "http://ses.amazonaws.com/doc/2010-12-01/");

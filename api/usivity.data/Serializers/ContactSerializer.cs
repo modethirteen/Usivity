@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Options;
 using Usivity.Entities;
 
 namespace Usivity.Data.Serializers {
@@ -11,7 +12,7 @@ namespace Usivity.Data.Serializers {
                 BsonClassMap.RegisterClassMap<Contact>(cm => {
                     cm.AutoMap();
                     cm.SetIdMember(cm.GetMemberMap(c => c.Id));
-                    cm.MapField("_identities");
+                    cm.MapField("_identities").SetSerializationOptions(DictionarySerializationOptions.ArrayOfDocuments);
                     cm.MapField("_organizations");
                 });
             }

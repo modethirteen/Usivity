@@ -8,8 +8,8 @@ namespace Usivity.Entities {
     public class Contact : IEntity {
 
         //--- Fields ---
-        private IDictionary<Source, Identity> _identities;
-        private IList<string> _organizations;
+        private Dictionary<Source, Identity> _identities;
+        private List<string> _organizations;
 
         //--- Properties ---
         public string Id { get; private set; }
@@ -87,7 +87,7 @@ namespace Usivity.Entities {
             return _identities.TryGetValue(source, null);
         }
 
-        public IDictionary<Source, Identity> GetSourceIdentities() {
+        public IEnumerable<KeyValuePair<Source, Identity>> GetSourceIdentities() {
             return _identities;
         }
 

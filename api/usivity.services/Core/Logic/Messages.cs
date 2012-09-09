@@ -11,7 +11,6 @@ using Usivity.Entities.Types;
 using Usivity.Services.Clients;
 using Usivity.Services.Clients.Email;
 using Usivity.Services.Clients.Twitter;
-using Usivity.Services.Parser;
 using Usivity.Util;
 
 namespace Usivity.Services.Core.Logic {
@@ -76,12 +75,32 @@ namespace Usivity.Services.Core.Logic {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            var author = new XDoc("author")
-                .Elem("name", message.Author.Name ?? message.Author.Id);
-            if(message.Author.Avatar != null) {
-                author.Elem("uri.avatar", message.Author.Avatar.ToString());
+            XDoc author = null;
+            if(message.UserId != null) {
+                var user = _data.Users.Get(message.UserId);
+                if(user != null) {
+
+                    // author is usivity user
+                    author = _users.GetUserXml(user, "author");
+                }
             }
-            var doc = new XDoc(resource)
+            if(author == null) {
+                var contact = _data.Contacts.Get(message, _organizations.CurrentOrganization);
+                if(contact != null) {
+
+                    // author is contact
+                    author = _contacts.GetContactXml(contact, "author");
+                }
+                else {
+
+                    // author is unaffiliated
+                    author = new XDoc("author").Elem("name", message.Author.Name ?? message.Author.Id);
+                    if(message.Author.Avatar != null) {
+                        author.Elem("uri.avatar", message.Author.Avatar.ToString());
+                    }        
+                }    
+            }
+            return new XDoc(resource)
                 .Attr("id", message.Id)
                 .Attr("href", _context.ApiUri.At("messages", message.Id))
                 .Elem("source", message.Source.ToString().ToLowerInvariant())
@@ -90,17 +109,6 @@ namespace Usivity.Services.Core.Logic {
                 .Elem("body", message.Body)
                 .Elem("created.source", message.SourceCreated.ToISO8601String())
                 .Elem("created.openstream", message.Created.ToISO8601String());
-            var contact = _data.Contacts.Get(message);
-            if(contact != null) {
-                doc.AddAll(_contacts.GetContactXml(contact, "author"));
-            }
-            if(message.UserId != null) {
-                var user = _data.Users.Get(message.UserId);
-                if(user != null) {
-                    doc.AddAll(_users.GetUserXml(user, "author"));
-                }
-            }
-            return doc;
         }            
 
         public XDoc GetMessageStreamXml(DateTime startTime, DateTime endTime, int count, int offset, Source? source) {
@@ -167,7 +175,7 @@ namespace Usivity.Services.Core.Logic {
             }
             _messageStream.Save(replyMessage);
             var doc = GetMessageVerboseXml(replyMessage);
-            var contact = _data.Contacts.Get(message);
+            var contact = _data.Contacts.Get(message, organization);
             if(contact == null) {
                 contact = client.NewContact(message.Author);
                 doc["message.parent"].Add(_contacts.GetContactXml(contact));
