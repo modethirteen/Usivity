@@ -26,7 +26,7 @@ namespace Usivity.Services.Clients.Email {
 
         //--- Class Methods ---
         public static Identity NewIdentityFromEmailAddress(string email) {
-            return new Identity { Id = email.ToLowerInvariant() };
+            return new Identity { Id = email.ToLowerInvariant().Trim() };
         }
 
         public static void CheckEmailConnectionCredentials(IEmailConnection connection) {
@@ -94,11 +94,14 @@ namespace Usivity.Services.Clients.Email {
                 if(mailMessage.Date < _connection.Created) {
                     continue;
                 }
-                var identity = new Identity();
                 var sender = mailMessage.From ?? mailMessage.Sender;
+                Identity identity;
                 if(sender != null) {
-                    identity.Id = sender.Address;
+                    identity = NewIdentityFromEmailAddress(sender.Address);
                     identity.Name = sender.DisplayName;
+                }
+                else {
+                    identity = new Identity();
                 }
                 var message = new Message(_guidGenerator, _dateTime, expiration) {
                     Source = Source.Email,

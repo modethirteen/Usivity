@@ -676,6 +676,9 @@ namespace Usivity.Services {
             if(!container.IsRegistered<IGuidGenerator>()) {
                 builder.RegisterType<GuidGenerator>().As<IGuidGenerator>().RequestScoped();
             }
+            if(!container.IsRegistered<IAvatarHelper>()) {
+                builder.RegisterType<AvatarHelper>().As<IAvatarHelper>().RequestScoped();
+            }
         }
 
         protected override DreamAccess DetermineAccess(DreamContext context, string key) {
@@ -703,6 +706,16 @@ namespace Usivity.Services {
                 // Assumes UI is on same domain as API
                 UiUri = new XUri(apiUri.WithoutPathQueryFragment())
             };
+
+            // default avatar for gravatar fallback
+            var avatar = context.GetParam("defaultavatar", null);
+            if(!string.IsNullOrEmpty(avatar)) {
+                XUri uri;
+                XUri.TryParse(avatar, out uri);
+                if(uri != null) {
+                    usivityContext.DefaultAvatarUri = uri;
+                }
+            }
             DreamContext.Current.SetState(usivityContext);
             response.Return(request);
             yield break;

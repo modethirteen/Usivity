@@ -17,18 +17,21 @@ namespace Usivity.Services.Core.Logic {
         private readonly IUsivityDataCatalog _data;
         private readonly IOrganizations _organizations;
         private readonly IGuidGenerator _guidGenerator;
+        private readonly IAvatarHelper _avatarHelper;
 
         //--- Constructors ---
         public Contacts(
             IGuidGenerator guidGenerator,
             IUsivityDataCatalog data,
             ICurrentContext context,
-            IOrganizations organizations
+            IOrganizations organizations,
+            IAvatarHelper avatarHelper
         ) {
             _context = context;
             _data = data;
             _organizations = organizations;
             _guidGenerator = guidGenerator;
+            _avatarHelper = avatarHelper;
         }
 
         //--- Methods ---
@@ -81,9 +84,10 @@ namespace Usivity.Services.Core.Logic {
             }
 
             // Twitter
-            var twitter = info["identity.twitter"].Contents;
-            if(!string.IsNullOrEmpty(twitter) && (contact.Twitter == null || contact.Twitter.Name != twitter)) {
-                contact.SetIdentity(Source.Twitter, TwitterClient.NewIdentityFromScreenName(twitter));
+            var newTwitter = info["identity.twitter"].Contents;
+            var existingTwitter = contact.GetIdentity(Source.Twitter);
+            if(!string.IsNullOrEmpty(newTwitter) && (existingTwitter == null || existingTwitter.Name != newTwitter)) {
+                contact.SetIdentity(Source.Twitter, TwitterClient.NewIdentityFromScreenName(newTwitter));
             }
 
             // Facebook
@@ -135,17 +139,24 @@ namespace Usivity.Services.Core.Logic {
             if(!string.IsNullOrEmpty(relation)) {
                 resource += "." + relation;
             }
-            return new XDoc(resource)
+            var doc = new XDoc(resource)
                 .Attr("id", contact.Id ?? "")
                 .Attr("href", _context.ApiUri.At("contacts", contact.Id))
                 .Elem("firstname", contact.FirstName ?? "")
                 .Elem("lastname", contact.LastName ?? "")
-                .Elem("email", contact.Email != null ? contact.Email.Id : "")
-                .Elem("uri.avatar", contact.Avatar != null ? contact.Avatar.ToString() : "");
+                .Elem("email", contact.Email ?? "");
+            if(contact.Avatar != null) {
+                doc.Start("uri.avatar").Attr("default", false).Value(contact.Avatar.ToString()).End();
+            }
+            else {
+                var avatar = GetDefaultContactIdentityAvatarUri(contact);
+                doc.Start("uri.avatar").Attr("default", true).Value((avatar != null) ? avatar.ToString() : "").End();
+            }
+            return doc;
         }
 
         public XDoc GetContactVerboseXml(Contact contact, string relation = null) {
-            return GetContactXml(contact, relation)
+            var doc = GetContactXml(contact, relation)
                 .Elem("age", contact.Age ?? "")
                 .Elem("gender", contact.Gender ?? "")
                 .Elem("location", contact.Location ?? "")
@@ -154,28 +165,77 @@ namespace Usivity.Services.Core.Logic {
                 .Elem("address", contact.Address ?? "")
                 .Elem("city", contact.City ?? "")
                 .Elem("state", contact.State ?? "")
-                .Elem("zip", contact.Zip ?? "")
-                .Elem("identity.twitter", contact.Twitter != null ? contact.Twitter.Name : "")
-                .Elem("identity.facebook", contact.Facebook != null ? contact.Facebook.Name : "")
-                .Elem("identity.linkedin", contact.LinkedIn != null ? contact.LinkedIn.Name : "")
-                .Elem("identity.google", contact.Google != null ? contact.Google.Name : "")
-                .Start("company")
-                    .Elem("name", contact.CompanyName ?? "")
-                    .Elem("phone", contact.CompanyPhone ?? "")
-                    .Elem("fax", contact.CompanyFax ?? "")
-                    .Elem("address", contact.CompanyAddress ?? "")
-                    .Elem("city", contact.CompanyCity ?? "")
-                    .Elem("state", contact.CompanyState ?? "")
-                    .Elem("zip", contact.CompanyZip ?? "")
-                    .Elem("industry", contact.CompanyIndustry ?? "")
-                    .Elem("revenue", contact.CompanyRevenue ?? "")
-                    .Elem("competitors", contact.CompanyCompetitors ?? "")
-                .EndAll();
+                .Elem("zip", contact.Zip ?? "");
+            var email = contact.GetIdentity(Source.Email);
+            if(email != null) {
+                doc.Start("identity.email")
+                    .Attr("id", email.Id)
+                    .Elem("name", email.Name ?? "")
+                    .Elem("uri.avatar", _avatarHelper.GetGravatarUri(email.Id).ToString())
+                .End();
+            }
+            else {
+                doc.Elem("identity.email", "");
+            }
+            AppendIdentityXml(doc, "identity.twitter", contact.GetIdentity(Source.Twitter));
+            AppendIdentityXml(doc, "identity.facebook", contact.GetIdentity(Source.Facebook));
+            AppendIdentityXml(doc, "identity.linkedin", contact.GetIdentity(Source.LinkedIn));
+            AppendIdentityXml(doc, "identity.google", contact.GetIdentity(Source.Google));
+            doc.Start("company")
+                .Elem("name", contact.CompanyName ?? "")
+                .Elem("phone", contact.CompanyPhone ?? "")
+                .Elem("fax", contact.CompanyFax ?? "")
+                .Elem("address", contact.CompanyAddress ?? "")
+                .Elem("city", contact.CompanyCity ?? "")
+                .Elem("state", contact.CompanyState ?? "")
+                .Elem("zip", contact.CompanyZip ?? "")
+                .Elem("industry", contact.CompanyIndustry ?? "")
+                .Elem("revenue", contact.CompanyRevenue ?? "")
+                .Elem("competitors", contact.CompanyCompetitors ?? "")
+            .EndAll();
+            return doc;
         }
 
         public void RemoveContact(Contact contact) {
             contact.RemoveOrganization(_organizations.CurrentOrganization.Id);
             SaveContact(contact);
-        } 
+        }
+
+        private XUri GetDefaultContactIdentityAvatarUri(Contact contact) {
+            if(contact.Email != null) {
+                return _avatarHelper.GetGravatarUri(contact.Email);
+            }
+            var twitter = contact.GetIdentity(Source.Twitter);
+            if(twitter != null) {
+                return _avatarHelper.GetAvatarUri(twitter);
+            }
+            var facebook = contact.GetIdentity(Source.Facebook);
+            if(facebook != null) {
+                return _avatarHelper.GetAvatarUri(facebook);
+            }
+            var linkedIn = contact.GetIdentity(Source.LinkedIn);
+            if(linkedIn != null) {
+                return _avatarHelper.GetAvatarUri(facebook);
+            }
+            var google = contact.GetIdentity(Source.Google);
+            if(google != null) {
+                return _avatarHelper.GetAvatarUri(google);
+            }
+            return null;
+        }
+
+        private void AppendIdentityXml(XDoc root, string name, Identity identity) {
+            if(identity != null) {
+                var avatar = _avatarHelper.GetAvatarUri(identity);
+                root.AddAll(new XDoc(name)
+                    .Attr("id", identity.Id)
+                    .Elem("name", identity.Name ?? "")
+                    .Elem("uri.avatar", (avatar != null) ? avatar.ToString() : "")
+                    );    
+            }
+            else {
+                root.Elem(name, "");
+            }
+        }
     }
 }

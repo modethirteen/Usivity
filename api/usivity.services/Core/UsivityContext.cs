@@ -9,6 +9,7 @@ namespace Usivity.Services.Core {
         User.UserRole Role { get; set; }
         XUri ApiUri { get; set; }
         XUri UiUri { get; set; }
+        XUri DefaultAvatarUri { get; set; }
     }
 
     public class UsivityContext : ICurrentContext, IDisposable {
@@ -41,6 +42,7 @@ namespace Usivity.Services.Core {
         public User.UserRole Role { get; set; }
         public XUri ApiUri { get; set; }
         public XUri UiUri { get; set; }
+        public XUri DefaultAvatarUri { get; set; }
 
         //--- Methods ---
         public void Dispose() {}

@@ -22,8 +22,9 @@ namespace Usivity.Services.Core.Logic {
         private readonly ICurrentContext _context;
         private readonly IUsivityDataCatalog _data;
         private readonly IOrganization _currentOrganization;
-        private readonly IEmailClientFactory _emailClientFactory;
         private readonly ITwitterClientFactory _twitterClientFactory;
+        private readonly IEmailClientFactory _emailClientFactory;
+        private readonly IAvatarHelper _avatarHelper;
 
         //--- Constructors ---
         public Connections(
@@ -32,22 +33,23 @@ namespace Usivity.Services.Core.Logic {
             IUsivityDataCatalog data,
             ICurrentContext context,
             IOrganizations organizations,
+            ITwitterClientFactory twitterClientFactory,
             IEmailClientFactory emailClientFactory,
-            ITwitterClientFactory twitterClientFactory
+            IAvatarHelper avatarHelper
         ) {
             _guidGenerator = guidGenerator;
             _dateTime = dateTime;
             _context = context;
             _data = data;
             _currentOrganization = organizations.CurrentOrganization;
-            _emailClientFactory = emailClientFactory;
             _twitterClientFactory = twitterClientFactory;
+            _emailClientFactory = emailClientFactory;
+            _avatarHelper = avatarHelper;
         }
 
         //--- Methods ---
         public XDoc GetOAuthRequestTokenXml(OAuthRequestToken token) {
-            return new XDoc("token")
-                .Elem("uri.authorize", token.AuthorizeUri.ToString());
+            return new XDoc("token").Elem("uri.authorize", token.AuthorizeUri.ToString());
         }
 
         public OAuthRequestToken NewOAuthRequestToken(Source source) {
@@ -129,6 +131,9 @@ namespace Usivity.Services.Core.Logic {
         }
 
         public XDoc GetConnectionXml(IConnection connection) {
+            var avatar = connection.Source == Source.Email
+                ? _avatarHelper.GetGravatarUri(connection.Identity.Id)
+                : _avatarHelper.GetAvatarUri(connection.Identity);
             return new XDoc("connection")
                 .Attr("id", connection.Id)
                 .Attr("href", _context.ApiUri.At("connections", connection.Id))
@@ -136,7 +141,7 @@ namespace Usivity.Services.Core.Logic {
                 .Start("identity")
                     .Attr("id", connection.Identity.Id)
                     .Elem("name", connection.Identity.Name)
-                    .Elem("uri.avatar", connection.Identity.Avatar)
+                    .Elem("uri.avatar", (avatar != null) ? avatar.ToString() : "")
                 .End()
                 .Elem("created", connection.Created.ToISO8601String());
         }

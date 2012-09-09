@@ -30,6 +30,7 @@ namespace Usivity.Services.Core.Logic {
         private readonly IConnections _connections;
         private readonly ITwitterClientFactory _twitterClientFactory;
         private readonly IEmailClientFactory _emailClientFactory;
+        private readonly IAvatarHelper _avatarHelper;
 
         //--- Constructors ---
         public Messages(
@@ -40,7 +41,8 @@ namespace Usivity.Services.Core.Logic {
             IOrganizations organizations,
             IConnections connections,
             ITwitterClientFactory twitterClientFactory,
-            IEmailClientFactory emailClientFactory
+            IEmailClientFactory emailClientFactory,
+            IAvatarHelper avatarHelper
         ) {
             _context = context;
             _data = data;
@@ -52,6 +54,7 @@ namespace Usivity.Services.Core.Logic {
             _connections = connections;
             _twitterClientFactory = twitterClientFactory;
             _emailClientFactory = emailClientFactory;
+            _avatarHelper = avatarHelper;
         }
 
         //--- Methods ---
@@ -94,10 +97,13 @@ namespace Usivity.Services.Core.Logic {
                 else {
 
                     // author is unaffiliated
-                    author = new XDoc("author").Elem("name", message.Author.Name ?? message.Author.Id);
-                    if(message.Author.Avatar != null) {
-                        author.Elem("uri.avatar", message.Author.Avatar.ToString());
-                    }        
+                    author = new XDoc("author")
+                        .Attr("id", message.Author.Id)
+                        .Elem("name", message.Author.Name ?? message.Author.Id);
+                    var avatar = message.Source == Source.Email
+                        ? _avatarHelper.GetGravatarUri(message.Author.Id)
+                        : _avatarHelper.GetAvatarUri(message.Author);
+                    author.Elem("uri.avatar", (avatar != null) ? avatar.ToString() : "");
                 }    
             }
             return new XDoc(resource)

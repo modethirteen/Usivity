@@ -42,7 +42,7 @@ namespace Usivity.Data {
 
         public IEnumerable<IMessage> GetConversations(Contact contact) {
             var queries = new List<IMongoQuery>();
-            var identities = contact.GetSourceIdentities();
+            var identities = contact.Identities;
             if(!identities.Any()) {
                 return new Message[0];
             }

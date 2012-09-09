@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MindTouch.Dream;
 using Usivity.Entities.Types;
 using Usivity.Util;
 
@@ -15,7 +16,11 @@ namespace Usivity.Entities {
         public string Id { get; private set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public Uri Avatar { get; set; }
+        public XUri Avatar { get; set; }
+        public string Email { get {
+            var email = GetIdentity(Source.Email);
+            return (email != null) ? email.Id : null;
+        } }
         public string Age { get; set; }
         public string Gender { get; set; }
         public string Location { get; set; }
@@ -25,51 +30,17 @@ namespace Usivity.Entities {
         public string City { get; set; }
         public string State { get; set; }
         public string Zip { get; set; }
-        public Identity Email {
-            get {
-                Identity email;
-                _identities.TryGetValue(Source.Email, out email);
-                return email;
-            }
-        }
-        public Identity Twitter {
-            get {
-                Identity twitter;
-                _identities.TryGetValue(Source.Twitter, out twitter);
-                return twitter;
-            }
-        }
-        public Identity Google {
-            get {
-                Identity google;
-                _identities.TryGetValue(Source.Google, out google);
-                return google;
-            }
-        }
-        public Identity Facebook {
-            get {
-                Identity facebook;
-                _identities.TryGetValue(Source.Facebook, out facebook);
-                return facebook;
-            }
-        }
-        public Identity LinkedIn {
-            get {
-                Identity linkedIn;
-                _identities.TryGetValue(Source.LinkedIn, out linkedIn);
-                return linkedIn;
-            }
-        }
         public string CompanyName { get; set; }
-        public string CompanyPhone { get; set;}
+        public string CompanyPhone { get; set; }
         public string CompanyFax { get; set;}
         public string CompanyAddress { get; set; }
         public string CompanyCity { get; set; }
         public string CompanyState { get; set; }
         public string CompanyZip { get; set; }
         public string CompanyIndustry { get; set; }
-        public string CompanyRevenue { get; set;}
-        public string CompanyCompetitors { get; set;}
+        public string CompanyRevenue { get; set; }
+        public string CompanyCompetitors { get; set; }
+        public IEnumerable<KeyValuePair<Source, Identity>> Identities { get { return _identities; } }
 
         //--- Constructors ---
         public Contact(IGuidGenerator guidGenerator) {
@@ -83,12 +54,8 @@ namespace Usivity.Entities {
             _identities[source] = identity;
         }
 
-        public Identity GetSourceIdentity(Source source) {
+        public Identity GetIdentity(Source source) {
             return _identities.TryGetValue(source, null);
-        }
-
-        public IEnumerable<KeyValuePair<Source, Identity>> GetSourceIdentities() {
-            return _identities;
         }
 
         public void AddOrganization(IOrganization organization) {
