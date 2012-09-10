@@ -12,6 +12,13 @@ namespace Usivity.Services.Core.Logic {
 
     public class Contacts : IContacts {
 
+        class SourceAvatarInfo {
+            
+            //--- Properties ---
+            public Source Source { get; set; }
+            public XUri Avatar { get; set; }
+        }
+
         //--- Fields ---
         private readonly ICurrentContext _context;
         private readonly IUsivityDataCatalog _data;
@@ -150,8 +157,17 @@ namespace Usivity.Services.Core.Logic {
                 doc.Start("uri.avatar").Attr("default", false).Value(contact.Avatar.ToString()).End();
             }
             else {
-                var avatar = GetDefaultContactIdentityAvatarUri(contact);
-                doc.Start("uri.avatar").Attr("default", true).Value((avatar != null) ? avatar.ToString() : "").End();
+                var avatarInfo = GetDefaultContactAvatar(contact);
+                if(avatarInfo != null) {
+                    doc.Start("uri.avatar")
+                        .Attr("default", true)
+                        .Attr("source", avatarInfo.Source.ToString().ToLowerInvariant())
+                        .Value((avatarInfo.Avatar != null) ? avatarInfo.Avatar.ToString() : "")
+                        .End();    
+                }
+                else {
+                    doc.Elem("uri.avatar", "");
+                }
             }
             return doc;
         }
@@ -166,7 +182,11 @@ namespace Usivity.Services.Core.Logic {
                 .Elem("address", contact.Address ?? "")
                 .Elem("city", contact.City ?? "")
                 .Elem("state", contact.State ?? "")
-                .Elem("zip", contact.Zip ?? "");
+                .Elem("zip", contact.Zip ?? "");            
+            AppendIdentityXml(doc, "identity.twitter", contact.GetIdentity(Source.Twitter));
+            AppendIdentityXml(doc, "identity.facebook", contact.GetIdentity(Source.Facebook));
+            AppendIdentityXml(doc, "identity.linkedin", contact.GetIdentity(Source.LinkedIn));
+            AppendIdentityXml(doc, "identity.google", contact.GetIdentity(Source.Google));
             var email = contact.GetIdentity(Source.Email);
             if(email != null) {
                 doc.Start("identity.email")
@@ -178,10 +198,6 @@ namespace Usivity.Services.Core.Logic {
             else {
                 doc.Elem("identity.email", "");
             }
-            AppendIdentityXml(doc, "identity.twitter", contact.GetIdentity(Source.Twitter));
-            AppendIdentityXml(doc, "identity.facebook", contact.GetIdentity(Source.Facebook));
-            AppendIdentityXml(doc, "identity.linkedin", contact.GetIdentity(Source.LinkedIn));
-            AppendIdentityXml(doc, "identity.google", contact.GetIdentity(Source.Google));
             doc.Start("company")
                 .Elem("name", contact.CompanyName ?? "")
                 .Elem("phone", contact.CompanyPhone ?? "")
@@ -202,25 +218,40 @@ namespace Usivity.Services.Core.Logic {
             SaveContact(contact);
         }
 
-        private XUri GetDefaultContactIdentityAvatarUri(Contact contact) {
-            if(contact.Email != null) {
-                return _avatarHelper.GetGravatarUri(contact.Email);
-            }
+        private SourceAvatarInfo GetDefaultContactAvatar(Contact contact) {
             var twitter = contact.GetIdentity(Source.Twitter);
             if(twitter != null) {
-                return _avatarHelper.GetAvatarUri(twitter);
+                var avatar = _avatarHelper.GetAvatarUri(twitter);
+                if(avatar != null) {
+                    return new SourceAvatarInfo { Source = Source.Twitter, Avatar = avatar }; 
+                }
             }
             var facebook = contact.GetIdentity(Source.Facebook);
             if(facebook != null) {
-                return _avatarHelper.GetAvatarUri(facebook);
+                var avatar = _avatarHelper.GetAvatarUri(facebook);
+                if(avatar != null) {
+                    return new SourceAvatarInfo { Source = Source.Facebook, Avatar = avatar }; 
+                }
             }
             var linkedIn = contact.GetIdentity(Source.LinkedIn);
             if(linkedIn != null) {
-                return _avatarHelper.GetAvatarUri(facebook);
+                var avatar = _avatarHelper.GetAvatarUri(linkedIn);
+                if(avatar != null) {
+                    return new SourceAvatarInfo { Source = Source.LinkedIn, Avatar = avatar }; 
+                }
             }
             var google = contact.GetIdentity(Source.Google);
             if(google != null) {
-                return _avatarHelper.GetAvatarUri(google);
+                var avatar = _avatarHelper.GetAvatarUri(google);
+                if(avatar != null) {
+                    return new SourceAvatarInfo { Source = Source.Google, Avatar = avatar }; 
+                }
+            }
+            if(contact.Email != null) {
+                var avatar = _avatarHelper.GetGravatarUri(contact.Email);
+                if(avatar != null) {
+                    return new SourceAvatarInfo { Source = Source.Email, Avatar = avatar }; 
+                }
             }
             return null;
         }
