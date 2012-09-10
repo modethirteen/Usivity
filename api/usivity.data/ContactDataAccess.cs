@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using Usivity.Entities;
+using Usivity.Entities.Types;
 
 namespace Usivity.Data {
 
@@ -21,10 +22,11 @@ namespace Usivity.Data {
             return _db.FindAs<Contact>(Query.EQ("_organizations", organization.Id));
         }
 
-        public Contact Get(IMessage message) {
-            var identity = "_identities." + (int)message.Source;
+        public Contact Get(IMessage message, IOrganization organization) {
             var query = Query.And(
-                Query.EQ(identity + "._id", message.Author.Id)
+                Query.EQ("_identities.k", message.Source.GetSourceValue()),
+                Query.EQ("_identities.v._id", message.Author.Id),
+                Query.EQ("_organizations", organization.Id)
                 );
             return _db.FindOneAs<Contact>(query);
         }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MindTouch.Dream;
 
 namespace Usivity.Entities.Types {
 
@@ -7,6 +7,7 @@ namespace Usivity.Entities.Types {
         //--- Properties ---
         public string Id { get; set; }
         public string Name { get; set; }
-        public Uri Avatar { get; set; }
+        public XUri Avatar { get; set; }
+        public XUri AvatarSecure { get; set; }
     }
 }

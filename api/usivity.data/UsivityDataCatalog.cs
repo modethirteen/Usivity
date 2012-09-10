@@ -19,17 +19,15 @@ namespace Usivity.Data {
             subscriptionSerializer.RegisterSerializer();
             var userSerializer = new UserSerializer();
             userSerializer.RegisterSerializer();
-
             var xuriSerializer = new XUriSerializer();
             xuriSerializer.RegisterSerializer();
             var oauthTokenInfoSerializer = new OAuthTokenInfoSerializer();
             oauthTokenInfoSerializer.RegisterSerializer();
-
             var twitterConnectionSerializer = new TwitterConnectionSerializer();
             twitterConnectionSerializer.RegisterSerializer();
             var emailConnectionSerializer = new EmailConnectionSerializer();
             emailConnectionSerializer.RegisterSerializer();
- 
+
             return new UsivityDataCatalog(connection);
         }
 

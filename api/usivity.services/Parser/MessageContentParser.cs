@@ -48,7 +48,9 @@ namespace Usivity.Services.Parser {
         }
 
         public void ProcessWhitespace() {
-            MessageContent = MessageContent.Replace("\n", "<br />");
+            MessageContent = MessageContent
+                .Replace("\r\n", "<br />")
+                .Replace("\n", "<br />");
         }
 
         public void ProcessMentions() {

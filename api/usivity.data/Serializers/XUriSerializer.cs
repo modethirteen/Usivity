@@ -7,13 +7,16 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Usivity.Data.Serializers {
 
-    public class XUriSerializer : BsonBaseSerializer {
+    public class XUriSerializer : BsonBaseSerializer, IUsivityDataSerializer {
+
+        //--- Class Fields ---
+        private static bool _isRegistered;
 
         //--- Methods ---
         public void RegisterSerializer() {
-            var type = typeof(XUri);
-            if(BsonSerializer.LookupSerializer(type) == null) {
-                BsonSerializer.RegisterSerializer(type, new XUriSerializer());    
+            if(!_isRegistered) {
+                BsonSerializer.RegisterSerializer(typeof(XUri), new XUriSerializer());
+                _isRegistered = true;
             }
         }
 

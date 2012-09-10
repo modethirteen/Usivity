@@ -26,7 +26,7 @@ namespace Usivity.Services.Clients.Email {
 
         //--- Class Methods ---
         public static Identity NewIdentityFromEmailAddress(string email) {
-            return new Identity { Id = email };
+            return new Identity { Id = email.ToLowerInvariant().Trim() };
         }
 
         public static void CheckEmailConnectionCredentials(IEmailConnection connection) {
@@ -34,8 +34,7 @@ namespace Usivity.Services.Clients.Email {
                 NewImapClient(connection);
             }
             catch(Exception e) {
-                throw new ConnectionResponseException(DreamStatus.BadRequest,
-                    "Could not successfully validate email connection settings", e);
+                throw new ConnectionResponseException(DreamStatus.BadRequest, "Could not successfully validate email connection settings", e);
             }
         }
 
@@ -77,21 +76,32 @@ namespace Usivity.Services.Clients.Email {
         #region IClient implementation
         public IEnumerable<IMessage> GetNewMessages(TimeSpan? expiration) {
             var imap = NewImapClient(_connection);
+
+            // build search conditions; unseen messages since connection creation -1 day
             var search = SearchCondition.Unseen();
+            var since = _connection.Created.Subtract(TimeSpan.FromDays(1));
             search = search.And(new SearchCondition {
                     Field = SearchCondition.Fields.Since,
-                    Value = _connection.Created.ToLocalTime()
+                    Value = since.ToString("dd-MMM-yyyy").QuoteString()
             });
             var mailMessages = imap.SearchMessages(search);
             var messages = new List<IMessage>();
             foreach(var mailMessageDeferred in mailMessages) {
                 var mailMessage = mailMessageDeferred.Value;
                 imap.AddFlags(Flags.Seen, mailMessage);
-                var identity = new Identity();
+
+                // ignore messages older than connection
+                if(mailMessage.Date < _connection.Created) {
+                    continue;
+                }
                 var sender = mailMessage.From ?? mailMessage.Sender;
+                Identity identity;
                 if(sender != null) {
-                    identity.Id = sender.Address;
+                    identity = NewIdentityFromEmailAddress(sender.Address);
                     identity.Name = sender.DisplayName;
+                }
+                else {
+                    identity = new Identity();
                 }
                 var message = new Message(_guidGenerator, _dateTime, expiration) {
                     Source = Source.Email,
@@ -137,7 +147,7 @@ namespace Usivity.Services.Clients.Email {
                 response = plug.PostAsForm();
             }
             catch(DreamResponseException e) {
-                throw new ConnectionResponseException(e.Response.Status, "Error posting message", e);
+                throw new ConnectionResponseException(e.Response.Status, "Error posting message", plug.Uri, e.Response, e);
             }
             var sendEmailResult = response.ToDocument();
             sendEmailResult.UsePrefix("ses", "http://ses.amazonaws.com/doc/2010-12-01/");

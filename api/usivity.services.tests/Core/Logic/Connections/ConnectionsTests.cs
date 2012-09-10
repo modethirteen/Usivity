@@ -19,6 +19,7 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
         protected Mock<ITwitterClientFactory> _twitterClientFactoryMock;
         protected Mock<IEmailClientFactory> _emailClientFactoryMock;
         protected Mock<IDateTime> _dateTimeMock;
+        protected Mock<IAvatarHelper> _avatarHelperMock;
 
         //--- Methods ---
         protected void SetUp() {
@@ -31,6 +32,7 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
             _twitterClientFactoryMock = new Mock<ITwitterClientFactory>();
             _emailClientFactoryMock = new Mock<IEmailClientFactory>();
             _dateTimeMock = new Mock<IDateTime>();
+            _avatarHelperMock = new Mock<IAvatarHelper>();
         }
 
         protected Connections GetConnections() {
@@ -40,8 +42,9 @@ namespace Usivity.Tests.Services.Core.Logic.Connections {
                 _dataMock.Object,
                 _contextMock.Object,
                 _organizationsMock.Object,
+                _twitterClientFactoryMock.Object,
                 _emailClientFactoryMock.Object,
-                _twitterClientFactoryMock.Object
+                _avatarHelperMock.Object
                 );
         }
     }

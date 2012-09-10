@@ -35,32 +35,45 @@ namespace Usivity.Services.Clients.Twitter {
 
         //--- Class Methods ---
         public static Identity NewIdentityFromScreenName(string screenName) {
-             var msg = Plug.New(API_URI)
-                .At("users", "show.xml")
-                .With("screen_name", screenName)
-                .Get();
-             return NewIdentityFromUserLookup(msg.ToDocument());
+            var result = GetUserLookupResultFromScreenName(screenName);
+            return NewIdentityFromUserLookupResult(result);
         }
 
         public static Identity NewIdentityFromUserId(string userId) {
+            var result = GetUserLookupResultFromUserId(userId);
+            return NewIdentityFromUserLookupResult(result);
+        }
+
+        private static Identity NewIdentityFromUserLookupResult(XDoc result) {
+            if(!result["error"].IsEmpty) {
+                return null;
+            }
+            XUri avatarUri;
+            XUri.TryParse(result["profile_image_url"].AsText, out avatarUri);
+            XUri avatarSecureUri;
+            XUri.TryParse(result["profile_image_url_https"].AsText, out avatarSecureUri);
+            return new Identity {
+                Id = result["id"].AsText,
+                Name = result["screen_name"].AsText,
+                Avatar = avatarUri,
+                AvatarSecure = avatarSecureUri
+            };
+        }
+
+        private static XDoc GetUserLookupResultFromUserId(string userId) {
             var msg = Plug.New(API_URI)
                 .At("users", "show.xml")
                 .With("user_id", userId)
                 .Get();
-            return NewIdentityFromUserLookup(msg.ToDocument());
+            return msg.ToDocument();
         }
 
-        private static Identity NewIdentityFromUserLookup(XDoc result) {
-            if(!result["error"].IsEmpty) {
-                return null;
-            }
-            XUri uri;
-            XUri.TryParse(result["profile_image_url"].AsText, out uri);
-            return new Identity {
-                Id = result["id"].AsText,
-                Name = result["screen_name"].AsText,
-                Avatar = uri != null ? uri.ToUri() : null
-            };
+        private static XDoc GetUserLookupResultFromScreenName(string screenName) {
+            var msg = Plug.New(API_URI)
+                .At("users", "show.xml")
+                .With("screen_name", screenName)
+                .Get();
+            return msg.ToDocument();
         }
 
         private static XUri GetNewSubscriptionUri(Subscription subscription) {
@@ -107,7 +120,7 @@ namespace Usivity.Services.Clients.Twitter {
                 response = plug.WithOAuthAuthentication(_oauth, _connection.OAuthAccess).PostAsForm();
             }
             catch(DreamResponseException e) {
-                throw new ConnectionResponseException(e.Response.Status, "Error posting message", e);
+                throw new ConnectionResponseException(e.Response.Status, "Error posting message", plug.Uri, e.Response, e);
             }
             var replyMessage = NewMessageFromStatusUpdate(new JDoc(response.ToText()).ToDocument("response"));
             replyMessage.SetParent(message);
@@ -122,25 +135,16 @@ namespace Usivity.Services.Clients.Twitter {
                 return contact;
             }
             try {
-                var msg = Plug.New(API_URI)
-                    .At("users", "show.xml")
-                    .With("user_id", identity.Id)
-                    .Get();
-                var userDoc = msg.ToDocument();
+                var userDoc = GetUserLookupResultFromUserId(identity.Id);
                 if(string.IsNullOrEmpty(contact.FirstName)) {
                     contact.FirstName = userDoc["name"].AsText;
-                }
-                XUri uri;
-                XUri.TryParse(userDoc["profile_image_url"].AsText, out uri);
-                if(uri != null && contact.Avatar == null) {
-                    contact.Avatar = uri;
                 }
                 if(string.IsNullOrEmpty(contact.Location)) {
                     contact.Location = userDoc["location"].AsText;
                 }
             }
             catch(Exception e) {
-                _log.WarnFormat("Cannot populate contact data with Twitter details, exception: {0}", e.Message);        
+                _log.ErrorFormat("Cannot populate contact data with Twitter details, exception: {0}", e);        
             }
             return contact;
         }
@@ -165,7 +169,7 @@ namespace Usivity.Services.Clients.Twitter {
                 }
                 var response = new JDoc(msg.ToText()).ToDocument("response");
                 var results = response["results"];
-                messages.AddRange(results.Select(result => NewFromSearchResult(result, expiration)));
+                messages.AddRange(results.Select(result => NewMessageFromSearchResult(result, expiration)));
                 var ids = new List<ulong>();
                 foreach(var result in results) {
                     var id = ulong.MinValue;
@@ -198,9 +202,11 @@ namespace Usivity.Services.Clients.Twitter {
         #endregion
 
         #region Helpers
-        private IMessage NewFromSearchResult(XDoc result, TimeSpan? expiration = null) {
-            XUri uri;
-            XUri.TryParse(result["profile_image_url"].AsText, out uri);
+        private IMessage NewMessageFromSearchResult(XDoc result, TimeSpan? expiration = null) {
+            XUri avatarUri;
+            XUri.TryParse(result["profile_image_url"].AsText, out avatarUri);
+            XUri avatarSecureUri;
+            XUri.TryParse(result["profile_image_url_https"].AsText, out avatarSecureUri);
             return new Message(_guidGenerator, _dateTime, expiration) {
                 Source = Source.Twitter,
                 SourceMessageId = result["id_str"].AsText,
@@ -210,7 +216,8 @@ namespace Usivity.Services.Clients.Twitter {
                 Author = new Identity {
                     Id = result["from_user_id_str"].AsText,
                     Name = result["from_user"].AsText,
-                    Avatar = uri != null ? uri.ToUri() : null
+                    Avatar = avatarUri,
+                    AvatarSecure = avatarSecureUri
                 },
                 SourceCreated = DateTime.Parse(result["created_at"].AsText)
             };
