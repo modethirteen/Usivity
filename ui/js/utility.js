@@ -35,26 +35,6 @@ function checkemail(email)
     return re.test(email);
 } 
 
-// EXTRACT A QUERYPARAM BY NAME
-function queryparam(name, url)
-{
-	name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-	var regexS = "[\\?&]" + name + "=([^&#]*)";
-	var regex = new RegExp(regexS);
-	if (url)
-	{
-		var results = regex.exec(url);
-	}
-	else
-	{
-		var results = regex.exec(window.location.href);
-	}
-	if(results == null)
-		return "";
-	else
-		return decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
 // Generate an ISO-8601 TimeStamp
 function ISODateString(d)
 {

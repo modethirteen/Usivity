@@ -8,12 +8,12 @@
 */
 $(document).ready(function() {
 
-	var authtoken		= queryparam("oauth_token");
+	var authtoken = queryparam("oauth_token");
 	
 	if (authtoken)
 	{
-		var authverifier	= queryparam("oauth_verifier");
-		var connection		= queryparam("source");
+		var authverifier = queryparam("oauth_verifier");
+		var connection = queryparam("source");
 		
 		data = {
 			    connection: {
@@ -36,7 +36,6 @@ $(document).ready(function() {
 			success: function(results)
 			{
 				console.log("connection saved");
-				location.href = "http://usivity.com";
 			},
 			error:function (xhr, ajaxOptions, thrownError){
 				console.log(xhr.statusText);

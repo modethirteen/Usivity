@@ -7,8 +7,14 @@ message_contact
 ">
 	<td class="author_picture">
 		<span>
+{if:contact.author}
+			<a href="/template/message_post.htm" id="{@href}" class="popup message_reply"><img src="{contact.author_uri.avatar_#text}"></a>
+{if}
+{if:!contact.author}
 			<a href="/template/message_post.htm" id="{@href}" class="popup message_reply"><img src="{author_uri.avatar}"></a>
+{!if}
 		</span>
+		
 	</td>
 	<td class="author_name">
 {if:source=email}
@@ -18,8 +24,7 @@ message_contact
 		<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
 {if}
 {if:contact.author}
-		<span class="contact_fullname">{contact.author_firstname} {contact.author_lastname}</span>
-
+		<span class="profile">{contact.author_firstname} {contact.author_lastname}</span>
 {if}
 	</td>
 	<td class="message_text">

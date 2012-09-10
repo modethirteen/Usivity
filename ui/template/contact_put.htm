@@ -12,7 +12,7 @@
 		
 				<span class="contact_details">
 					<span class="contact_picture contact_picture_large">
-						<img src="{contact_uri.avatar}"/>
+						<img src="{contact_uri.avatar_#text}"/>
 					</span>
 					<input type="text" start="first name" class="contact_firstname" value="{contact_firstname}"/>
 					<input type="text" start="last name" class="contact_lastname" value="{contact_lastname}"/>
@@ -57,10 +57,10 @@
 				
 				
 				<h3>Social Networks</h3>
-				<input type="text" start="linkedin" value="{contact_identity.linkedin}" class="contact_socialnetwork contact_linkedin contactdetail long"/>
-				<input type="text" start="facebook" value="{contact_identity.facebook}"  class="contact_socialnetwork contact_facebook contactdetail long"/>
-				<input type="text" start="twitter" value="{contact_identity.twitter}"  class="contact_socialnetwork contact_twitter contactdetail long"/>
-				<input type="text" start="google" value="{contact_identity.google}"  class="contact_socialnetwork contact_google contactdetail long"/>		
+				<input type="text" start="linkedin" value="{contact_identity.linkedin_name}" class="contact_socialnetwork contact_linkedin contactdetail long"/>
+				<input type="text" start="facebook" value="{contact_identity.facebook_name}"  class="contact_socialnetwork contact_facebook contactdetail long"/>
+				<input type="text" start="twitter" value="{contact_identity.twitter_name}"  class="contact_socialnetwork contact_twitter contactdetail long"/>
+				<input type="text" start="google" value="{contact_identity.google_name}"  class="contact_socialnetwork contact_google contactdetail long"/>		
 		</div>
 	</div>
 </form>
@@ -72,7 +72,7 @@
 {in:contact_messages_message}
 		<div class="message_thread">
 			<span class="contact_picture contact_picture_large"> 
-				<img src="{author_uri.avatar}" />
+				<img src="{contact.author_uri.avatar_#text}" />
 			</span>
 			<div class="message_details">
 				<span class="message_meta">
@@ -91,7 +91,7 @@
 					</span>
 				</span>
 				<span class="contact_name">
-					<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
+						<span class="profile">{contact_firstname} {contact_lastname}</span>
 				</span>
 				<div class="message_text">{body}</div>
 			</div>

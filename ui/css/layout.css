@@ -152,6 +152,9 @@ body {
 	padding-left:20px;
 	max-height:200px;
 }
+.message_thread_children .message_thread {
+	min-height:40px;	
+}
 .message_thread_children .contact_picture_large {
 	width:30px;
 	height:30px;

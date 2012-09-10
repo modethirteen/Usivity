@@ -20,8 +20,15 @@ function loaddata()
 		var count = connections["@count"];
 		//var count = 0;
 		
+		
+		// IF AN AUTH TOKEN IS PASSED IN THE UI
+		if (queryparam("oauth_token"))
+		{
+			buildModal("","/template/connection_configure.htm");
+			setTimeout("refreshui()",3000);
+		}
 		// MORE THAN ONE CONNECTION EXISTS
-		if (count >= 1)
+		else if (count >= 1)
 		{
 			// LOAD THE OPENSTREAM
 			loadopenstream();
@@ -33,7 +40,7 @@ function loaddata()
 		// NO CONNECTIONS
 		else
 		{
-			buildModal("","/template/setup.htm");	
+			buildModal("","/template/setup.htm");
 		}
 		
 		// LOAD USER PANEL
@@ -57,6 +64,12 @@ function loaduserpanel()
 			$(".header .menu").fadeIn();
 		});
 	});
+}
+
+// REFRESH UI
+function refreshui()
+{
+	location.href = "http://usivity.com";	
 }
 
 // LOAD THE OPEN STREAM

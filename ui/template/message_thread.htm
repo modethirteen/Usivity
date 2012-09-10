@@ -6,9 +6,6 @@
 	</span>
 	<div class="message_details">
 		<span class="message_meta">
-{if:user.author}
-			<span class="usivity-user">posted by {user.author_name}</span>
-{if}
 			<span class="message_time timeago" title="{created.source}">
 				
 			</span>
@@ -17,7 +14,12 @@
 			</span>
 		</span>
 		<span class="contact_name">
+{if:!user.author}
 			<a target="_new" class="profile" href="http://twitter.com/{author_name}">{author_name}</a>
+{!if}
+{if:user.author}
+			<span class="usivity-user">{user.author_name}</span>
+{if}
 		</span>
 		<div class="message_text">{body}</div>
 	</div>
